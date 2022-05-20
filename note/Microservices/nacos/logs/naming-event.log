@@ -1,0 +1,318 @@
+2022-05-20 08:14:53,881 INFO DEFAULT_GROUP@@seata-tc-server {SYNC} {IP-NEW} cluster: SH, new ips size: 1, content: [169.254.77.61:8091:unknown:SH_1.0_true_false_SH]
+
+2022-05-20 08:14:53,883 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@seata-tc-server, ips: 169.254.77.61:8091_true,
+
+2022-05-20 08:41:02,819 INFO DEFAULT_GROUP@@storage-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8081:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 08:41:02,820 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 10.3.109.161:8081_true,
+
+2022-05-20 08:41:09,231 INFO DEFAULT_GROUP@@order-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8082:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 08:41:09,231 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 10.3.109.161:8082_true,
+
+2022-05-20 08:41:14,876 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 08:41:14,876 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 10.3.109.161:8083_true,
+
+2022-05-20 08:48:17,903 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653007678175
+
+2022-05-20 08:48:19,329 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653007679604
+
+2022-05-20 08:48:19,956 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653007680250
+
+2022-05-20 08:48:33,092 INFO DEFAULT_GROUP@@storage-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8081:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 08:48:33,092 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 
+
+2022-05-20 08:48:34,338 INFO DEFAULT_GROUP@@order-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8082:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 08:48:34,338 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 
+
+2022-05-20 08:48:34,959 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 08:48:34,959 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 
+
+2022-05-20 08:52:45,704 INFO DEFAULT_GROUP@@storage-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8081:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 08:52:45,704 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 10.3.109.161:8081_true,
+
+2022-05-20 08:52:48,692 INFO DEFAULT_GROUP@@order-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8082:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 08:52:48,692 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 10.3.109.161:8082_true,
+
+2022-05-20 08:52:51,507 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 08:52:51,507 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 10.3.109.161:8083_true,
+
+2022-05-20 09:01:26,608 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653008466917
+
+2022-05-20 09:01:28,790 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653008469149
+
+2022-05-20 09:01:30,802 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653008471097
+
+2022-05-20 09:01:35,493 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 10.3.109.161:8081_false,
+
+2022-05-20 09:01:40,495 INFO service: DEFAULT_GROUP@@storage-service {POS} {IP-ENABLED} valid: 10.3.109.161:8081@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:01:41,290 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 10.3.109.161:8082_false,
+
+2022-05-20 09:01:41,623 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:01:41,623 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 
+
+2022-05-20 09:01:45,904 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 09:01:45,904 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 10.3.109.161:8083_true,
+
+2022-05-20 09:01:46,293 INFO service: DEFAULT_GROUP@@order-service {POS} {IP-ENABLED} valid: 10.3.109.161:8082@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:03:05,821 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653008570541
+
+2022-05-20 09:03:06,635 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653008570946
+
+2022-05-20 09:03:08,809 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653008571337
+
+2022-05-20 09:03:18,402 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 10.3.109.161:8081_false,
+
+2022-05-20 09:03:21,659 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:03:21,659 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 
+
+2022-05-20 09:03:23,398 INFO service: DEFAULT_GROUP@@storage-service {POS} {IP-ENABLED} valid: 10.3.109.161:8081@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:03:23,820 INFO DEFAULT_GROUP@@order-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8082:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:03:23,820 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 
+
+2022-05-20 09:03:25,555 INFO DEFAULT_GROUP@@order-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8082:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 09:03:25,555 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 10.3.109.161:8082_true,
+
+2022-05-20 09:03:30,457 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 09:03:30,457 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 10.3.109.161:8083_true,
+
+2022-05-20 09:06:55,878 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653008798529
+
+2022-05-20 09:06:56,692 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653008800583
+
+2022-05-20 09:06:58,864 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653008800671
+
+2022-05-20 09:07:00,729 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 10.3.109.161:8081_false,
+
+2022-05-20 09:07:05,092 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 10.3.109.161:8082_false,
+
+2022-05-20 09:07:05,731 INFO service: DEFAULT_GROUP@@storage-service {POS} {IP-ENABLED} valid: 10.3.109.161:8081@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:07:07,975 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 10.3.109.161:8083_false,
+
+2022-05-20 09:07:10,092 INFO service: DEFAULT_GROUP@@order-service {POS} {IP-ENABLED} valid: 10.3.109.161:8082@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:07:12,977 INFO service: DEFAULT_GROUP@@account-service {POS} {IP-ENABLED} valid: 10.3.109.161:8083@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:07:55,889 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653008860754
+
+2022-05-20 09:07:56,703 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653008857996
+
+2022-05-20 09:07:58,877 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653008860123
+
+2022-05-20 09:08:07,271 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 10.3.109.161:8081_false,
+
+2022-05-20 09:08:11,709 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:08:11,709 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 
+
+2022-05-20 09:08:12,276 INFO service: DEFAULT_GROUP@@storage-service {POS} {IP-ENABLED} valid: 10.3.109.161:8081@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:08:12,991 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 10.3.109.161:8082_false,
+
+2022-05-20 09:08:17,967 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 09:08:17,967 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 10.3.109.161:8083_true,
+
+2022-05-20 09:08:17,993 INFO service: DEFAULT_GROUP@@order-service {POS} {IP-ENABLED} valid: 10.3.109.161:8082@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:10:11,726 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653008993031
+
+2022-05-20 09:10:26,731 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:10:26,731 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 
+
+2022-05-20 09:11:16,208 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 09:11:16,208 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 10.3.109.161:8083_true,
+
+2022-05-20 09:12:08,933 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653009113128
+
+2022-05-20 09:12:16,642 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 10.3.109.161:8082_false,
+
+2022-05-20 09:12:16,754 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653009121235
+
+2022-05-20 09:12:20,936 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653009122434
+
+2022-05-20 09:12:21,643 INFO service: DEFAULT_GROUP@@order-service {POS} {IP-ENABLED} valid: 10.3.109.161:8082@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:12:23,555 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 10.3.109.161:8081_false,
+
+2022-05-20 09:12:28,247 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 10.3.109.161:8083_false,
+
+2022-05-20 09:12:28,558 INFO service: DEFAULT_GROUP@@storage-service {POS} {IP-ENABLED} valid: 10.3.109.161:8081@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:12:33,249 INFO service: DEFAULT_GROUP@@account-service {POS} {IP-ENABLED} valid: 10.3.109.161:8083@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:20:54,024 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653009636949
+
+2022-05-20 09:20:56,029 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653009638854
+
+2022-05-20 09:20:56,841 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653009638548
+
+2022-05-20 09:21:00,804 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 10.3.109.161:8081_false,
+
+2022-05-20 09:21:03,533 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 10.3.109.161:8082_false,
+
+2022-05-20 09:21:05,809 INFO service: DEFAULT_GROUP@@storage-service {POS} {IP-ENABLED} valid: 10.3.109.161:8081@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:21:07,033 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 10.3.109.161:8083_false,
+
+2022-05-20 09:21:08,535 INFO service: DEFAULT_GROUP@@order-service {POS} {IP-ENABLED} valid: 10.3.109.161:8082@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:21:12,036 INFO service: DEFAULT_GROUP@@account-service {POS} {IP-ENABLED} valid: 10.3.109.161:8083@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 09:24:09,460 INFO {POS} {IP-DISABLED} valid: 169.254.77.61:8091@SH@DEFAULT_GROUP@@seata-tc-server, region: unknown, msg: client timeout after 15000, last beat: 1653009831753
+
+2022-05-20 09:24:11,059 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653009835920
+
+2022-05-20 09:24:14,060 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653009838670
+
+2022-05-20 09:24:16,874 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653009837176
+
+2022-05-20 09:24:24,469 INFO DEFAULT_GROUP@@seata-tc-server {SYNC} {IP-DEAD} cluster: SH, dead ips size: 1, content: [169.254.77.61:8091:unknown:SH_1.0_false_false_SH]
+
+2022-05-20 09:24:24,469 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@seata-tc-server, ips: 
+
+2022-05-20 09:24:26,063 INFO DEFAULT_GROUP@@storage-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8081:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:24:26,063 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 
+
+2022-05-20 09:24:29,063 INFO DEFAULT_GROUP@@order-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8082:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:24:29,063 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 
+
+2022-05-20 09:24:31,877 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:24:31,877 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 
+
+2022-05-20 09:25:05,453 INFO DEFAULT_GROUP@@seata-tc-server {SYNC} {IP-NEW} cluster: SH, new ips size: 1, content: [169.254.77.61:8091:unknown:SH_1.0_true_false_SH]
+
+2022-05-20 09:25:05,453 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@seata-tc-server, ips: 169.254.77.61:8091_true,
+
+2022-05-20 09:27:31,091 INFO DEFAULT_GROUP@@storage-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8081:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 09:27:31,091 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 10.3.109.161:8081_true,
+
+2022-05-20 09:27:34,925 INFO DEFAULT_GROUP@@order-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8082:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 09:27:34,925 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 10.3.109.161:8082_true,
+
+2022-05-20 09:27:37,975 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 09:27:37,975 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 10.3.109.161:8083_true,
+
+2022-05-20 09:32:29,563 INFO {POS} {IP-DISABLED} valid: 169.254.77.61:8091@SH@DEFAULT_GROUP@@seata-tc-server, region: unknown, msg: client timeout after 15000, last beat: 1653010330802
+
+2022-05-20 09:32:33,017 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653010333152
+
+2022-05-20 09:32:34,975 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653010335124
+
+2022-05-20 09:32:36,131 INFO {POS} {IP-DISABLED} valid: 10.3.109.161:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653010336274
+
+2022-05-20 09:32:44,573 INFO DEFAULT_GROUP@@seata-tc-server {SYNC} {IP-DEAD} cluster: SH, dead ips size: 1, content: [169.254.77.61:8091:unknown:SH_1.0_false_false_SH]
+
+2022-05-20 09:32:44,573 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@seata-tc-server, ips: 
+
+2022-05-20 09:32:48,024 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8083:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:32:48,024 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 
+
+2022-05-20 09:32:49,979 INFO DEFAULT_GROUP@@order-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8082:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:32:49,979 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 
+
+2022-05-20 09:32:51,134 INFO DEFAULT_GROUP@@storage-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [10.3.109.161:8081:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 09:32:51,134 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 
+
+2022-05-20 10:09:11,117 INFO DEFAULT_GROUP@@seata-tc-server {SYNC} {IP-NEW} cluster: SH, new ips size: 1, content: [192.168.98.1:8091:unknown:SH_1.0_true_false_SH]
+
+2022-05-20 10:09:11,122 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@seata-tc-server, ips: 192.168.98.1:8091_true,
+
+2022-05-20 10:10:33,907 INFO DEFAULT_GROUP@@storage-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [192.168.137.45:8081:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 10:10:33,907 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 192.168.137.45:8081_true,
+
+2022-05-20 10:10:37,285 INFO DEFAULT_GROUP@@order-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [192.168.137.45:8082:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 10:10:37,285 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 192.168.137.45:8082_true,
+
+2022-05-20 10:10:42,925 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [192.168.137.45:8083:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 10:10:42,925 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 192.168.137.45:8083_true,
+
+2022-05-20 10:15:17,355 INFO {POS} {IP-DISABLED} valid: 192.168.137.45:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653012897527
+
+2022-05-20 10:15:17,983 INFO {POS} {IP-DISABLED} valid: 192.168.137.45:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653012898128
+
+2022-05-20 10:15:18,964 INFO {POS} {IP-DISABLED} valid: 192.168.137.45:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653012899152
+
+2022-05-20 10:15:25,061 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 192.168.137.45:8081_false,
+
+2022-05-20 10:15:30,056 INFO service: DEFAULT_GROUP@@storage-service {POS} {IP-ENABLED} valid: 192.168.137.45:8081@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 10:15:30,801 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 192.168.137.45:8082_false,
+
+2022-05-20 10:15:33,202 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [192.168.137.45:8083:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 10:15:33,202 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 
+
+2022-05-20 10:15:34,632 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [192.168.137.45:8083:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2022-05-20 10:15:34,632 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 192.168.137.45:8083_true,
+
+2022-05-20 10:15:35,806 INFO service: DEFAULT_GROUP@@order-service {POS} {IP-ENABLED} valid: 192.168.137.45:8082@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 10:18:37,420 INFO {POS} {IP-DISABLED} valid: 192.168.137.45:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653013100969
+
+2022-05-20 10:18:43,191 INFO {POS} {IP-DISABLED} valid: 192.168.137.45:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653013104852
+
+2022-05-20 10:18:44,009 INFO {POS} {IP-DISABLED} valid: 192.168.137.45:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653013105228
+
+2022-05-20 10:18:46,894 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 192.168.137.45:8081_false,
+
+2022-05-20 10:18:51,898 INFO service: DEFAULT_GROUP@@storage-service {POS} {IP-ENABLED} valid: 192.168.137.45:8081@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 10:18:52,377 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 192.168.137.45:8082_false,
+
+2022-05-20 10:18:56,291 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 192.168.137.45:8083_false,
+
+2022-05-20 10:18:57,380 INFO service: DEFAULT_GROUP@@order-service {POS} {IP-ENABLED} valid: 192.168.137.45:8082@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 10:19:01,292 INFO service: DEFAULT_GROUP@@account-service {POS} {IP-ENABLED} valid: 192.168.137.45:8083@DEFAULT, region: unknown, msg: client beat ok
+
+2022-05-20 10:19:37,430 INFO {POS} {IP-DISABLED} valid: 192.168.137.45:8082@DEFAULT@DEFAULT_GROUP@@order-service, region: unknown, msg: client timeout after 15000, last beat: 1653013162403
+
+2022-05-20 10:19:39,022 INFO {POS} {IP-DISABLED} valid: 192.168.137.45:8081@DEFAULT@DEFAULT_GROUP@@storage-service, region: unknown, msg: client timeout after 15000, last beat: 1653013161923
+
+2022-05-20 10:19:43,204 INFO {POS} {IP-DISABLED} valid: 192.168.137.45:8083@DEFAULT@DEFAULT_GROUP@@account-service, region: unknown, msg: client timeout after 15000, last beat: 1653013166310
+
+2022-05-20 10:19:52,441 INFO DEFAULT_GROUP@@order-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [192.168.137.45:8082:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 10:19:52,441 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@order-service, ips: 
+
+2022-05-20 10:19:54,027 INFO DEFAULT_GROUP@@storage-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [192.168.137.45:8081:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 10:19:54,027 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@storage-service, ips: 
+
+2022-05-20 10:19:58,209 INFO DEFAULT_GROUP@@account-service {SYNC} {IP-DEAD} cluster: DEFAULT, dead ips size: 1, content: [192.168.137.45:8083:unknown:DEFAULT_1.0_false_false_DEFAULT]
+
+2022-05-20 10:19:58,209 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@account-service, ips: 
+

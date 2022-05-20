@@ -1,0 +1,30 @@
+2021-09-28 11:07:24,925 INFO DEFAULT_GROUP@@orderservice is changed, add it to push queue.
+
+2021-09-28 11:07:24,960 INFO serviceName: DEFAULT_GROUP@@orderservice changed, schedule push for: 10.3.31.1:50684, agent: Nacos-Java-Client:v1.4.1, key: 10.3.31.1,50684,223357175991000
+
+2021-09-28 11:07:24,960 INFO send udp packet: 10.3.31.1,50684,223357175991000
+
+2021-09-28 11:07:24,968 INFO received ack: {"type": "push-ack", "lastRefTime":"223357175991000", "data":""} from: 10.3.31.1:50684, cost: 8 ms, unacked: 0, total push: 1
+
+2021-09-28 11:07:26,093 INFO DEFAULT_GROUP@@userservice is changed, add it to push queue.
+
+2021-09-28 11:07:26,094 INFO serviceName: DEFAULT_GROUP@@userservice changed, schedule push for: 10.3.31.1:50685, agent: Nacos-Java-Client:v1.4.1, key: 10.3.31.1,50685,223358324476900
+
+2021-09-28 11:07:26,094 INFO send udp packet: 10.3.31.1,50685,223358324476900
+
+2021-09-28 11:07:26,094 INFO received ack: {"type": "push-ack", "lastRefTime":"223358324476900", "data":""} from: 10.3.31.1:50685, cost: 0 ms, unacked: 0, total push: 2
+
+2021-09-28 11:07:30,104 INFO DEFAULT_GROUP@@userservice is changed, add it to push queue.
+
+2021-09-28 11:07:30,112 INFO serviceName: DEFAULT_GROUP@@userservice changed, schedule push for: 10.3.31.1:50686, agent: Nacos-Java-Client:v1.4.1, key: 10.3.31.1,50686,223362334231300
+
+2021-09-28 11:07:30,112 INFO send udp packet: 10.3.31.1,50686,223362334231300
+
+2021-09-28 11:07:30,112 INFO serviceName: DEFAULT_GROUP@@userservice changed, schedule push for: 10.3.31.1:50685, agent: Nacos-Java-Client:v1.4.1, key: 10.3.31.1,50685,223362334231300
+
+2021-09-28 11:07:30,112 INFO send udp packet: 10.3.31.1,50685,223362334231300
+
+2021-09-28 11:07:30,112 INFO received ack: {"type": "push-ack", "lastRefTime":"223362334231300", "data":""} from: 10.3.31.1:50685, cost: 0 ms, unacked: 1, total push: 4
+
+2021-09-28 11:07:30,112 INFO received ack: {"type": "push-ack", "lastRefTime":"223362334231300", "data":""} from: 10.3.31.1:50686, cost: 0 ms, unacked: 0, total push: 4
+

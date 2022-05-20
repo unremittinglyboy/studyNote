@@ -1,0 +1,711 @@
+### 基本的SELECT语句
+
+SELECT  1 + 1,3 * 2
+
+SELECT 1 + 1, 3 * 2 FROM DUAL #DUAL为伪表
+
+**1、列的别名**
+
+![image-20220121213922662](D:\Typora图片\image-20220121213922662.png)
+
+不要使用单引号做列的别名(严谨规定)
+
+VALUES的字符串用单引号(严谨规定)
+
+**2、去除重复行**
+
+ #查询员工表中一共有哪些部门id呢？
+
+SELECT DISTINCT department_id
+
+FROM employees
+
+特别：
+
+![image-20220121215006361](D:\Typora图片\image-20220121215006361.png)
+
+**3、空值参与运算**
+
+空值参与，结果一定为空
+
+![image-20220121215759395](D:\Typora图片\image-20220121215759395.png)
+
+**4、着重号**
+
+着重号 : ``
+
+**5、查询常数**
+
+![image-20220121220151041](D:\Typora图片\image-20220121220151041.png)
+
+![image-20220121220209663](D:\Typora图片\image-20220121220209663.png)
+
+**6、显示表结构**
+
+DESCRIBE employees; #显示了表中字段的详细信息
+
+DESC employees; 和前者效果一致
+
+**7、WHERE**
+
+![image-20220122213817122](D:\Typora图片\image-20220122213817122.png)
+
+mysql不区分大小写，但是实质上需要区分大小写。
+
+**一些select练习**
+
+#1.查询员工12个月的工资总和，并起别名为ANNUAL SALARY
+
+SELECT employee_id,last_name,salary * 12 "ANNUAL SALARY";
+
+#2.查询employees表中去除重复的job_id(工种)以后的数据
+
+SELECT DISTINCT job_id 
+
+FROM employees;
+
+#3.查询工资大于12000的员工姓名和工资
+
+SELECT last_name,salary
+
+FROM employees
+
+WHERE salary > 12000;
+
+#4.查询员工号为176的员工的姓名和部门号
+
+SELECT last_name,department_id
+
+FROM employees
+
+WHERE employee_id = 176;
+
+#5.显示表 departments 的结构，并查询其中的全部数据
+
+DESCRIBE departments;
+
+SELECT * FROM departments;
+
+### **运算符**
+
+#### **1、算术运算符**
+
+![image-20220122220820696](D:\Typora图片\image-20220122220820696.png)
+
+![image-20220122221057778](D:\Typora图片\image-20220122221057778.png)
+
+![image-20220122221235135](D:\Typora图片\image-20220122221235135.png)
+
+取模符号与被模数有关，与模数无关
+
+#练习：查询员工id为偶数的员工信息
+
+SELECT employee_id,last_name,salary
+
+FROM employees
+
+WHERE employee_id % 2 = 0;
+
+#### **2、比较运算符**
+
+2.1  =、<、<=、>、>= ； <>、!= 两者都为不等于
+
+![image-20220122221831314](D:\Typora图片\image-20220122221831314.png)
+
+![image-20220122222011971](D:\Typora图片\image-20220122222011971.png)
+
+只要有null参与判断，结果为null，下图为示例
+
+![image-20220122222406625](D:\Typora图片\image-20220122222406625.png)
+
+‘#’ <=> 安全等于
+
+![image-20220122222538373](D:\Typora图片\image-20220122222538373.png)
+
+#### **3、关系运算符**
+
+![image-20220123212816174](D:\Typora图片\image-20220123212816174.png)
+
+**3.1 NULL相关：**
+
+![image-20220123213346567](D:\Typora图片\image-20220123213346567.png)
+
+**3.2 最大、最小相关：**
+
+字符串按字典序来比较，比较字符串长度的话要转为长度数值，然后比较。
+
+![image-20220123213711419](D:\Typora图片\image-20220123213711419.png)
+
+**3.3 BETWEEN...AND (包含边界)**
+
+#查询工资在 6000 到 8000 的员工信息
+
+SELECT employee_id,last_name,salary
+
+FROM employees
+
+WHERE salary BETWEEN 6000 AND 8000;
+
+注意：6000和8000调转的话效果不一样
+
+**3.4 IN (SET) \ NOT IN (SET)**
+
+#查询部门为10，20，30部门的员工信息
+
+SELECT last_name,salary,department_id
+
+FROM employees
+
+WHERE department_id = 10 OR department_id = 20 OR department_id = 30;
+
+//WHERE department_id INN (10, 20, 30);
+
+**3.5 模糊查询 ** LIKE
+
+![image-20220123215027689](D:\Typora图片\image-20220123215027689.png)
+
+各种匹配字符:
+
+‘%’ : 代表不确定个数的字符 0个或多个
+
+'_' : 代表一个不确定的字符
+
+若要匹配匹配字符，则要用到转义字符 \
+
+ESCAPE '$' 也表示为转义
+
+**3.6 正则表达式** REGEXP
+
+常用规则：
+
+![image-20220123215909536](D:\Typora图片\image-20220123215909536.png)
+
+![image-20220123220134450](D:\Typora图片\image-20220123220134450.png)
+
+#### **4、逻辑运算符**
+
+**4.1 NOT 或 ! 非**
+
+**4.2 AND 或 &&**
+
+**4.3 OR 或 ||**
+
+**4.4 XOR**
+
+#### 5、位运算符
+
+![image-20220123220918793](D:\Typora图片\image-20220123220918793.png)
+
+### 排序与分页
+
+无排序操作，默认情况查询返回的数据是按照添加数据的顺序显示的。
+
+#### 1、排序
+
+**ORDER BY** [升序为ASC, 降序为DESC] 默认为ASC
+
+#按照 salary 从高到低的顺序显示员工信息
+
+SELECT employee_id, last_name, salary
+
+FROM employees 
+
+ORDER BY salary DESC;
+
+注意：列的别名只能在ORDER BY 使用，不能在WHERE中使用，WHERE 在 FROM 和 ORDER BY 之间。(原因：sql语句不是正序来读取语义的)
+
+![image-20220123223825550](D:\Typora图片\image-20220123223825550.png)
+
+二级排序：
+
+![image-20220123224335677](D:\Typora图片\image-20220123224335677.png)
+
+#### 2、分页
+
+**2.1常规分页使用**
+
+mysql使用limit实现数据的分页显示
+
+![image-20220123225307956](D:\Typora图片\image-20220123225307956.png)
+
+上图可见在LIMIT右边所填数据中，前者为起始下标(偏移值)，后者为显示条数。
+
+**公式： LIMIT (pageNo - 1) \* pageSize，pageSize**
+
+pageNo为显示的页数，pageSize为单页显示条目数
+
+LIMIT 格式：
+
+只写单个数据时，该数据为条目数，此时默认偏移量为0。
+
+========================================
+
+**2.2 WHERE ... ORDER BY ...LIMIT 声明顺序如下：**
+
+SELECT employee_id, last_name, salary
+
+FROM employees
+
+WHERE salary > 6000
+
+ORDER BY salary DESC
+
+LIMIT 0, 10;
+
+**MYSQL8.0新特性：**
+
+LIMIT ... OFFSET ...
+
+就是LIMIT ..., ... 两个填数据的位置交换了一下。
+
+分页好处：减少网络数据传输量，提高页面响应效率。
+
+### 3、多表查询
+
+![image-20220124224348065](D:\Typora图片\image-20220124224348065.png)
+
+上图为笛卡尔积错误
+
+产生该种错误的情况：
+
+1、省略多个表的连接条件
+
+2、连接条件无效
+
+3、所有表中的所有行相互连接
+
+多表查询的正确方式：需要有连接条件
+
+![image-20220124224746498](D:\Typora图片\image-20220124224746498.png)
+
+各种注意事项：
+
+1、如果查询语句中出现了多个表都存在的字段，则必须指明此字段所在的表。
+
+2、建议多表查询时，每个字段前都指明其所在的表。
+
+![image-20220124225507161](D:\Typora图片\image-20220124225507161.png)
+
+上图中有一个注意点，如果给表起了别名，一旦在SELECT或者WHERE中使用表就要用别名，不能用表的原名。
+
+示例：
+
+![image-20220124225704739](D:\Typora图片\image-20220124225704739.png)
+
+**各种连接方式**
+
+多表查询的分类
+
+角度1：等值连接 vs 非等值连接
+
+角度2：自连接 vs 非自连接
+
+角度3：内连接 vs 外连接
+
+角度一：
+
+下图为非等值连接
+
+![image-20220126220031668](D:\Typora图片\image-20220126220031668.png)
+
+角度二：
+
+下图为自连接
+
+![image-20220126220441093](D:\Typora图片\image-20220126220441093.png)
+
+角度三：
+
+内连接：合并具有同一列的两个以上的表的行，结果集中不包含一个表与另一个表不匹配的行。
+
+![image-20220126220827051](D:\Typora图片\image-20220126220827051.png)
+
+上图中不是107条记录，是因为有个人没有部门，此时的效果就是内连接。
+
+外连接：合并具有同一列的两个以上的表的行，结果集中除了包含一个表与另一个表匹配的行之外，还查询到了左表或右表中不匹配的行。
+
+外连接分类：左外连接、右外连接、满外连接
+
+左外连接：还返回了左表中不符合条件的行。
+
+右外连接：左表变为了右表
+
+满外连接：左外连接和右外连接的结果
+
+**各种面试题涉及多表查询，说到查询"所有的"，指的就是外连接。**
+
+
+
+**SQL92语法实现外连接的方式(mysql不支持，别的支持)：**![image-20220126221558675](D:\Typora图片\image-20220126221558675.png)
+
+**SQL99语法中使用 JOIN...ON 的方式实现多表查询，解决外连接问题，mysql支持：**
+
+SQL99语法实现内连接：
+
+```sql
+SELECT last_name, department_name
+FROM employees e [INNER] JOIN departments d
+ON e.`department_id` = d.`department_id`
+JOIN locations l
+ON d.`location_id`  = l.`location_id`;
+```
+
+SQL99语法实现外连接：
+
+左外连接：
+
+```sql
+SELECT last_name,department_name
+FROM employees e LEFT [OUTER] JOIN departments d
+ON e.`department_id` = d.`department_id`;
+```
+
+右外连接：RIGHT
+
+满外连接：
+
+![image-20220126222803245](D:\Typora图片\image-20220126222803245.png)
+
+mysql要用union
+
+#### **全部内外连接方式图**
+
+![image-20220126222854783](D:\Typora图片\image-20220126222854783.png)
+
+![image-20220126223858700](D:\Typora图片\image-20220126223858700.png)
+
+![image-20220126224037940](D:\Typora图片\image-20220126224037940.png)
+
+![image-20220126224213370](D:\Typora图片\image-20220126224213370.png)
+
+p30扩展内容
+
+较坑的题目：
+
+![image-20220126225109119](D:\Typora图片\image-20220126225109119.png)
+
+### 4、UNION关键字
+
+![image-20220126223237994](D:\Typora图片\image-20220126223237994.png)
+
+用于实现满外连接等情况。
+
+UNION ALL效率高，尽量用UNION ALL
+
+### 5、函数的分类
+
+![image-20220127210500396](D:\Typora图片\image-20220127210500396.png)
+
+#### 两种SQL函数：
+
+单行函数、多行函数
+
+![image-20220127210843435](D:\Typora图片\image-20220127210843435.png)
+
+#### 基本函数
+
+**数值函数**
+
+![image-20220127211248041](D:\Typora图片\image-20220127211248041.png)
+
+![image-20220127211509150](D:\Typora图片\image-20220127211509150.png)
+
+上图为特别例子。
+
+**字符串函数**
+
+![image-20220127211731122](D:\Typora图片\image-20220127211731122.png)
+
+![image-20220127211852783](D:\Typora图片\image-20220127211852783.png)
+
+![image-20220127211920767](D:\Typora图片\image-20220127211920767.png)
+
+注意：MYSQL中，字符串的位置由1开始。
+
+#### **日期和时间函数**
+
+**获取日期、时间**
+
+![image-20220127212624952](D:\Typora图片\image-20220127212624952.png)
+
+**日期与时间戳的转换**
+
+![image-20220127212720991](D:\Typora图片\image-20220127212720991.png)
+
+**获取月份、星期、星期数、天数等函数**
+
+![image-20220127212822378](D:\Typora图片\image-20220127212822378.png)
+
+**日期的操作函数**
+
+![image-20220127212902911](D:\Typora图片\image-20220127212902911.png)
+
+![image-20220127212944824](D:\Typora图片\image-20220127212944824.png)
+
+![image-20220127212958113](D:\Typora图片\image-20220127212958113.png)
+
+**时间和秒钟转换的函数**
+
+![image-20220127213033046](D:\Typora图片\image-20220127213033046.png)
+
+**计算日期和时间的函数**
+
+第一组
+
+![image-20220127213157200](D:\Typora图片\image-20220127213157200.png)
+
+![image-20220127213310183](D:\Typora图片\image-20220127213310183.png)
+
+![image-20220127213449253](D:\Typora图片\image-20220127213449253.png)
+
+第二组
+
+![image-20220127213518464](D:\Typora图片\image-20220127213518464.png)
+
+**日期的格式化和解析**
+
+格式化：将日期转化为字符串
+
+解析：字符串转化为日期
+
+![image-20220127213844240](D:\Typora图片\image-20220127213844240.png)
+
+此时谈及的为显示的格式化和解析
+
+![image-20220127213940424](D:\Typora图片\image-20220127213940424.png)
+
+上述非GET_FORMAT函数中fmt参数常用的格式符：
+
+![image-20220127214103020](D:\Typora图片\image-20220127214103020.png)
+
+![image-20220127214254450](D:\Typora图片\image-20220127214254450.png)
+
+自带一些关键字替换格式符
+
+![image-20220127214614749](D:\Typora图片\image-20220127214614749.png)
+
+#### 流程控制函数
+
+流程处理函数可以根据不同条件，执行不同的处理流程，可以在SQL语句中实现不同的条件选择。MYSQL中的流程处理函数主要包括IF()、IFNULL()、CASE()函数。
+
+![image-20220127214959419](D:\Typora图片\image-20220127214959419.png)
+
+各种用例：
+
+![image-20220127215252822](D:\Typora图片\image-20220127215252822.png)
+
+![image-20220127215542436](D:\Typora图片\image-20220127215542436.png)
+
+![image-20220127215728600](D:\Typora图片\image-20220127215728600.png)
+
+![image-20220127220136128](D:\Typora图片\image-20220127220136128.png)
+
+![image-20220127220247235](D:\Typora图片\image-20220127220247235.png)
+
+**面试若问起为何没有循环结构，可以说每查询到一行输出一行看为循环**
+
+#### 加密和解密函数
+
+加密与解密函数主要用于对数据库中的数据进行加密和解密处理，以防止数据被他人窃取。这些函数保证数据安全时非常有用。
+
+![image-20220127221007434](D:\Typora图片\image-20220127221007434.png)
+
+mysql8.0不推荐使用PASSWORD()
+
+### 5大常用的聚合函数
+
+聚合函数也叫做聚集、分组函数，它是对一组数据进行汇总的函数，输入的是一组数据的集合，输出的是单个值。
+
+#### 1、常见的几个聚合函数
+
+**1.1 AVG / SUM**
+
+![image-20220127221707292](D:\Typora图片\image-20220127221707292.png)
+
+数值外求和、求平均值为0，oracle是报错
+
+**1.2 MAX / MIN**
+
+![image-20220127221929077](D:\Typora图片\image-20220127221929077.png)
+
+数值外类型用其特有的比较规则比较，故合理
+
+**1.3 COUNT**
+
+求某列的数据项总数。
+
+COUNT(2) 每查到一行就标记2，此时函数效果变成求一共有多少个标记2，即表内的总行数
+
+注意：
+
+1.count(1)与count(*)得到的结果一致，包含null值。
+2.count(字段)不计算null值
+3.count(null)结果恒为0
+
+**聚合的特别之处：**
+
+![image-20220127223344600](D:\Typora图片\image-20220127223344600.png)
+
+COUNT(*)、COUNT(1)、COUNT(具体字段)哪个效率高：
+
+1、在MYISAM存储引擎中，COUNT(*) = COUNT(1) > COUNT(字段)
+
+2、在InnoDB存储引擎中，COUNT(*) = COUNT(1) > COUNT(字段)
+
+1因为元数据中已存有行数值，所以三者效率都高于2的对应聚合函数执行效率。
+
+#### 2、GROUP BY 的使用
+
+![image-20220129222721286](D:\Typora图片\image-20220129222721286.png)
+
+![image-20220129222904872](D:\Typora图片\image-20220129222904872.png)
+
+注意：
+
+1、使用GROUP BY时，SELECT中出现的非组函数字段必须声明在GROUP BY中。反之，GROUP BY中声明的字段可以不出现在SELECT中。
+
+2、GROUP BY声明在FROM后面，WHERE后面，ORDER BY前面、LIMIIT前面
+
+3、![image-20220129223513251](D:\Typora图片\image-20220129223513251.png)
+
+对各个分组的各自平均值也计算了一次平均值
+
+mysql5.7 ROLLUP和排序存在矛盾，mysql8.0就没事。
+
+#### 3、HAVING 的使用
+
+用于过滤数据
+
+#查询各个部门中最高工资比10000高的部门信息
+
+SELECT department_id, MAX(salary)
+
+FROM employees
+
+GROUP BY department_id;
+
+HAVING MAX(salary) > 10000;
+
+结论：
+
+1、如果过滤条件中使用了聚合函数，则必须使用HAVING来替换WHERE。否则，报错。
+
+2、HAVING 必须声明在 GROUP BY 的后面。
+
+3、开发中，我们使用HAVING的前提是SQL中使用了GROUP BY。
+
+![image-20220209220450189](D:\Typora图片\image-20220209220450189.png)
+
+![image-20220209220518716](D:\Typora图片\image-20220209220518716.png)
+
+方式一执行效率高于方式二。
+
+上图结论：当过滤条件中有聚合函数时，则此过滤条件必须声明在HAVING中，当过滤条件中没有聚合函数时，则此过滤条件声明在WHERE中或HAVING中都可以。但是，建议声明在WHERE中。
+
+**WHERE 与 HAVING 对比**
+
+1、从适用范围上来讲，HAVING的适用范围更广。
+
+2、如果过滤条件中没有聚合函数：这种情况下，WHERE的执行效率要高于HAVING。
+
+3、WHERE是先筛选后连接，而HAVING是先连接后筛选
+
+#### 4、SQL底层执行原理
+
+**1、SELECT语句的完整结构**
+
+```sql
+sql92语法：
+
+SELECT ...,...,...(存在聚合函数)
+
+FROM ...,...,...
+
+WHERE多表的连接条件 AND 不包含聚合函数的过滤条件
+
+GROUP BY ...,...
+
+HAVING 包含聚合函数的过滤条件
+
+ORDER BY ...,...(ASC/DESC)
+
+LIMIT ...,...
+```
+
+```sql
+sql99语法：
+
+SELECT ...,...,...(存在聚合函数)
+
+FROM ... (LEFT/RIGHT)JOIN ... ON 多表连接条件
+(LEFT/RIGHT)JOIN...ON...
+
+WHERE 不包含聚合函数的过滤条件
+
+GROUP BY ...,...
+
+HAVING 包含聚合函数的过滤条件
+
+ORDER BY ...,...(ASC/DESC)
+
+LIMIT ...,...
+```
+
+**2、SELECT执行顺序：**
+
+1、关键字顺序不能颠倒：
+
+```
+SELECT...FROM...WHERE...GROUP BY...HAVING...ORDER BY...LIMIT...
+```
+
+2、SELECT语句的执行顺序 (在MySQL和Oracle中，SELECT执行顺序基本相同)：
+
+```
+FROM -> ON -> (LEFT/RIGHT) -> WHERE -> GROUP BY -> HAVING -> SELECT 的字段 -> DISTINCT -> ORDER BY -> LIMIT
+```
+
+![image-20220209223237599](D:\Typora图片\image-20220209223237599.png)
+
+注意：前项引用。
+
+### 子查询
+
+#### 1、需求分析与问题解决
+
+![image-20220212223450703](D:\Typora图片\image-20220212223450703.png)
+
+![image-20220212223506103](D:\Typora图片\image-20220212223506103.png)
+
+![image-20220212224159581](D:\Typora图片\image-20220212224159581.png)
+
+#### 2、称谓规范：外查询（主查询）、内查询（子查询）
+
+![image-20220212224222395](D:\Typora图片\image-20220212224222395.png)
+
+#### 3、子查询的分类
+
+**分类方式一**
+
+分类依据：内查询返回的结果条目数
+
+**单行子查询，查询结果只有单行。**
+
+**多行子查询，查询结果有多行。**
+
+**分类方式二**
+
+分类依据：内查询是否被执行多次
+
+**相关子查询，外查询会影响内查询的结果。**
+
+**不相关子查询，外查询不会影响内查询的结果。**
+
+![image-20220212224715543](D:\Typora图片\image-20220212224715543.png)
+
+#### 4、子查询编写技巧
+
+1、从里往外写
+
+2、从外往里写
+

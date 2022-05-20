@@ -1,0 +1,1513 @@
+！！！
+AOP 面向切面编程
+Joint Point 连接点
+PointCut 切点 
+Aspect 切面 
+Advice Advice 定义了在 Pointcut 里面定义的程序点具体要做的操作，它通过 before、after 和 around 来区别是在每个 joint point 之前、之后还是代替执行的代码。
+Weaving 将 Aspect 和其他对象连接起来, 并创建 Adviced object 的过程
+Target 织入Advice的目标对象、
+Serialization 序列化
+
+！！！
+PointCut 切点 在哪些方法、哪些类上切入。
+Advice 通知 在方法前、方法后、方法前后做什么。
+Aspect 切面 切入点 + 通知。即在什么时机、什么地方、做什么。
+Weaving 织入 把切面加入对象，并创建出代理对象的过程。
+
+环绕通知：AOP中最强大、最灵活的通知，它集成了前置通知和后置通知，
+保留了连接点的原有方法。 
+
+
+非核心业务功能被定义为切面，核心业务功能和切面功能
+先被分别进行独立开发，然后把切面功能和核心业务功能
+“编织”在一起。
+
+.jar.original是上一次打包的备份文件
+
+pom.xml中的parent几乎声明了所有开发中常用的依赖的版本号。
+
+实在想修改版本号时就写入properties标签来更改对应的版本号（利用了maven的就近原则）
+体现了springboot的依赖管理和版本仲裁
+
+spring-boot-starter-* *就表示某种场景
+springboot支持的场景文档中有
+*-spring-boot-starter-*是第三方提供的对应特点场景
+
+注意：引入的非版本仲裁的要自己配置。
+
+主程序所在包及其下的所有包都会被自动扫描，其他位置会报404
+
+各种配置拥有默认值
+默认配置最终都是映射到MultipartProperties
+配置文件的值最终会绑定到每一个类上，这个类会在容器中创建对象
+
+spring-boot-devtools ctrl+f9 热部署（伪：自动更新） 真的要付费
+
+！！！
+所谓上下文，它是用来存储系统的一些初始化信息
+
+Signature getSignature();
+获取封装了署名信息的对象,在该对象中可以获取
+到目标方法名,所属类的Class等信息
+回滚（Rollback）指的是程序或数据处理错误，将程序或数据恢复到上一次正确状态的行为。
+FactoryBean, 后缀为bean，那么它其实就是一个bean, BeanFactory，顾名思义 bean工厂，它是IOC容器的顶级接口
+
+数据库的一对一映射：写了@OneToOne的类关联另一个类时，
+删除该类中的某个记录亦会将关联（外键啥的）一起删除，
+该类中会产生一个关联的表的外键
+
+数据库的一对多映射：写了@OneToMany的A类关联写了@ManyToOne的B类，删除A类中的某条记录（与B关联）时，
+B类表的所有对应删除id的外键会全部变为空，然后再删除A类表中的对应值。若删除B类记录对A无影响。B类表
+会产生与A表关联的外键
+
+数据库的多对多映射：关系双方都可以作为主控，多对多关系存在关系的发出端和接收端，关系的接收端需要设置
+  mappedBy = '集合类型发出端实体的字段名称'
+
+Web 应用的安全性包括用户认证（Authentication）和用户授权（Authorization）两个部分（用Springsecurity实现）
+
+HttpServlet对象在RequestContextHolder.getRequestAttributes()方法中
+请求参数和方法名（类型）在JoinPoint中
+
+# Spring Boot
+
+通过 Spring Boot 可以快速构建一个基于 Spring 框架的 Java Application，简化配置，**自动装配**。
+
+JavaConfiguration 用 Java 类替代 XML 的配置方式。
+
+Spring Boot 对常用的第三方库提供配置方案，可以很好地和 Spring 进行整合，一键式搭建功能完备的 Java 企业级应用。
+
+开箱即用是 Spring Boot 的特点。
+
+#### **Spring Boot 的优势：**
+
+**·** 不需要任何 XML 配置文件
+
+**·** 内嵌了 Tomcat，可以直接部署
+
+**·** 默认支持 JSON 数据格式，不需要进行转换
+
+**·** 支持 RESTful
+
+**·** 配置文件非常简单，支持 YAML 格式
+
+Spring Boot 是一种只需要极少配置就可以快速搭建 Spring 应用，并且集成了常用的第三方类库，让开发者可以快速进行企业级应用开发，
+
+Spring Boot 2.x 要求必须基于 Spring 5.x，Spring 5.x 要
+
+求 Java 版本必须是 8 以上。
+
+#### **Spring Boot 的使用**
+
+1、创建 Handler
+
+```java
+@RestController
+@RequestMapping("/hello")
+public class HelloHandler {
+
+    @GetMapping("/index")
+    public String index(){
+        return "Hello Spring Boot";
+    }
+}
+```
+
+2、启动类
+
+```
+@SpringBootApplication
+public class SpringbootlearnApplication {
+
+public static void main(String[] args) {
+SpringApplication.run(SpringbootlearnApplication.class, args);
+}
+}
+```
+
+启动类必须覆盖所有与业务相关的类：启动类所在的包必须是业务类所在包的同一个包或者父包，如果没有覆盖，业务类就不会自动装配到 IoC 容器中。
+
+**Spring Boot 扫包底层原理**
+
+为何默认情况下扫包是以入口类为基准
+
+原因：@EnableAutoConfiguration -> @AutoConfigurationPackage -> @Import({Registrar.class}) -> 
+
+Registrar 
+
+```java
+public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
+    AutoConfigurationPackages.register(registry, (String[])(new AutoConfigurationPackages.PackageImports(metadata)).getPackageNames().toArray(new String[0]));
+}
+```
+
+注意：metadata 指的就是注解标注的对象。
+
+用下列注解替换 @SpringBootApplication，可以自己指定需要自动装配进 IoC 容器的组件所在的包。
+
+```java
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan(...)
+```
+
+#### **Spring Boot 配置文件**
+
+常用的配置设置：
+
+Properties：
+
+```properties
+#设置端口：
+server.port = 8080
+
+#项目访问路径：
+server.servlet.context-path = 'path'
+
+#cookie 失效时间：
+server.servlet.session.cookie.max-age = 100
+
+#session 失效时间：
+server.servlet.session.timeout = 100
+
+#编码格式：
+server.tomcat.uri-encoding = UTF-8
+```
+
+YAML (优点：编写简单，结构清晰，利用缩进来表示层级关系，减少重复字段)：
+
+```yaml
+server:
+  #设置端口
+  port: 8080
+  servlet:
+    #项目访问路径
+    context-path:
+    session:
+      cookie:
+        #cookie 失效时间
+        max-age: 100
+      #session 失效时间  
+      timeout: 100
+  #编码格式    
+  tomcat:
+    uri-encoding: UTF-8
+```
+
+如果两者存在，yml 的优先级更高，配置文件除了可以放置在 resources 路径下之外，还有 3 个地方可以放置，如下图所示。
+
+![image-20210607215310790](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210607215310790.png)
+
+优先级顺序如下所示：
+
+1 - 根路径下的 config 中的配置文件
+
+2 - 跟路径下的配置文件
+
+3 - resources 路径下的 config 中的配置文件
+
+4 - resources 路径下的配置文件
+
+可以直接在 Handler 中读取 YAML 文件中的数据，比如在业务方法中向客户端返回当前服务的端口信息。
+
+```java
+package com.southwind.springbootlearn.controller;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/hello")
+public class HelloHandler {
+
+    /**
+     * SpEL Spring Expression Language
+     */
+    @Value("${server.port}")
+    private String port;
+
+    @GetMapping("/index")
+    public String index(){
+        return "当前服务的端口是" + this.port;
+    }
+}
+```
+
+注：@Value 注解同样适用于 Properties 文件。
+
+自定义 banner
+
+![image-20210607213503904](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210607213503904.png)
+
+不创建 banner.txt 则使用默认样式。
+
+**自定义 banner 底层原理**
+
+找到 pom.xml 中的：
+
+```xml
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.4.4</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+```
+
+打开 spring-boot-starter-parent 可以看到工程中一系列文件资源的配置路径。
+
+![image-20210607213948395](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210607213948395.png)
+
+注：basedir 指的是工程路径。
+
+#### **Spring Boot 整合 JSP**
+
+Spring Boot 与视图层的整合
+
+**·** JSP
+
+**·** Thymeleaf
+
+Java Server Page，是 Java 提供的一种动态网页技术，底层是 Servlet，可以直接在 HTML 中插入 Java 代码。
+
+JSP 的底层原理：
+
+JSP 是一种中间层的组件，开发者可以在这个组件中将 Java 代码与 HTML 代码进行整合，由 JSP 引擎将组件转为 Servlet，再把开发者定义在组件中的混合代码翻译成 Servlet 的响应语句，输出给客户端。
+
+#### **Spring Boot 整合 Thymeleaf**
+
+Thymeleaf 是目前较为流行的视图层技术，Spring Boot 官方推荐使用 Thymeleaf。
+
+**什么是 Thymeleaf**
+
+Thymeleaf 是一个支持原生 HTML 文件的 Java 模板，可以实现前后端分离的交互方式，即视图与业务数据分开响应，它可以直接将服务端返回的数据生成 HTML 文件，同时也可以处理 XML、JavaScript、CSS 等格式。
+
+Thymeleaf 最大特点是既可以直接在浏览器打开（静态方式），也可以结合服务端将业务数据填充到 HTML 之后动态生成的页面（动态方法），Spring Boot 支持 Thymeleaf，使用起来非常方便。
+
+1、创建 Maven 工程，不需要创建 web 工程。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.southwind</groupId>
+    <artifactId>springbootthymeleaf</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.4</version>
+    </parent>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>
+```
+
+2、application.yml
+
+```yaml
+spring:
+  thymeleaf:
+    prefix: classpath:/templates/ #模板路径
+    suffix: .html                 #模板后缀
+    servlet:
+      content-type: text/html     #设置 Content-type
+    encoding: UTF-8               #编码方式
+    mode: HTML5                   #校验 H5 格式
+    cache: false                  #缓存开关，关闭后在开发过程中可以立即看到页面修改的结果
+```
+
+3、创建 Handler
+
+```java
+@Controller
+@RequestMapping("/hello")
+public class HelloHandler {
+
+    @GetMapping("/index")
+    public ModelAndView index(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("index");
+        modelAndView.addObject("name", "张三");
+        return modelAndView;
+    }
+
+}
+```
+
+4、启动类
+
+```java
+package com.southwind;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class,args);
+    }
+}
+```
+
+5、HTML
+
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+        <h1>Index</h1>
+        <p th:text="${name}">Hello World</p>
+</body>
+</html>
+```
+
+如果需要加载后台返回的业务数据，则需要在 HTML 页面中使用 Thymeleaf 模板标签来完成。
+
+1、需要引入模板标签。
+
+```html
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+```
+
+2、通过特定标签完成操作。
+
+```html
+<p th:text="${name}">Hello World</p>
+```
+
+Thymeleaf 模板标签不同于 JSTL，Thymeleaf 模板标签是直接嵌入到 HTML 原生标签内部的。
+
+**Thymeleaf 常用标签**
+
+**·** th:text
+
+th:text 用于文本的显示，将业务数据的值填充到 HTML 标签中。
+
+**·** th:if
+
+th:if 用于条件判断，对业务数据的值进行判断，如果条件成立则显示内容，否则不显示，具体使用如下所示：
+
+```java
+@GetMapping("/if")
+public ModelAndView ifTest(){
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("score",80);
+    return modelAndView;
+}
+```
+
+```html
+<p th:if="${score >= 90}">优秀</p>
+<p th:if="${score < 90}">良好</p>
+```
+
+**·** th:unless (与 th:if 逻辑恰好相反)
+
+th:unless 用于条件判断，对业务数据的值进行判断，如果条件不成立则显示内容，否则不显示，具体使用如下所示：
+
+```java
+@GetMapping("/unless")
+public ModelAndView unlessTest(){
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("score",90);
+    return modelAndView;
+}
+```
+
+```html
+<p th:unless="${score >= 90}">优秀</p>
+<p th:unless="${score < 90}">良好</p>
+```
+
+**·** th:switch th:case
+
+th:switch th:case 两个需要结合起来使用，用作多条件的等值判断，逻辑与 java 中的 switch-case是一致的，当 switch 中的业务数据等于某个 case 时，就显示该 case 对应的内容。
+
+```java
+@GetMapping("/switch")
+public ModelAndView switchTest(){
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("studentId",1);
+    return modelAndView;
+}
+```
+
+```html
+<div th:switch="${studentId}">
+    <p th:case="1">张三</p>
+    <p th:case="2">李四</p>
+    <p th:case="3">王五</p>
+</div>
+```
+
+**·** th:action
+
+用来指定请求的 URL，相当于 form 表单中的 action 属性
+
+```html
+<form action="" th:action="@{/hello/login}" method="post">
+    <input type="submit">
+</form>
+```
+
+```java
+@PostMapping("/login")
+@ResponseBody
+public String login(){
+    return "login";
+}
+```
+
+```html
+<form action="" th:action="${url}" method="post">
+    <input type="submit">
+</form>
+```
+
+```java
+//    可以直接访问test映射路径
+@GetMapping("/redirect/{url}")
+public String redirect(@PathVariable("url") String url, Model model){
+    model.addAttribute("url","/hello/login");
+    return url;
+}
+```
+
+如果 action 的值直接写在 html 中，则需要使用 @{}，如果是从后台传来的数据，则使用${}。
+
+**·** th:each
+
+th:each 用来遍历集合
+
+```java
+@Data
+@AllArgsConstructor
+public class User {
+    private Integer id;
+    private String name;
+}
+```
+
+```java
+@GetMapping("/each")
+public ModelAndView each(){
+    List<User> list = Arrays.asList(
+        new User(1, "张三"),
+        new User(2, "李四"),
+        new User(3, "王五")
+    );
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("list", list);
+    return modelAndView;
+}
+```
+
+```html
+<table>
+    <tr>
+        <th>编号</th>
+        <th>姓名</th>
+    </tr>
+    <tr th:each="user:${list}">
+        <td>${user.id}</td>
+        <td>${user.name}</td>
+    </tr>
+</table>
+```
+
+**·** th:value
+
+th:value 用来给标签赋值。
+
+```java
+@GetMapping("/value")
+public ModelAndView value(){
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("value", "Spring Boot");
+    return modelAndView;
+}
+```
+
+```html
+<input type="text" th:value="${value}">
+```
+
+**·** th:src
+
+th:src 用来引入静态资源，相当于 HTML 原生标签的 img、script 的 src 属性。
+
+图片，css，js，静态加载的 html 都需要放置在 resources/static 文件中。
+
+```java
+@GetMapping("/src")
+public ModelAndView src(){
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("src", "/1.jpg");
+    return modelAndView;
+}
+```
+
+```html
+<img src="" alt="" th:src="${src}">
+```
+
+```html
+<img src="" alt="" th:src="@{/1.jpg}">
+```
+
+**·** th:href
+
+th:href 用作设置超链接的 href
+
+```java
+@GetMapping("/href")
+public ModelAndView href(){
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("href", "http://www.baidu.com");
+    return modelAndView;
+}
+```
+
+```html
+<a href="" th:href="${href}">百度</a>
+```
+
+```
+<a href="" th:href="@{http://www.baidu.com}">百度</a>
+```
+
+**·** th:selected
+
+th:selected 用作给 HTML 元素设置选中，条件成立则选中，否则不选中。
+
+```java
+@GetMapping("/select")
+public ModelAndView select(){
+    List<User> list = Arrays.asList(
+        new User(1, "张三"),
+        new User(2, "李四"),
+        new User(3, "王五")
+    );
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("list", list);
+    modelAndView.addObject("name", "李四");
+    return modelAndView;
+}
+```
+
+```html
+<select>
+    <option th:each="user:${list}" th:text="${user.name}" th:value="${user.id}" th:selected="${user.name == name}"></option>
+</select>
+```
+
+结合 th:each 来使用，首先遍历 list 集合动态创建 option 元素，根据每次遍历出的 user.name 与业务数据中的 name 进行对比，通过两者是否相等来决定是否要选择。
+
+**·** th:attr
+
+th:attr 给 HTML 标签的任意属性赋值。
+
+```java
+@GetMapping("/attr")
+public ModelAndView attr(){
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("attr","Spring Boot");
+    return modelAndView;
+}
+```
+
+```html
+<input type="text" th:attr="value=${attr}"><br/>
+<input type="text" th:value="${attr}">
+```
+
+**Thymeleaf 对象**
+
+Thymeleaf 支持直接访问 Servlet Web 原生资源，HttpServletRequest、HttpServletReponse、HttpSession、ServletContext
+
+```
+#request:获取 HttpServletRequest 对象
+#response:获取HttpServletResponse 对象
+#session:获取 HttpSession 对象
+#servletContext:获取 ServletContext 对象
+```
+
+```java
+@GetMapping("/servlet")
+public String servlet(HttpServletRequest request){
+    request.setAttribute("value", "request");
+    request.getSession().setAttribute("value", "session");
+    request.getServletContext().setAttribute("value", "servletContext");
+    return "test";
+}
+```
+
+```html
+<p th:text="${#request.getAttribute('value')}"></p>
+<p th:text="${#session.getAttribute('value')}"></p>
+<p th:text="${#servletContext.getAttribute('value')}"></p>
+<p th:text="${#response}"></p>
+```
+
+Thymeleaf 支持直接访问 session，${#request.getAttribute('name')} 也可以简化 ${name}
+
+```java
+@GetMapping("/servlet2")
+public ModelAndView servlet2(HttpSession session){
+    session.setAttribute("name", "李四");
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("name", "张三");
+    return modelAndView;
+}
+```
+
+```html
+<p th:text="${name}"></p>
+<p th:text="${#request.getAttribute('name')}"></p>
+<p th:text="${session.name}"></p>
+<p th:text="${#session.getAttribute('name')}"></p>
+```
+
+**Thymeleaf 内置对象**
+
+**·** dates：日期格式化
+
+**·** calendars：日期操作
+
+**·** numbers：数字格式化
+
+**·** strings：字符串格式化
+
+**·** bools：boolean
+
+**·** arrays：数组内置对象
+
+**·** lists：List 集合内置对象
+
+**·** sets：Set 集合内置对象
+
+**·** maps：Map 集合内置对象
+
+```java
+@GetMapping("/utility")
+public ModelAndView utility(){
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("test");
+    modelAndView.addObject("date", new Date());
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(2020,1,1);
+    modelAndView.addObject("calendar", calendar);
+    modelAndView.addObject("number", 0.06);
+    modelAndView.addObject("string", "Spring Boot");
+    modelAndView.addObject("boolean", true);
+    modelAndView.addObject("array", Arrays.asList("张三","李四","王五"));
+    List<User> list = new ArrayList<>();
+    list.add(new User(1,"张三"));
+    list.add(new User(2,"李四"));
+    modelAndView.addObject("list", list);
+    Set<User> set = new HashSet<>();
+    set.add(new User(1,"张三"));
+    set.add(new User(2,"李四"));
+    Map<Integer, User> map = new HashMap();
+    map.put(1, new User(1,"张三"));
+    map.put(1, new User(2,"李四"));
+    modelAndView.addObject("map",map);
+    return modelAndView;
+}
+```
+
+```html
+date格式化：<span th:text="${#dates.format(date,'yyyy-MM-dd')}"></span> <br>
+当前日期：<span th:text="${#dates.createToday()}"></span> <br>
+当前时间：<span th:text="${#dates.createNow()}"></span> <br>
+Calendar格式化：<span th:text="${#calendars.format(calendar,'yyyy-MM-dd')}"></span> <br>
+number百分比格式化：<span th:text="${#numbers.formatPercent(number,2,2)}"></span> <br>
+name是否为空：<span th:text="${#strings.isEmpty(string)}"></span> <br>
+name长度：<span th:text="${#strings.length(string)}"></span> <br>
+name拼接：<span th:text="${#strings.concat('Good',string)}"></span> <br>
+boolean是否为true：<span th:text="${#bools.isTrue(boolean)}"></span> <br>
+arrays的长度：<span th:text="${#arrays.length(array)}"></span> <br>
+arrays是否包含张三：<span th:text="${#arrays.contains(array,'张三')}"></span> <br>
+List是否为空：<span th:text="${#lists.isEmpty(list)}"></span> <br>
+List的长度：<span th:text="${#lists.size(list)}"></span> <br>
+Set是否为空：<span th:text="${#sets.isEmpty(set)}"></span> <br>
+Set的长度：<span th:text="${#sets.size(set)}"></span> <br>
+Map是否为空：<span th:text="${#maps.isEmpty(map)}"></span> <br>
+Map长度：<span th:text="${#maps.size(map)}"></span>
+```
+
+![image-20210609213402712](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210609213402712.png)
+
+#### **Spring Boot 整合持久层**
+
+**Spring Boot 整合 JdbcTemplate**
+
+jdbcTemplate 是 Spring 自带的 JDBC 模板组件，底层实现了对 JDBC 的封装，用法与 MyBatis 类似，需要开发者自定义 SQL 语句，JdbcTemplate 帮助我们完成数据库的连接，SQL 执行，结果集的封装。
+
+不足之处是灵活性不如 MyBatis，因为 MyBatis 的 SQL 语句都是定义在 XML 中的，更有利于维护和扩展，jdbcTemplate 以硬编码的方式将 SQL 直接写在 java 代码中，不利于扩展维护。
+
+1、pom.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.southwind</groupId>
+    <artifactId>springbootdao</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.4</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
+```
+
+2、创建实体类
+
+```java
+@Data
+public class  User {
+    private Integer id;
+    private String username;
+    private String password;
+    private Integer age;
+}
+```
+
+3、创建 UserRepository
+
+```java
+public interface UserRepository {
+    public List<User> findAll();
+    public User findById(Integer id);
+    public int save(User user);
+    public int update(User user);
+    public int deleteById(Integer id);
+}
+```
+
+4、创建 UserRepository 实现类
+
+```java
+package com.southwind.repository.impl;
+
+import com.southwind.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public class UserRepository implements com.southwind.repository.UserRepository {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Override
+    public List<User> findAll() {
+        return jdbcTemplate.query(
+            "select * from user",
+            new BeanPropertyRowMapper<>(User.class)
+        );
+    }
+
+    @Override
+    public User findById(Integer id) {
+        return (User) jdbcTemplate.query(
+            "select * from user",
+            //把id传进去
+            new Object[]{id},
+            new BeanPropertyRowMapper<>(User.class)
+        );
+    }
+
+    @Override
+    public int save(User user) {
+        return jdbcTemplate.update(
+            "insert into user(username,password,age) values (?,?,?)",
+            user.getUsername(),
+            user.getPassword(),
+            user.getAge()
+        );
+    }
+
+    @Override
+    public int update(User user) {
+        return jdbcTemplate.update(
+            "update user set username = ?,password = ?,age = ? where id = ?",
+            user.getUsername(),
+            user.getPassword(),
+            user.getAge(),
+            user.getId()
+        );
+    }
+
+    @Override
+    public int deleteById(Integer id) {
+        return jdbcTemplate.update(
+            "delete from user where id = ?",
+            new Object[]{id}
+        );
+    }
+}
+```
+
+5、配置数据源信息
+
+```yaml
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 200013
+    url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=UTF-8
+```
+
+6、Handler
+
+```java
+@RestController
+@RequestMapping("/user")
+public class UserHandler {
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping("/findAll")
+    public List<User> findAll(){
+        return userRepository.findAll();
+    }
+    //别的就不写了。
+}
+```
+
+7、入口类
+
+```java
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class,args);
+    }
+}
+```
+
+**query**
+
+query(String sql, RowMapper<T> rowMapper)
+
+![image-20210609221506110](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210609221506110.png)
+
+RowMapper 接口作用是解析结果集，将 JDBC 查询出的 ResultSet 对象转换成对应的 POJO。
+
+queryForObject(String sql,Object[] args,RowMapper<T> rowMapper)
+
+该方法用来查询一条数据，并将结果封装成一个 POJO。
+
+**update**
+
+增删改的操作都可以调用这个方法来完成。
+
+![image-20210609221905923](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210609221905923.png)
+
+##### **Spring Boot 整合 MyBatis**
+
+1、pom.xml
+
+```xml
+<dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>2.1.4</version>
+</dependency>
+```
+
+2、实体类
+
+```java
+@Data
+public class  User {
+    private Integer id;
+    private String username;
+    private String password;
+    private Integer age;
+}
+```
+
+3、创建 UserRepository
+
+```java
+package com.southwind.repository;
+
+import com.southwind.entity.User;
+
+import java.util.List;
+
+public interface UserRepository {
+    public List<User> findAll();
+    public User findById(Integer id);
+    public int save(User user);
+    public int update(User user);
+    public int deleteById(Integer id);
+}
+```
+
+4、在 /resources/mapping 下创建 UserRepository.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.UserRepository">
+        <select id="findAll" resultType="User">
+            select * from user;
+        </select>
+        <select id="findById" parameterType="java.lang.Integer" resultType="User">
+            select * from user where id = #{id}
+        </select>
+        <insert id="save" parameterType="User">
+            insert into user(username,password,age) values (#{username},#{password},#{age})
+        </insert>
+        <update id="update" parameterType="User">
+            update user set username=#{username},password=#{password},age=#{age}
+        </update>
+        <delete id="deleteById" parameterType="java.lang.Integer">
+            delete from user where id = #{id}
+        </delete>
+</mapper>
+
+```
+
+5、Handler
+
+```java
+package com.southwind.controller;
+
+import com.southwind.entity.User;
+import com.southwind.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/user")
+public class UserHandler {
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping("/findAll")
+    public List<User> findAll(){
+        return userRepository.findAll();
+    }
+
+    @GetMapping("/findById/{id}")
+    public User findById(@PathVariable("id") Integer id){
+        return userRepository.findById(id);
+    }
+
+    @PostMapping("/save")
+    public int save(@RequestBody User user){
+        return userRepository.save(user);
+    }
+
+    @PutMapping("/update")
+    public int update(@RequestBody User user){
+        return userRepository.update(user);
+    }
+
+    @DeleteMapping("/deleteById/{id}")
+    public int deleteById(@PathVariable("id") Integer id){
+        return userRepository.deleteById(id);
+    }
+}
+```
+
+6、配置文件
+
+```yaml
+mybatis:
+  mapper-locations: classpath:/mapping/*.xml
+  type-aliases-package: com.southwind.entity
+```
+
+aliases：化名
+
+7、创建启动类
+
+```java
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class,args);
+    }
+}
+```
+
+引用依赖时装载自动配置类来完成自动配置，图中为启用自动配置类的装配信息存放地点
+
+![image-20210609225307104](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210609225307104.png)
+
+MybatisAutoConfiguration 类为 MyBatis 的配置文件提供自动装载操作。
+
+![image-20210610213316966](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210610213316966.png)
+
+由上往下注解的意思依次是：
+
+1、将该类作为配置类注入 IoC 容器中。
+
+2、存在注解内容中的类，当前类才能使用。
+
+3、 需要 IoC 容器中有注解内容中的类对象才能使用当前类。
+
+4、将配置文件中的信息载入到该注解内容的类中，载入完毕后才能启用。
+
+5、在注解内容中的配置类配置完成后才能使用当前类。
+
+![image-20210610213638654](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210610213638654.png)
+
+4 中的类的底层源码，该类用于读取配置文件中的配置信息。
+
+#### **Spring Boot 整合 Spring Data JPA**
+
+Spring Data JPA 是 Spring Data 大家族的一员
+
+**JPA 和 Spring Data JPA 的关系**
+
+JPA（Java Persistence API）Java 持久层规范，定义了一系列 ORM 接口，它本身是不能直接使用的，接口必须实现才能使用，Hibernate 框架就是一个实现了 JPA 规范的框架。
+
+Spring Data JPA 是 Spring 框架提供的对 JPA 规范的抽象，通过约定的命名规范，完成持久层接口的编写，在不需要实现接口的情况下，就可以完成对数据库的操作。
+
+简单理解，通过 Spring Data JPA 只需要定义接口而不需要实现，就能完成 CRUD 操作。
+
+Spring Data JPA 本身并不是一个具体的实现，它只是一个抽象层，底层还是需要 Hibernate 这样的 JPA 来提供支持。
+
+**Spring Data JPA 和 Spring JdbcTemplate 的关系**
+
+Spring jdbcTemplate 是 Spring 框架提供的一套操作数据库的模板，Spring Data JPA 是 JPA 的抽象。
+
+1、pom.xml
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+```
+
+看博客项目有样式。
+
+#### **Spring Security**
+
+![image-20210610221722510](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210610221722510.png)
+
+默认用户名为 user，默认密码为启动时控制台中随机生成的加密后的密码串。
+
+1、创建 Maven 工程，在 pom.xml 添加相关依赖。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.southwind</groupId>
+    <artifactId>springsecurity</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.4</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+2、Handler
+
+```java
+@Controller
+public class SecurityHandler {
+
+    @GetMapping("/index")
+    public String index(){
+        return "index";
+    }
+}
+```
+
+3、HTML
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+        <p>index</p>
+        <form method="post" action="/logout">
+            <input type="submit" value="退出">
+        </form>
+</body>
+</html>
+```
+
+4、application.yml
+
+```yaml
+spring:
+  thymeleaf:
+    prefix: classpath:/template/
+    suffix: .html
+```
+
+5、启动类
+
+```java
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class,args);
+    }
+}
+```
+
+**自定义用户名和密码**
+
+```yaml
+spring:
+  thymeleaf:
+    prefix: classpath:/template/
+    suffix: .html
+  security:
+    user:
+      name: admin
+      password: 123123
+```
+
+**权限管理**
+
+![image-20210610222808027](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210610222808027.png)
+
+定义两个资源
+
+**·** index.html
+
+**·** admin.html
+
+定义两个角色
+
+**·** ADMIN 访问 index.html 和 admin.html
+
+**·** USER 访问 index.htm
+
+1、创建 SecurityConfig 类
+
+```java
+package com.southwind.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    /**
+     * 角色和资源的关系
+     * @param http
+     * @throws Exception
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+            .antMatchers("/admin")
+            .hasRole("ADMIN")
+            .antMatchers("/index")
+            .access("hasRole('ADMIN') or hasRole('USER')")
+            .anyRequest().authenticated()
+            .and()
+            .formLogin()
+            .loginPage("/login")
+            .permitAll()
+            .and()
+            .logout()
+            .permitAll()
+            .and()
+            .csrf()
+            .disable();
+    }
+
+    /**
+     * 用户和角色的关系
+     * @param auth
+     * @throws Exception
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication().passwordEncoder(new MyPasswordEncoder())
+            .withUser("user")
+            .password(new MyPasswordEncoder()
+                      .encode("000"))
+            .roles("USER")
+            .and()
+            .withUser("admin")
+            .password(new MyPasswordEncoder()
+                      .encode("123"))
+            .roles("ADMIN","USER");
+    }
+}
+```
+
+2、自定义 MyPasswordEncoder (Spring Security 5 以上版本需要配置实现 PasswordEncoder 接口的转码解析类)
+
+```java
+package com.southwind.config;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+public class MyPasswordEncoder implements PasswordEncoder {
+
+    @Override
+    public String encode(CharSequence charSequence) {
+        return charSequence.toString();
+    }
+
+    @Override
+    public boolean matches(CharSequence charSequence, String s) {
+        return s.equals(charSequence.toString());
+    }
+}
+```
+
+3、admin.html
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+        <p>后台管理系统</p>
+        <form method="post" action="/logout">
+            <input type="submit" value="退出">
+        </form>
+</body>
+</html>
+```
+
+4、index.html
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+        <p>欢迎回来</p>
+        <form method="post" action="/logout">
+            <input type="submit" value="退出">
+        </form>
+</body>
+</html>
+```
+
+5、login.html
+
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+        <p th:if="${param.error}">
+            用户名或者密码错误
+        </p>
+        <form th:action="@{/login}" method="post">
+            用户名：<input type="text" name="username"><br>
+            密码：<input type="password" name="password"><br>
+            <input type="submit" value="登录">
+        </form>
+</body>
+</html>
+```
+
+6、Handler
+
+```java
+package com.southwind.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class SecurityHandler {
+
+    @GetMapping("/index")
+    public String index(){
+        return "index";
+    }
+
+    @GetMapping("/admin")
+    public String admin(){
+        return "admin";
+    }
+
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+}
+```
+
+#### 自动配置原理
+
+**@SpringBootApplication**
+
+```java
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan(
+    excludeFilters = {@Filter(
+    type = FilterType.CUSTOM,
+    classes = {TypeExcludeFilter.class}
+), @Filter(
+    type = FilterType.CUSTOM,
+    classes = {AutoConfigurationExcludeFilter.class}
+)}
+```
+
+@SpringBootConfiguration相当于@Configuration
+
+@ComponentScan扫包原理见上
+
+**@EnableAutoConfiguration**
+
+```java
+@AutoConfigurationPackage
+@Import({AutoConfigurationImportSelector.class})
+public @interface EnableAutoConfiguration {}
+```
+
+@AutoConfigurationPackage
+
+自动配置包
+
+```java
+@Import({Registrar.class})
+public @interface AutoConfigurationPackage {
+//利用Registrar给容器中导入一系列组件
+//将指定的一个包下的所有组件导入进来
+```
+
+@Import({AutoConfigurationImportSelector.class})
+
+```java
+1、利用getAutoConfigurationEntry(annotationMetadata);给容器中批量导入一些组件。
+2、List<String> configurations = this.getCandidateConfigurations(annotationMetadata, attributes);获取到所有需要导入到容器的配置类。
+3、利用工厂加载器加载
+  SpringFactoriesLoader.loadFactoryNames(this.getSpringFactoriesLoaderFactoryClass(), this.getBeanClassLoader())
+    Map<String, List<String>> loadSpringFactories(ClassLoader classLoader);得到所有组件
+4、从META-INF/spring.factories位置来加载一个文件。
+    默认扫描所有这个位置的文件
+    某些jar包存在META-INF/spring.factories这个文件
+```
+
+![image-20210617224401075](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210617224401075.png)
+
+```xml
+文件中写死了spring-boot一启动就要给容器中加载的所有配置类
+```
+
+按需开启自动配置项
+
+```java
+虽然写死的自动配置启动时会默认全部加载
+但是由于条件装配注解，所以最终会按照条件装配组件
+```
+

@@ -1,0 +1,18 @@
+搜索二叉树中序遍历为升序数组
+递归算法的时间复杂度=递归的次数*每次递归的时间复杂度
+递归算法的空间复杂度=每次递归的空间复杂度*递归深度
+二分查找：时间复杂度O(logn)
+(char)(Math.random()*(0xffff+1)) 得到一个随机字符（要0-9，a-z，A-z记得加if，else中写循环变量回退条件）
+LeetCode中的523题中的同余定理可以关注一下！
+
+floor 向下取整
+
+ceil 向上取整
+
+有序集中的**ceiling()方法**用于返回等于或大于给定元素(ele)的最低元素(如果存在)，否则返回null。
+
+int[]转为List
+
+List<Integer> list = Arrays.stream(arr).boxed().collect(Collectors.toList());
+
+![image-20211216172601593](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211216172601593.png)

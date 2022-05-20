@@ -1,0 +1,279 @@
+批量安装当前目录下的所有rpm
+
+ rpm -Uvh --force --nodeps *rpm
+
+防火墙相关命令
+
+firewall-cmd --list-ports 列出当前防火墙的信任端口
+
+firewall-cmd --zone=public --add-port=6379/tcp [--permanent] 将某个端口添加到信任表中
+
+firewall-cmd --reload 对防火墙的修改完毕后都要进行此命令才能生效。
+
+ps -ef | grep 'redis' 查看redis的进程
+
+ctrl+f 下翻（PageDown）
+ctrl+u 上翻
+
+&& 与命令 前一个执行成功才执行后者
+
+‘/’搜寻字符串 n向下
+
+版本有强联系
+
+sudo -i 普通用户转为管理员用户
+
+make 编译命令
+
+make install 安装编译完后的文件
+
+make disclean 清除编译文件
+
+shell命令
+echo
+$PATH 获取环境变量
+'' 严格字符串
+"" 非严格字符串
+
+* 通配符用来表示任意字符串
+& 后台执行命令程序
+\ 转义字符
+< 输入重定向字符
+> 输出重定向字符
+| 管道字符
+ps 后端进程状态查询
+
+
+网络层加密方式：
+
+密钥相同的加密叫对称（私钥）加密
+DES 3DES AES
+
+密钥不相同的加密叫非对称（公钥）加密
+RSA ECC SM2
+
+私钥证明所有者，公钥表明加密性
+
+SSH公钥认证
+可看.pem文件
+
+
+客户计算机：
+ssh-key gen
+cd .ssh
+ls -a
+查看生成的私钥和公钥
+
+SSH服务器：
+主目录下
+mkdir .ssh
+cd .ssh
+mv id_rsa.pub authorized_keys
+chmod 644 authorized_keys
+chmod 700.ssh
+
+ifconfig查看网卡信息
+
+虚拟机最常见网卡名 eth0 以太网0
+
+ifconfig ifcfg
+
+ifconfig  网卡名 down 关闭指定网卡
+
+route  操作网关信息
+
+route -n  查看关信息
+
+route add default gw ip  创建一个网关
+
+service network restart  重置网卡 2-6
+systemctl restart network 7
+
+管理员才能改
+ifcfg-eth0 改网卡配置
+更改onboot=true
+
+修改ip配置文件：vi /etc/netplan/01-network-manager-all.yaml
+激活ip sudo netplan apply
+实验时windows应和虚拟机保持同一网段
+
+设置主机配置文件（主机名不能为中文或加入空格）
+vi /etc/hostname
+hostname 查看主机名命令
+
+环回地址：本地地址 127.0.0.1
+ping 连通命令（加-t表示持续连接）
+
+主机名称与ip地址的映射表文件
+/etc/hosts
+127.0.0.1 本地主机名
+192.168.1.188 “设置的虚拟主机名”
+ping 192.168.1.188
+ping "设置的虚拟主机名
+
+RedHat
+.rpm
+yum[选项][命令][软件包名...] 在线安装 !!!
+选项
+-h 显示帮助信息
+-y 对所有的提问都回答yes
+命令
+yum install 安装rpm软件包
+yum remove 删除rpm软件包
+yum update 升级rpm软件包
+yum search 检查rpm软件包信息
+
+配置本地yum，进入企业时用镜像来弄
+
+Ubuntu
+.deb
+apt[选项][命令][软件包名...] 在线安装 
+选项
+-h 显示帮助信息
+-y 对所有的提问都回答yes
+-v 显示详细的交互信息 verbose
+-s 执行当前页面下的可执行文件
+
+install 
+remove 保留配置文件
+upgrade 更新deb，不考虑依赖关系
+update 重新获取软件包列表
+purge 包和配置文件都删除
+search
+
+JDK在Linux上有两种版本：Oracle官方版本与开源版本OpenJDK
+gz Linux压缩文件，压缩率极高
+
+tar -xzvf
+tar -xzvf 解压
+-x extract 解压tar包
+-z unzip GNU zip包
+xxx.tar.gz
+-v 显示详细的解压交互信息 verbose
+-f file 解压的是文件
+--force 双横杆单个意义，单横杆多个意义
+Linux的path基本上写的都是大写！！！
+
+学习下用WINSCP来传文件到Linux中
+/usr/local 相当于C:/Program Files/
+
+bin/hadoop 子命令jar jar文件 jar文件参数
+jar文件参数：grep 参数1：搜索目录 参数2：
+结果目录 参数3：搜索条件（正则表达式）
+
+！！！
+ssh-copy-id 拷到远程机器中
+波浪线指的是主目录
+
+生成公钥与私钥对 p43
+ssh-copy-id -i ~/.ssh/id_rsa.pub 远程主机名
+依次输入yes root用户密码
+重启ssh service sshd restart
+
+linux遵循gnu规范
+
+sudo mkdir -p （-p表示父子目录一并创建）
+chown （change owner） 修改主人
+sudo chown -R hadoop:hadoop 目录 (-R对父子目录全都修改，:hadoop表示hadoop组) recursive递归
+
+-l 查询子命令
+hdfs dfs 常用命令
+查看、上传、创建文件夹、下载、复制、移除、移动
+
+root能到处去，别人不能进自己
+hadoop /home/hadoop/主目录  只有hadoop用户才能进入
+oracle /home/oracle/主目录
+root root/主目录		
+
+hdfs中有个与主目录类似的特殊目录：/user
+/user/hadoop/主目录
+/user/root/主目录
+
+使用ulimit -a 可以查看当前系统的所有限制值，使用ulimit -n 可以查看当前的最大打开文件数。
+新装的linux 默认只有1024 ，当作负载较大的服务器时，很容易遇到error: too many open files。因此，需要将其改大，在/etc/security/limits.conf最后增加：
+
+* soft nofile 65535
+
+* hard nofile 65535
+
+* soft noproc 65535
+
+* hard noproc 65535
+
+用户重新登录生效（ulimit -n）
+
+http://Linux IP:50020
+
+vi的三种工作模式
+
+底行模式：
+
+ :  wq 保存文件
+
+命令模式：
+
+'/' 搜索内容 
+
+插入模式：
+
+
+
+ZZ 快捷键效果类似
+ctrl + z ：切换到后台
+
+当前目录 .
+上级父目录 ..
+
+head 看头部
+tail 看尾部
+
+ls 查看当前目录的文件
+
+epoll是Linux内核为处理大批量文件描述符而作了改进的poll
+
+**查看进程和使用进程的服务名**
+
+根目录下存在一个 /proc
+
+1、cd /proc
+
+2、pwd /proc
+
+3、ls
+
+若cd到进程号的目录中，然后ls
+
+会发现有一个文件描述符的目录 fd
+
+ll 后会发现最基本的3个流
+
+'>' 重定向到某个文件，加上'&'表示重定向到某个描述符。
+
+ls 的输出是在标准输出，即1中
+
+**Linux系统操作指令** 
+
+systemctl enable '服务名'		开机默认打开指定服务
+
+systemctl stop '服务名'		取消开机默认启动某服务
+
+systemctl status '服务名'		查看某服务的状态
+
+systemctl start '服务名'		手动开启某服务
+
+
+
+netstat -natp 查询所有和网络相关的进程状态，此处指定了atp（ATP）
+
+建立简易的TCP传输 curl www.baidu.com
+
+抓包工具 tcpdump 常用格式
+
+tcpdump  [-nn] [-X] [-i] [网卡名]  [port] [端口号] 
+
+-X 是将具体数据更详细的展示
+
+这里的网卡名和端口号，指的是tcpdump的程序监听的对象，-nn是一种展示形式。
+
+-i 运行参数
+

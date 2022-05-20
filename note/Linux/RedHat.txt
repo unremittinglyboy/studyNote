@@ -1,0 +1,3 @@
+su - 命令 切换root账户
+systemctl status firewalld.service 查看防火墙状态
+systemctl stop firewalld.service 停止防火墙

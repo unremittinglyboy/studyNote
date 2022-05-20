@@ -1,0 +1,337 @@
+### 操作系统中断
+
+对必要的马上执行，不必要的慢慢来。
+
+**中断请求 IRQ**
+
+中断处理程序(内核态程序)
+
+作用：
+
+中断处理程序，将当前执行进程保留下状态，放入任务队列中，然后从任务队列中弹出一定条件的任务（下面的例子则是开吃）。
+
+**中断发生例子：**
+
+当前的中断触发事件：外卖小哥到了！
+
+玩游戏 (当前执行的工作任务)
+
+吃东西
+
+在这玩游戏和吃东西都成了任务，一开始外卖还没到，则吃东西任务处于休眠状态。
+
+外卖小哥敲门在这里则是中断请求。
+
+进行对游戏进行暂停然后拿外卖开吃的行为的处理程序就叫做中断处理程序。
+
+**软中断：**
+
+0x80中断 由中断映射表决定中断类型
+
+为了满足实时系统的要求，中断处理应该是越快越好。linux为了实现这个特点，当中断发生的时候，硬中断处理那些短时间就可以完成的工作，而将那些处理事件比较长的工作，放到中断之后来完成，也就是软中断(softirq)来完成。
+
+**硬中断：**
+
+由于系统相连的外设(比如网卡、硬盘)自动产生的。主要是用来通知操作系统系统外设状态的变化。比如当网卡收到数据包的时候，就会发出一个中断。我们通常所说的中断指的是硬中断(hardirq)。
+
+**系统中断，内核会做什么？**
+
+硬件都有对应的中断处理程序
+
+DMA设备内嵌于网卡中，将报文直接映射到内存内的一块缓存区（被称为网卡缓存区，为了高效工作，缓存区不大，但转换的频率高，就快满的时候(或者满足某种合理条件时)会赶紧将其中的内容转移到内存中）内。
+
+当网卡需要处理时(无可工作cpu时)，某个进程
+
+使用到的寄存器保存到进程描述符(引用进程空间的东西)，释放该cpu给网卡的中断系统用，由用户态变为内核态。
+
+**中断控制器**
+
+中断控制器用于连接硬件设备，并做一定处理。
+
+中断控制器是可以级联的。
+
+![image-20211013102022325](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013102022325.png)
+
+IRQ中断程序入口映射表
+
+![image-20211013102510663](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013102510663.png)
+
+### Socket
+
+![image-20211013103917080](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013103917080.png)
+
+想发数据则需要将应用(用户态)数据放到内核(内核态)空间中，通过协议路由到队端。
+
+APP(用户态) - 写入/读取方法(内核态) - 缓冲区(硬件缓存) - 发送/接收队列中(内核态)。
+
+**传统BIO形式(阻塞读写)：**
+
+写：
+
+​	从app发出数据时首先检测输出缓冲区可用空间是否小于要发送的数据大小。若小于则会阻塞，直到缓冲区腾出空间。
+
+​	若输出缓冲区正在给tcp发出数据，会上锁。此时app写入数据也会阻塞，得等到锁释放后才能写入。
+
+读：
+
+​	检测输入缓冲区是否有数据，没有则阻塞当前调用进程，直到输入缓冲区中存在数据，读取的数据规模由应用层的buffer来定。
+
+**NIO形式(非阻塞读写)：**
+
+写：
+
+​	开始仍然检测缓存区可用空间，缓冲区剩余多少则写入当前想输入的数据的多少，一直重试直到成功。特别情况下，缓存区大小为0时，会立马返回一个标识值，然后经由上层程序来进行处理。
+
+读：
+
+​	检测输入缓冲区是否有数据，没有则返回标识码，并且释放当前调用进程，直到输入缓冲区中存在数据，读取的数据规模由应用层的buffer来定。
+
+**小知识**
+
+TCP协议会保证数据包不丢失，按顺序，由TCP重发技术实现。输入缓冲区拿到数据也会往发送端回复ACK报文。
+
+面试：此时Server非常繁忙，抢占不到cpu资源，client发送数据会不会存在问题？
+
+BIO：
+
+​	输入输出缓冲区变满，阻塞当前写进程。
+
+NIO:
+
+​	输入输出缓冲区变满，若输出已满则返回标识码。
+
+**CPU的运行状态**
+
+分为0~3，0为内核态、3为用户态。
+
+Linux创建进程时会给每个进程分配用户堆栈和内核堆栈。
+
+![image-20211014091907817](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014091907817.png)
+
+p为进程描述符，u_addr为用户堆栈，k_addr为内核堆栈。
+
+![image-20211014092306666](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014092306666.png)
+
+某个使用到内核态的程序的执行过程 ：	
+
+​	1、将系统函数调用号（将要使用到的系统函数的标识）保存到eax寄存器中。
+
+​	2、将请求的参数封装为指针保存到cpu特定寄存器中。
+
+​	3、将cpu用于完成此次请求需要使用的寄存器等系统信息、用户态数据信息保存到进程描述符中去。
+
+​	4、执行进程由用户堆栈切换到内核堆栈（让保存执行进程用户堆栈地址和内核堆栈的地址的寄存器指向转为内核堆栈）。
+
+​	5、根据IRQ中断程序的入口映射表找到中断处理程序的地址，将该地址保存到cpu中表示代码地址的寄存器的空间中去（该代码地址原本是指向用户态的代码）。
+
+​	6、切换代码地址指向当前的中断处理程序的地址。
+
+​	7、运行中断处理程序，读取eax寄存器中的值（表示调用的系统函数号），根据号码拿到系统函数的指针，使用带有请求参数指针的寄存器，找到参数的内存空间，然后拷贝参数到内核空间中，用系统函数处理完后，将结果信息存放到cpu某个寄存器内。
+
+​	8、从存放有结果信息的寄存器中读取到结果信息，返回给用户态，随后根据进程描述符将使用到的寄存器状态恢复为请求执行前的状态。
+
+![image-20211014093441001](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014093441001.png)
+
+**BIO通信过程**
+
+1、
+
+![image-20211014102121318](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014102121318.png)
+
+没显示的是写缓冲区
+
+2、
+
+![image-20211014102249417](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014102249417.png)
+
+![image-20211014102349426](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014102349426.png)
+
+3、
+
+![image-20211014102429098](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014102429098.png)
+
+![image-20211014102451847](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014102451847.png)
+
+4、
+
+![image-20211014102554678](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014102554678.png)
+
+5、
+
+![image-20211014102624843](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014102624843.png)
+
+6、
+
+![image-20211014102747751](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014102747751.png)
+
+![image-20211014103005343](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014103005343.png)
+
+![image-20211014103016648](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014103016648.png)
+
+7、
+
+![image-20211014103142249](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014103142249.png)
+
+![image-20211014103150831](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014103150831.png)
+
+图中有误：应该是去就绪队列。
+
+java中的线程就是Linux中的轻量级进程。
+
+#### **多路复用**
+
+epoll和select（poll和select本质上无区别，传参做了一些优化）
+
+**Linux select 函数详解**
+
+在Linux中，我们可以使用select函数实现I/O端口的复用，**传递给 select 函数的参数**会告诉内核一些信息：
+
+1、我们所关心的文件描述符。
+
+我们监听哪些socket。
+
+2、对每个描述符，我们所关心的状态。
+
+关心该socket是否可读或者可写了。
+
+3、我们要等待多长时间。
+
+要阻塞多久。
+
+传入参数的类型决定处理方式，传null表示某个socket就绪之后返回；传0检查socket列表中是否有socket状态是就绪的，有则使用就绪的去处理请求后返回结果，没有返回-1；传大于0的值就检查socket列表中是否有socket状态是就绪的，有则使用就绪的去处理请求后返回结果，没有则阻塞超出0部分的限定时长；
+
+从**select函数返回**后，内核告诉我们一些信息：
+
+1、对我们的要求已经做好准备的描述符个数。
+
+就绪的socket的数量。
+
+2、对于三种条件哪种描述符已经做好准备(读，写，异常)
+
+有哪些socket是就绪的。
+
+有了这些返回信息，我们可以调用合适的I/O函数(通常是 read 或 write)，并且这些函数不会再阻塞。
+
+![image-20211014110102353](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014110102353.png)
+
+maxfdp表示bitmap的最大有效位，检查的位数。
+
+第三个bitmap是传错误的。
+
+fd_set 是个 bitmap，位长定长为1024（其实达不到这个长度，因为最前面会有用于表示标准输出、标准输入、标准错误流的位头），要改的话需要重新编译内核，会比较麻烦，监听的文件描述符是有大小限制的。
+
+![image-20211014110551911](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014110551911.png)
+
+其中一个fd_set的存储形式
+
+![image-20211014111531646](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014111531646.png)
+
+上图为自带的对位图进行修改的函数。
+
+**BIO/NIO/AIO 快速实战**
+
+BIO：
+
+```java
+public class BIO {
+    //ServerSocket
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(9000);
+        while(true){
+            System.out.println("等待连接...");
+            //阻塞方法
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("有客户端连接了...");
+            handler(clientSocket);
+        }
+    }
+    private static void handler(Socket clientSocket) throws IOException{
+        byte[] bytes = new byte[1024];
+        System.out.println("准备read...");
+        //接收客户端的数据，阻塞方法，没有数据可读时就阻塞
+        while(true){
+            int read = clientSocket.getInputStream().read(bytes);
+            System.out.println("read完毕");
+            if(read != -1){
+                System.out.println("接收到的客户端数据为：" + new String(bytes, 0, read));
+            }
+        }
+    }
+}
+```
+
+加入多线程来处理连接阻塞问题
+
+![image-20211015092621681](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211015092621681.png)
+
+开辟线程会占用空间，不会销毁，连接数多了内存顶不住。
+
+C10K 问题
+
+有10000个连接
+
+C10M 问题
+
+有1000w个连接
+
+NIO:
+
+```java
+public class NIO {
+    //保存客户端连接
+    static List<SocketChannel> channelList = new ArrayList<>();
+
+    public static void main(String[] args) throws IOException {
+        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+        serverSocketChannel.socket().bind(new InetSocketAddress(9000));
+        //设置ServerSocketChannel为非阻塞
+        serverSocketChannel.configureBlocking(false);
+        System.out.println("服务启动成功");
+        while(true){
+            //非阻塞模式的accept方法不会阻塞
+            //NIO的非阻塞实现有操作系统实现，使用Linux内核的accept()函数
+            SocketChannel clientSocketChannel = serverSocketChannel.accept();
+            if(clientSocketChannel != null){
+                System.out.println("连接成功");
+                //设置 clientSocketChannel为非阻塞
+                clientSocketChannel.configureBlocking(false);
+                //保存客户端连接到List中
+                channelList.add(clientSocketChannel);
+            }
+            //遍历连接进行数据读取
+            Iterator<SocketChannel> iterator = channelList.iterator();
+            while(iterator.hasNext()){
+                //封装了通道，存在读写切换效果，进入HeapByteBuffer类中可知。
+                ByteBuffer byteBuff = ByteBuffer.allocate(128);
+                SocketChannel csc = iterator.next();
+                int read = csc.read(byteBuff);
+                if(read > 0){
+                    System.out.println("服务端接收到数据：" + new String(byteBuff.array(), 0, read));
+                }else if(read == -1){
+                    iterator.remove();
+                    System.out.println("客户端断开连接");
+                }
+            }
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+#### 特别知识
+
+如果把被储存的东西比作能量：
+
+\1. 寄存器就是 ATP，可以随时拿来用，性能高，但数量有限；
+
+\2. 内存就是葡萄糖，性能一般，但是存量可以比较多；
+
+\3. 外存（比如硬盘）就是脂肪，容量可以非常大，性能很差，要先转化为葡萄糖（存进内存），然后转化为 ATP（放到寄存器）才能直接利用（存取）。
+

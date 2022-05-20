@@ -1,0 +1,57 @@
+1、jps即Java Server Pages
+jsp继承HttpJspBase
+HttpJspBase继承于HttpServlet
+jsp容器会生成java文件，然后会生成对应的servlet对象，通过生成的servlet对象，去处理请求，做响应
+
+2、jsp基本语法
+	2.1 jsp脚本元素
+	书写有三种形式
+		>>可以声明语句和方法
+		jsp的声明语句，可以写变量+方法
+		语法： <%! 定义变量+方法 %>
+		转换之后生成在成员位置
+
+		>>可以书写java代码段
+		jsp scriptlets
+		语法:<% java code segement %>
+	
+		>>可以书写表达式
+			在jsp页面中，可以输入一个结果
+		语法:<%=表达式%> 等同于out.print()方法
+		生成的代码段在_jspService方法内部		
+	
+	2.2 jsp注释
+	<%-- --%>
+3、jsp指令 page、include、taglib
+	3.1  page指令
+	page指令用途是设置与jsp页面相关的信息，比如：jsp页面编码、默认语言
+	语法结构<%@page 属性="属性值"%>
+	3.2 include指令
+	#include<iostream> cin cout c++
+	是在jsp页面中，共享其他页面信息。可以通过include语句将其他页面包含进当前jsp
+	静态包含，特点：多个文件的内容合并输出，对应生成1个java文件。
+4、隐式对象
+	在jsp页面中，jsp提供了一些对象，不需要创建，直接可以使用的对象
+	4.1 out对象 理解原理即可 out输出慢过response的输出，因为out会先存入out缓冲区，等待response输出的内容先放入resp缓冲区，要解决则将out缓冲区设为0即可。
+	4.2 pageContext对象 本身也是一个域对象 功能：获取其他8个隐式对象，操作其他三个域对象  作为域对象的作用范围很小，只在jsp页面中
+
+5、jsp动作元素
+	5.1<jsp:include>
+		动态包含
+		和静态包含的区别：
+		生成多个java文件，文件是编译后的，可以包含与当前jsp重复的一些内容，附过来之前会解析掉。
+		静态是生成单个java文件，编写代码在顶部，主要用来附加重用的代码，原封不动地附过来，不能带有多余标签或者与当前jsp文件重复的东西。把其他资源页面的内容，合并到当前要包含的界面，最好一起输出。
+
+	语法：<jsp:include page="被包含页面的url">
+	flush="true||false"</jsp:include>
+	是否立即刷新
+	
+	5.2<jsp:forward>
+	转发页面的url：不需要携带项目名，因为转发动作是服务器内部的行为。
+6、阶段案例：书城的jsp页面
+
+首页面：
+
+1、在html页面中是不能书写jsp相关
+
+2、${pageContext.request.contextPath} 获取项目名称路径

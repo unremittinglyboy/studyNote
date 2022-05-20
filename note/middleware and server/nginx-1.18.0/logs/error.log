@@ -1,0 +1,1 @@
+2022/05/14 21:46:43 [emerg] 11952#16220: CreateFile() "C:\Users\шьза\Desktop\note\middleware and server\nginx-1.18.0/conf/nginx.conf" failed (1113: No mapping for the Unicode character exists in the target multi-byte code page)

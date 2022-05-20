@@ -1,0 +1,42 @@
+2021-09-17 21:49:49,402 INFO Initializes the Raft protocol, raft-config info : {}
+
+2021-09-17 21:49:49,680 INFO ========= The raft protocol is starting... =========
+
+2021-09-17 21:49:52,083 INFO ========= The raft protocol start finished... =========
+
+2021-09-17 21:49:52,091 INFO create raft group : naming_persistent_service
+
+2021-09-17 21:49:52,323 INFO shutdown jraft server
+
+2021-09-17 21:49:52,324 INFO ========= The raft protocol is starting to close =========
+
+2021-09-17 21:49:52,324 INFO ========= The raft protocol has been closed =========
+
+2021-09-17 21:54:38,708 INFO Initializes the Raft protocol, raft-config info : {}
+
+2021-09-17 21:54:38,926 INFO ========= The raft protocol is starting... =========
+
+2021-09-17 21:54:41,340 INFO ========= The raft protocol start finished... =========
+
+2021-09-17 21:54:41,347 INFO create raft group : naming_persistent_service
+
+2021-09-17 21:54:41,601 INFO shutdown jraft server
+
+2021-09-17 21:54:41,601 INFO ========= The raft protocol is starting to close =========
+
+2021-09-17 21:54:41,601 INFO ========= The raft protocol has been closed =========
+
+2021-09-17 21:56:28,928 INFO Initializes the Raft protocol, raft-config info : {}
+
+2021-09-17 21:56:29,177 INFO ========= The raft protocol is starting... =========
+
+2021-09-17 21:56:31,730 INFO ========= The raft protocol start finished... =========
+
+2021-09-17 21:56:31,736 INFO create raft group : naming_persistent_service
+
+2021-09-17 21:56:31,983 INFO shutdown jraft server
+
+2021-09-17 21:56:31,983 INFO ========= The raft protocol is starting to close =========
+
+2021-09-17 21:56:31,983 INFO ========= The raft protocol has been closed =========
+

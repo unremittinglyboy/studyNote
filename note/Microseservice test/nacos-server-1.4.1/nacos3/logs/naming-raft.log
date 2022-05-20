@@ -1,0 +1,80 @@
+2021-09-17 21:45:28,817 INFO raft peers changed: [Member{ip='10.3.108.40', port=8848, state=UP, extendInfo={raftPort=7848}}]
+
+2021-09-17 21:45:28,852 INFO initializing Raft sub-system
+
+2021-09-17 21:45:28,853 INFO finish loading all datums, size: 0 cost 1 ms.
+
+2021-09-17 21:45:28,859 INFO cache loaded, datum count: 0, current term: 0
+
+2021-09-17 21:45:28,859 INFO finish to load data from disk, cost: 7 ms.
+
+2021-09-17 21:45:28,863 INFO timer started: leader timeout ms: 15000, heart-beat timeout ms: 5000
+
+2021-09-17 21:45:29,458 INFO add listener: com.alibaba.nacos.naming.domains.meta.00-00---000-NACOS_SWITCH_DOMAIN-000---00-00
+
+2021-09-17 21:45:29,476 INFO add listener: com.alibaba.nacos.naming.domains.meta.
+
+2021-09-17 21:45:33,799 WARN start to close old raft protocol!!!
+
+2021-09-17 21:45:33,799 WARN stop old raft protocol task for notifier
+
+2021-09-17 21:45:33,799 WARN stop old raft protocol task for master task
+
+2021-09-17 21:45:33,799 WARN stop old raft protocol task for heartbeat task
+
+2021-09-17 21:45:33,799 WARN clean old cache datum for old raft
+
+2021-09-17 21:45:33,799 WARN start to close old raft protocol!!!
+
+2021-09-17 21:45:33,799 WARN stop old raft protocol task for notifier
+
+2021-09-17 21:45:33,799 WARN stop old raft protocol task for master task
+
+2021-09-17 21:45:33,799 WARN stop old raft protocol task for heartbeat task
+
+2021-09-17 21:45:33,799 WARN clean old cache datum for old raft
+
+2021-09-17 21:45:33,799 WARN start to move old raft protocol metadata
+
+2021-09-17 21:45:33,800 WARN start to move old raft protocol metadata
+
+2021-09-17 21:45:33,801 INFO raft peers changed: [Member{ip='10.3.108.40', port=8848, state=UP, extendInfo={lastRefreshTime=1631886333800, raftPort=7848, version=1.4.1}}]
+
+2021-09-17 21:57:29,634 INFO raft peers changed: [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='10.3.108.40', port=8847, state=UP, extendInfo={raftPort=7847}}]
+
+2021-09-17 21:57:29,663 INFO initializing Raft sub-system
+
+2021-09-17 21:57:29,663 INFO finish loading all datums, size: 0 cost 0 ms.
+
+2021-09-17 21:57:29,668 INFO cache loaded, datum count: 0, current term: 0
+
+2021-09-17 21:57:29,668 INFO finish to load data from disk, cost: 5 ms.
+
+2021-09-17 21:57:29,671 INFO timer started: leader timeout ms: 15000, heart-beat timeout ms: 5000
+
+2021-09-17 21:57:30,562 INFO raft peers changed: [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='10.3.108.40', port=8847, state=UP, extendInfo={raftPort=7847, version=1.4.1}}]
+
+2021-09-17 21:57:34,615 WARN start to close old raft protocol!!!
+
+2021-09-17 21:57:34,615 WARN stop old raft protocol task for notifier
+
+2021-09-17 21:57:34,615 WARN stop old raft protocol task for master task
+
+2021-09-17 21:57:34,615 WARN stop old raft protocol task for heartbeat task
+
+2021-09-17 21:57:34,615 WARN clean old cache datum for old raft
+
+2021-09-17 21:57:34,615 WARN start to close old raft protocol!!!
+
+2021-09-17 21:57:34,615 WARN stop old raft protocol task for notifier
+
+2021-09-17 21:57:34,615 WARN stop old raft protocol task for master task
+
+2021-09-17 21:57:34,615 WARN stop old raft protocol task for heartbeat task
+
+2021-09-17 21:57:34,615 WARN clean old cache datum for old raft
+
+2021-09-17 21:57:34,615 WARN start to move old raft protocol metadata
+
+2021-09-17 21:57:34,615 WARN start to move old raft protocol metadata
+

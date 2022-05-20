@@ -1,0 +1,60 @@
+2021-09-28 11:06:46,496 INFO Starting Nacos v1.4.1 on LAPTOP-TDK8A0I0 with PID 2400 (C:\Users\桁仔\Desktop\note\Microservices\nacos\target\nacos-server.jar started by 桁仔 in C:\Users\桁仔\Desktop\note\Microservices\nacos\bin)
+
+2021-09-28 11:06:46,496 INFO The following profiles are active: standalone
+
+2021-09-28 11:06:53,466 INFO Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@13d4992d' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+
+2021-09-28 11:06:53,466 INFO Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+
+2021-09-28 11:06:55,777 INFO Tomcat initialized with port(s): 8848 (http)
+
+2021-09-28 11:06:55,849 INFO Starting service [Tomcat]
+
+2021-09-28 11:06:55,849 INFO Starting Servlet engine: [Apache Tomcat/9.0.38]
+
+2021-09-28 11:06:56,525 INFO At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+
+2021-09-28 11:06:56,581 INFO Initializing Spring embedded WebApplicationContext
+
+2021-09-28 11:06:56,581 INFO Root WebApplicationContext: initialization completed in 9981 ms
+
+2021-09-28 11:06:57,005 INFO HikariPool-1 - Starting...
+
+2021-09-28 11:06:57,333 INFO HikariPool-1 - Start completed.
+
+2021-09-28 11:06:57,901 INFO Nacos-related cluster resource initialization
+
+2021-09-28 11:06:57,909 INFO The cluster resource is initialized
+
+2021-09-28 11:06:58,477 INFO Reflections took 72 ms to scan 1 urls, producing 4 keys and 6 values 
+
+2021-09-28 11:06:58,501 INFO Reflections took 0 ms to scan 1 urls, producing 6 keys and 26 values 
+
+2021-09-28 11:06:58,517 INFO Reflections took 0 ms to scan 1 urls, producing 3 keys and 15 values 
+
+2021-09-28 11:06:58,533 INFO Reflections took 0 ms to scan 1 urls, producing 2 keys and 12 values 
+
+2021-09-28 11:06:59,597 INFO Initializing ExecutorService 'applicationTaskExecutor'
+
+2021-09-28 11:06:59,789 INFO Adding welcome page: class path resource [static/index.html]
+
+2021-09-28 11:07:00,736 INFO Creating filter chain: Ant [pattern='/**'], []
+
+2021-09-28 11:07:00,816 INFO Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3aee3976, org.springframework.security.web.context.SecurityContextPersistenceFilter@1a2e2935, org.springframework.security.web.header.HeaderWriterFilter@790174f2, org.springframework.security.web.csrf.CsrfFilter@579d011c, org.springframework.security.web.authentication.logout.LogoutFilter@62d363ab, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4b629f13, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@aa22f1c, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5ef8df1e, org.springframework.security.web.session.SessionManagementFilter@7689ddef, org.springframework.security.web.access.ExceptionTranslationFilter@452e26d0]
+
+2021-09-28 11:07:01,088 INFO Initializing ExecutorService 'taskScheduler'
+
+2021-09-28 11:07:01,128 INFO Exposing 2 endpoint(s) beneath base path '/actuator'
+
+2021-09-28 11:07:01,301 INFO Tomcat started on port(s): 8848 (http) with context path '/nacos'
+
+2021-09-28 11:07:01,301 INFO Started Nacos in 18.167 seconds (JVM running for 19.222)
+
+2021-09-28 11:07:01,301 INFO Nacos started successfully in stand alone mode. use external storage
+
+2021-09-28 11:07:23,547 INFO Initializing Spring DispatcherServlet 'dispatcherServlet'
+
+2021-09-28 11:07:23,547 INFO Initializing Servlet 'dispatcherServlet'
+
+2021-09-28 11:07:23,555 INFO Completed initialization in 8 ms
+

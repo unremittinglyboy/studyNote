@@ -1,0 +1,114 @@
+stereotype 模式化
+hint 示意
+incoming 传入的
+routing 销毁
+assume 设置;假定
+accordingly 伴随着
+directly 直接地
+entry point 入口
+delegate 代表
+bootstrap 独自创建
+in turn 依次
+args array 参数数组
+passed through to expose 传递以公开
+self-contained 独立的
+compile 编译
+nest 嵌套
+problematic 有问题的
+approach 方法
+below 在...之中
+to do so 为此
+bind 联合
+original原始的
+task-oriented 以任务为导向（面向任务）
+metadata 元数据
+Candiate 
+authentication 身份认证
+executable 可执行的
+declare 公布;宣告
+Archive 档案
+consistent 一致的
+transitive 过渡的
+utility 公用
+fragment 片段
+delegate 代表
+valiator 验证器
+assert 断言
+decimal 小数
+fraction 一小部分
+constraint 限制
+reactive streams 反应流
+flux 通量
+reactor 反应堆
+Retention 保留
+router 路由器
+domain 范畴
+protocol 协议
+seq 顺序的
+asynchronous and non-blocking 异步和非阻塞的
+facet 方面
+Remote 偏远的
+signature 签名
+query 查询、询问
+injection 注入
+inject
+descript 描述
+reference 谈及
+retention 保持
+policy 政策、方针、原则
+Logger 记录器
+Holder 持有人
+Transactional 事务性
+template 模板
+processor 加工厂
+connectivity 连通性
+scope 范围；机会；仔细看
+Bean Property Row Mapper Bean属性行映射器
+core 核心
+validate 验证
+entity 实体
+embedded 嵌入的
+sequence 序列
+transient 瞬变、短暂的
+generator 生产者
+generate 生产
+merge 合并、相融
+strategy 策略
+dialect 方言
+schema 纲要
+inverse 反向
+fetch 取来
+item 条目
+angle 角度 可以是没有尾的箭头
+fluid 流体
+interval 间隔
+popup 弹出窗口
+flow 流
+cluster 集群
+slot 夹缝、槽
+resolver 分解器
+interception 拦截
+corresponding to 对应
+Reentrant 可重入的
+volatile 易变的、不稳定的
+transaction 事务
+disposition 性情、布置、安排
+contact 联系
+implicit 隐性的、内部的
+converter 转换器
+authority 权利
+Lucene 全局搜索
+duration 一段时间
+ref 编号
+const 常量
+oriented 面向
+sentinel 哨兵
+compress 压缩
+affinity 亲和力
+octet 八重
+Common Gateway Interface 通用网关接口
+pad 填充
+partitioner 分配器、分割器
+combiner 组合器
+eviction 驱逐
+volatile 易变的

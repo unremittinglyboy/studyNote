@@ -1,0 +1,12 @@
+2022-05-20 08:14:36,036 INFO [dump-all-ok] orderservice-flow-rules+SENTINEL_GROUP, 1652922916440, length=466, md5=7a3576cd4a4d9eac266d0a310031c45e
+
+2022-05-20 08:14:36,039 INFO [dump-all-ok] seataServer.properties+SEATA_GROUP, 1652970381826, length=1039, md5=f63775cf28a9281e93dfc6c6bb4103c3
+
+2022-05-20 10:08:34,287 INFO [dump-all-ok] orderservice-flow-rules+SENTINEL_GROUP, 1652922916440, length=466, md5=7a3576cd4a4d9eac266d0a310031c45e
+
+2022-05-20 10:08:34,289 INFO [dump-all-ok] seataServer.properties+SEATA_GROUP, 1652970381826, length=1039, md5=f63775cf28a9281e93dfc6c6bb4103c3
+
+2022-05-20 10:22:18,504 INFO [dump-all-ok] orderservice-flow-rules+SENTINEL_GROUP, 1652922916440, length=466, md5=7a3576cd4a4d9eac266d0a310031c45e
+
+2022-05-20 10:22:18,506 INFO [dump-all-ok] seataServer.properties+SEATA_GROUP, 1652970381826, length=1039, md5=f63775cf28a9281e93dfc6c6bb4103c3
+

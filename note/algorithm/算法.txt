@@ -1,0 +1,1083 @@
+```java
+(int n)
+	int maxfactor = 1;
+	for (int i = 2; i <= sqrt(n); i++)//找出大于1的最小公因式套路
+	{
+		if ( n % i == 0) {
+			maxfactor = i;
+			break;
+		}
+	}
+```
+
+![image-20210926172604679](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926172604679.png)
+
+求子数组和为某种等值状态用前缀和，若为大于、小于那种想滑动窗口，有负数不能用滑动窗口有负数不能用滑动窗口
+
+![image-20210923182034264](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923182034264.png)
+
+十和十以下进制通用加法(这里是二进制)，超过十的要对符号进行处理。
+
+```java
+    public String addBinary(String a, String b) {
+    StringBuilder res = new StringBuilder();
+    int carry = 0;
+    int l1 = a.length() - 1;
+    int l2 = b.length() - 1;
+    while (l1 >= 0 || l2 >= 0) {
+        int x = l1 < 0 ? 0 : a.charAt(l1) - '0';
+        int y = l2 < 0 ? 0 : b.charAt(l2) - '0';
+
+        int sum = x + y + carry;
+        res.append(sum % 2);
+        carry = sum / 2;
+
+        l1--;
+        l2--;
+    }
+    if (carry != 0) res.append(carry);
+    return res.reverse().toString();
+    }
+```
+
+Integer.compare
+
+i % 2 == 1 , 表明i的1位上有一个1
+
+博弈论知识：在数量为n的一堆东西中，先后手都可拿1~m，若n % (m + 1) != 0则先手胜，否则反之。
+
+辗转相除法求得是最大公因数。
+
+最小公倍数等于两个数相乘除于它们的最大公因数
+
+```java
+//求a、b的最大公因数
+public int x(int a, int b){
+    if(b == 0) return a;
+    return x(b, a % b);
+}
+```
+
+只有变量开辟则认为空间复杂度是O（1）
+
+**异或**
+
+异或可以理解为无进位相加
+
+0 ^ N = N N ^ N = 0
+
+满足交换律、结合律
+
+同一批数异或结果和其中的这些数的异或先后无关
+
+两数交换的特别写法（a、b存在两块独立的存储单元才行）：
+
+![image-20210724151622585](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210724151622585.png)
+
+额外干货（~eor + 1为eor的相反数）：
+
+![image-20210724160009389](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210724160009389.png)
+
+取反运算符 '~'
+
+**二分**
+
+找到有序数组中大于等于num的最左边的数
+
+![image-20210724180202014](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210724180202014.png)
+
+求局部最小保证二分不一定要有序
+
+![image-20210724182523812](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210724182523812.png)
+
+**对数器的概念和使用**
+
+用来测试对比方法结果，建立随机样本产生器。
+
+**递归**
+
+递归函数就是一个多叉树的后序遍历
+
+master 公式 (子问题规模一致时用于求递归的时间复杂度)
+
+T(N) = a * T(N / b) + O(N^d)
+
+ T(N / b) 子问题规模，a是调用次数，O(N^d)为调用之外的时间
+
+![image-20210725162749532](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210725162749532.png)
+
+O(N^2) 的排序算法相较于 O(NlogN)的排序算法 上区别在于比较行为上。
+
+快排2.0即荷兰国旗问题
+
+**快排3.0**
+
+privot值随机选择
+
+平均空间复杂度是 O(nlogN)
+
+**堆（重点）**
+
+主要就是下沉（Heapify）和上浮（insertHeap）操作。
+
+从左往右依次变满才叫完全二叉树
+
+树以数组实现时的数量关系（ i为下标）：
+
+左孩子 2 * i + 1
+
+右孩子 2 * i + 2
+
+父 (i - 1) / 2
+
+完全二叉树节点数：
+
+--在前则先-在使用，小括号内时，中括号先后无关
+
+log1 + ... + logN -> NlogN (复杂度)
+
+其空间是O(1)
+
+不是逐个插入，而是一下子很多的话，可以把最底层的完全二叉树先变为大根堆（更快）。
+
+![image-20210726171237298](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210726171237298.png)
+
+![image-20210807171555721](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210807171555721.png)
+
+![image-20210807171902100](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210807171902100.png)
+
+![image-20210726172030957](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210726172030957.png)
+
+整个数组变大根堆则用非注释的，逐个则用注释的，本质其实是简化叶子节点处的时间复杂度。原先要log(N)，现在变为了log(1)
+
+![image-20210726172313365](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210726172313365.png)
+
+优先队列中扩容的复杂度是O(logN)
+
+**比较器**
+
+![image-20210726174052160](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210726174052160.png)
+
+链表的归并排序
+
+```java
+    public ListNode sortList(ListNode head) {
+        if(head == null || head.next == null)
+            return head;
+        ListNode slow = head;
+        ListNode fast = head;
+        while(fast.next != null && fast.next.next != null){
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        ListNode mid = slow.next;
+        slow.next = null;
+
+        ListNode left = sortList(head);
+        ListNode right = sortList(mid);
+       
+        return mergeSort(left, right);
+    }
+
+    public ListNode mergeSort(ListNode l1, ListNode l2){
+        ListNode result = new ListNode();
+        ListNode cur = result;
+        while(l1 != null && l2 != null){
+            if (l1.val <= l2.val){
+                cur.next = l1;
+                cur = cur.next;
+                l1 = l1.next;
+            }
+            else{
+                cur.next = l2;
+                cur = cur.next;
+                l2 = l2.next;
+            }
+        }
+            
+        cur.next = l1 == null ? l2 : l1;
+        return result.next;
+    }
+```
+
+#### **不基于比较的排序**
+
+计数排序、基数排序、桶排序
+
+基数排序核心代码（较难理解，可多看）
+
+![image-20210726180322577](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210726180322577.png)
+
+排序稳定性在非基础类型中很实用
+
+![image-20210729144919326](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210729144919326.png)
+
+**坑：**
+
+![image-20210729144954595](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210729144954595.png)
+
+**工程排序：**
+
+样本量小时在快排中加入插入排序来加快速度（本质是减少常数时间）
+
+
+
+**哈希表**
+
+引用数据类型是拷贝地址到哈希表里，而基本数据类型是拷贝空间复制值。
+
+
+
+**链表**
+
+ ![image-20210729152839202](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210729152839202.png)
+
+快慢指针
+
+快指针一次两步，慢指针一次一步，快指针走完，慢到一半。
+
+ <img src="C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210801151733928.png" alt="image-20210801151733928" style="zoom:150%;" />
+
+复杂链表的复制(空间复杂度O(1)的情况)
+
+![image-20210801165834109](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210801165834109.png)
+
+迭代反转
+
+![image-20210801171227954](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210801171227954.png)
+
+ 链表相交节点可以有环的情况
+
+![image-20210802214355873](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210802214355873.png)
+
+
+
+**树**
+
+![image-20210803145305931](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210803145305931.png)
+
+图中表示的是回到自己的三次
+
+递归序
+
+![image-20210803151222698](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210803151222698.png)
+
+先序遍历即打印每个值的第一个数即在上图1-1处。
+
+中序遍历即打印每个值的第二个数即在上图2-2处。
+
+后序遍历即打印每个值的第三个数即在上图3-3处。
+
+
+
+**先序遍历非递归**（即深度优先遍历）
+
+![image-20210803152443268](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210803152443268.png)
+
+**中序遍历非递归**
+
+![image-20210803154207305](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210803154207305.png)
+
+原理：
+
+![image-20210803155121492](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210803155121492.png)
+
+**后序遍历非递归**
+
+![image-20210803153056568](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210803153056568.png)
+
+**宽度优先遍历**
+
+队列，先左后右
+
+求某个层中节点的最多数
+
+![image-20210803164445371](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210803164445371.png)
+
+完全二叉树
+
+宽度优先遍历条件下
+
+![image-20210804155629649](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210804155629649.png)
+
+满二叉树
+
+最容易的判断手段
+
+![image-20210804160255049](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210804160255049.png)
+
+递归套路解决树型DP
+
+信息得拿得到才行
+
+获取左右树信息求全集。
+
+上面是类名ReturnData
+
+![image-20210804163804235](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210804163804235.png)
+
+![image-20210804163747975](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210804163747975.png)
+
+含parent指针的树寻找后继节点（优化到O(k)）
+
+![image-20210805154856842](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210805154856842.png)
+
+内存结构化为字符串叫序列化，反序列化反之。
+
+下划线表示某个节点序列化完毕，井号表示null
+
+![image-20210805155259314](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210805155259314.png)
+
+![image-20210805155857018](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210805155857018.png)
+
+
+
+**图**
+
+采用染色法解决二分图问题(二分图：一个无向图，使得顶点集V可以分割为两个互不相交的子集A,B，使得所有边两端分别属于两个子集A,B。(图中不存在拥有奇数条边的环))
+
+![image-20210805163414682](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210805163414682.png)
+
+点集和边集（Interger是点的编号）
+
+点的实际结构
+
+![image-20210805163518176](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210805163518176.png)
+
+边的实际结构
+
+![image-20210805164038487](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210805164038487.png)
+
+ 转为自个习惯的图结构
+
+![image-20210805170131228](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210805170131228.png)
+
+宽度优先遍历
+
+![image-20210806155109212](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210806155109212.png)
+
+深度优先遍历
+
+![image-20210806155701610](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210806155701610.png)
+
+拓扑排序
+
+1、找到入度为0的点
+
+2、去掉其产生的影响
+
+3、重复1-2
+
+![image-20210806170232817](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210806170232817.png)
+
+最小生成树
+
+权值最小保证连通性即最小生成树
+
+![image-20210806171210481](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210806171210481.png)
+
+**注意：k算法和p算法都得是无向图**
+
+**k算法**以边的角度来出发
+
+最小边考虑，无环保留，有环不要
+
+上图情况一开始4个集合连上后将集合合并，变为3个集合，不满足连上条件(某条线表示的两个点不在同一个集合中)的则跳过，以此类推直到边用完。
+
+并查集高速解法:
+
+![image-20210806173051054](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210806173051054.png)
+
+**p算法**
+
+![image-20210806174111432](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210806174111432.png)
+
+实现：
+
+![image-20210806174408531](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210806174408531.png)
+
+![image-20210806174350251](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210806174350251.png)
+
+最大的for是拿来解决森林问题，如果为单图全连通，直接选某个点就行。
+
+**Dijkstra算法**
+
+最短路径算法
+
+注意：没有权值为负数的边才可用
+
+ 一定要规定出发点
+
+![image-20210807163700617](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210807163700617.png)
+
+ 代码：
+
+![image-20210807164102279](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210807164102279.png)
+
+![image-20210807170345918](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210807170345918.png)
+
+堆的加速
+
+让堆内自动上浮和下沉，自带的优先队列没有这个功能。
+
+![image-20210810163951052](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210810163951052.png)
+
+![image-20210810164452735](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210810164452735.png)
+
+**前缀树**
+
+![image-20210809152658403](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210809152658403.png)
+
+![image-20210809153711810](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210809153711810.png)
+
+![image-20210809155451685](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210809155451685.png)
+
+**贪心算法**
+
+![image-20210809161458480](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210809161458480.png)
+
+字典序
+
+![image-20210809163112873](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210809163112873.png)
+
+在数据流中始终获得中位数
+
+![image-20210810161206372](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210810161206372.png)
+
+n皇后比较特别的写法
+
+![image-20210810162205211](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210810162205211.png)
+
+![image-20210810162234815](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210810162234815.png)
+
+![image-20210810162452602](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210810162452602.png)
+
+两坐标如果行与行的差绝对值和列与列的差绝对值共斜线。
+
+利用函数逆序栈
+
+![image-20210811161303902](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210811161303902.png)
+
+ ![image-20210811161313154](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210811161313154.png)![image-20210811160919674](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210811160919674.png)
+
+![image-20210811161341508](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210811161341508.png)
+
+
+
+![image-20210811162323334](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210811162323334.png)
+
+![image-20210811162259183](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210811162259183.png)
+
+种子码采用的既是MD5、SHA1
+
+MD5 0 - 2 ^ 64 - 1 里的一个数 每个字符范围在0-9 a-f
+
+SHA1 0 - 2 ^ 128 - 1 里的一个数 每个字符范围在数字0到其后31个字符。
+
+**哈希**
+
+![image-20210812155722725](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210812155722725.png)
+
+第三种情况叫做哈希碰撞
+
+![image-20210812162026688](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210812162026688.png)
+
+![image-20210812170259128](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210812170259128.png)
+
+![image-20210812170119366](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210812170119366.png)
+
+**布隆过滤器（实用）**
+
+解决类似于黑名单和爬虫去重问题。
+
+![image-20210812175037840](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210812175037840.png)
+
+第二种类型失误率无法避免
+
+![image-20210812175625132](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210812175625132.png)
+
+![image-20210812180013109](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210812180013109.png)
+
+![image-20210812180718053](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210812180718053.png)
+
+查询时位置全为1才表明在集合中。
+
+![image-20210812181413954](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210812181413954.png)
+
+ 
+
+![image-20210813150802579](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813150802579.png)
+
+通过公式得到的m、k都是向上取整
+
+**一致性哈希原理**
+
+前言：
+
+![image-20210813152708103](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813152708103.png)
+
+负载均衡是看低中高频数量来算的。
+
+哈希key要选择种类较多，让高频低频划分明显。
+
+解释：
+
+![image-20210813153840619](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813153840619.png)
+
+进行二分查找最近的“大于查询值求得的哈希值”的最接近的机器
+
+![image-20210813154115863](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813154115863.png)
+
+只需要将m3管辖的归m4管的数据给到m4
+
+潜在问题：
+
+如何均分？上述例子均分完加入新节点怎么确保仍然均分？
+
+这里的均分就是负载均衡。
+
+问题用虚拟节点技术来解。
+
+含有下标的表示点既是虚拟节点。
+
+![image-20210813154842178](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813154842178.png)
+
+机器强弱来调整虚拟节点个数
+
+**有序表和并查集**
+
+![image-20210813161555137](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813161555137.png)
+
+![image-20210813164127447](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813164127447.png)
+
+并行算法（二维数组非常大）
+
+并查集介绍：
+
+![image-20210813165311118](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813165311118.png)
+
+并查集讨论的就是判断两个元素是否在同一个集合，和合并两个元素所处的集合的两个操作都要快。
+
+少的顶部连向多的顶部
+
+![image-20210813165927539](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813165927539.png)
+
+![image-20210813165957413](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813165957413.png)
+
+![image-20210813170646899](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813170646899.png)
+
+向上的时候改为上图所示结构。
+
+![image-20210813171110029](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813171110029.png)
+
+前两个map表示图下
+
+![image-20210813171015135](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813171015135.png)
+
+第三个表示
+
+![image-20210813171153429](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813171153429.png)
+
+初始化
+
+![image-20210813171523113](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813171523113.png)
+
+![image-20210813171336961](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813171336961.png)
+
+![image-20210813171502949](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813171502949.png)
+
+![image-20210813171543474](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210813171543474.png)
+
+ 岛问题扩展，并行算法（二维数组非常大）
+
+![image-20210814154906252](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210814154906252.png)
+
+每次进行合并，岛的数量减一。
+
+其实是一种map-reduce过程
+
+**KMP**
+
+![image-20210814160842048](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210814160842048.png)
+
+![image-20210814161037403](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210814161037403.png)
+
+求某个字符前面的字符串的前缀和后缀匹配的最大长度。
+
+这个信息是对str2求的。
+
+![image-20210814165314192](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210814165314192.png)
+
+![image-20210814165650331](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210814165650331.png)
+
+上述代码是 i < ms.length 不是next
+
+cn也表示当前使用的信息。
+
+**Manacher算法(马拉车)**
+
+求解字符串的最长回文子串长度，用O(N)完成。
+
+每个位置的最长回文半径。
+
+经典解法
+
+![image-20210815172659435](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210815172659435.png)
+
+回文子串最远右边界 R
+
+取得更远边界时的中间值 C
+
+![image-20210815173855236](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210815173855236.png)
+
+第一种情况：
+
+不在R内，暴力扩
+
+第二种情况
+
+中心，R内
+
+![image-20210815175519859](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210815175519859.png)
+(1) i`范围 在L-R中
+
+![image-20210815180134004](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210815180134004.png)
+
+i的回文半径和i`一样。
+
+(2) i`范围有一部分跑到L-R外面去了
+
+![image-20210816150603075](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816150603075.png)
+
+i的回文半径就是i->R
+
+(3) i`范围左边和L重合
+
+![image-20210816151301523](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816151301523.png)
+
+需要验证会不会变得更远
+
+**伪代码**
+
+![image-20210816152151850](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816152151850.png)
+
+![image-20210816152418505](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816152418505.png)
+
+第一句就是![image-20210816153110162](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816153110162.png)
+
+i`就是 2 * C - i
+
+ ![image-20210816153724129](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816153724129.png)
+
+半径减一就是原回文串的长度。
+
+**滑动窗口**
+
+**窗口内的最大值（例子是此）和最小值的维持问题**
+
+ 头部即为维持的最大值，从尾巴进值，若进来的是比尾部的值大的值，直到弹空了或者满足从头到尾从大到小才进。弹出值不保留且若值想当照样弹出。
+
+![image-20210816155237047](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816155237047.png)
+
+L往右动只看头部是否是过期的，是就弹出，不是就不管。
+
+![image-20210816160015771](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816160015771.png)
+
+双端队列维持的信息是，窗口不再扩时谁会成为最大值的优先级信息。
+
+**单调栈**
+
+解决最近更大问题
+
+![image-20210816161249456](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816161249456.png)
+
+![image-20210816161708046](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816161708046.png)
+
+![image-20210816161803582](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816161803582.png)
+
+最近更小，栈顺序相反即可
+
+若添加过程结束，栈还有剩则利用同规则清算，剩一个则两边都为无。
+
+数组有重复值的情况：
+
+![image-20210816162734858](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816162734858.png)
+
+![image-20210816162824241](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816162824241.png)
+
+![image-20210816163319446](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210816163319446.png)
+
+**树形DP套路回顾和加深**
+
+![image-20210817154353559](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210817154353559.png)
+
+ **Morris遍历**
+
+![image-20210817160954406](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210817160954406.png)
+
+![image-20210817161308741](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210817161308741.png)
+
+ morris遍历一定要修改树。
+
+有左树则会有两次
+
+![image-20210817173915037](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210817173915037.png)
+
+![image-20210817174559724](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210817174559724.png)
+
+![image-20210817180637741](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210817180637741.png)
+
+在这加打印得到的是中序遍历的序列(上方)
+
+![image-20210817181046774](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210817181046774.png)
+
+改动这些地方是先序遍历的序列(上方)
+
+![image-20210817182036316](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210817182036316.png)
+
+上一句是在处理完整个序列后才行
+
+![image-20210818151951399](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210818151951399.png)
+
+![image-20210818152000718](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210818152000718.png)
+
+![image-20210818152028217](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210818152028217.png)
+
+后序遍历的改动(上方)
+
+若要树的第三次信息的强整合要用递归，不能用morris。
+
+![image-20210818160040879](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210818160040879.png)
+
+分区间统计。
+
+**大数据题目技巧**
+
+![image-20210818160332479](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210818160332479.png)
+
+![image-20210818161006036](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210818161006036.png)
+
+ 
+
+位运算判断大小（不用判断符号）
+
+![image-20210820151253869](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820151253869.png)
+
+上述方法 a - b 可能溢出。
+
+无问题方式
+
+![image-20210820151451292](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820151451292.png)
+
+
+
+![](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820152402980.png)
+
+![image-20210820153929500](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820153929500.png)
+
+![image-20210820154340003](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820154340003.png)
+
+![image-20210820154345226](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820154345226.png)
+
+
+
+![image-20210820154552122](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820154552122.png)
+
+加法：
+
+![image-20210820155136089](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820155136089.png)
+
+(& << 1) 相当于进位信息，进位信息归零，无进位就是答案。
+
+减法：其实就是a+b的相反数，任何数的相反数就是取反和1相加的结果。
+
+![image-20210820155637717](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820155637717.png)
+
+乘法：
+
+![image-20210820160352747](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820160352747.png)
+
+除法：
+
+![image-20210820161410624](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820161410624.png)
+
+![image-20210820161516453](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820161516453.png)
+
+![image-20210820161520887](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820161520887.png)
+
+**重点难点**
+
+![image-20210820163517068](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210820163517068.png)
+
+ ![image-20210821151508140](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210821151508140.png)
+
+红黑树，AVL, SBT 属于BST（平衡二叉搜索树）系列
+
+p17记得回看
+
+3个月速成
+
+（1） AWS、阿里云
+
+15天 - >学习热门技术，选择5-6个。
+
+（2）开源对应产品
+
+2个月 -> 解决产品的底层细节（指的是具体概念），跑一下例子。
+
+（3）编业务
+
+10天 -> 主要回答技术！因为新公司对应的是新业务。
+
+中级班
+
+1、
+
+![image-20210907160047759](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907160047759.png)
+
+贪心 + 二分（寻找升序数组中大于某一个数的最左边的值）
+
+滑动窗口
+
+2、
+
+![image-20210907155829129](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907155829129.png)
+
+最常规解法：
+
+```java
+//策略：先把8的袋子用完，然后看剩余的是否为6的倍数，若不是则8的去掉一个，重复前述步骤。
+public static int apple(int n){
+    if(n % 2 != 0 || n < 0) return -1;
+    int ans = n / 8;
+    int rest = n - ans * 8;
+    while(rest <= n){
+        if(rest % 6 == 0){
+            ans += rest / 6;
+            return ans;
+        }else{
+            rest += 8;
+            ans--;
+        }
+    }
+    return -1;
+}
+```
+
+改进：while中的判别语句变为 
+
+```java
+rest < 24 && rest <= n
+```
+
+最小公倍数的效果,实际含义是如果为24我们肯定用更大的8来搞定。
+
+**打表法**
+
+整数入整数出可以解决。
+
+用暴力解法得出多个结果，然后以结果的规律得出快速解，不管该规律的证明。
+
+![image-20210912161346370](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912161346370.png)
+
+3、 题目：两只牛分先后手地从一堆草中取一部分草来吃，每次吃的草量为 4 的幂次。
+
+![image-20210921173316691](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210921173316691.png)
+
+```java
+    public static String cattleEatGrass(int n){
+        if(n < 5) return n == 0 || n == 2 ? "后手" : "先手";
+        int base = 1;
+        while(base <= n){
+            if(cattleEatGrass(n - base).equals("后手")){
+                return "先手";
+            }
+            if(base > n / 4){
+                break;//防止base*4之后溢出
+            }
+            base *= 4;
+        }
+        return "后手";
+    }
+```
+
+4、  ![image-20210921180110894](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210921180110894.png)
+
+![image-20210929162430778](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929162430778.png)
+
+5、
+
+![image-20210929162509836](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929162509836.png)
+
+n * n中有多少个子矩阵？n^4
+
+![image-20210929163225549](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929163225549.png)
+
+矩形：O(n^4)
+
+![image-20210929163419968](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929163419968.png)
+
+正方形: O(n^3)
+
+利用预处理来加快边界的验证。
+
+![image-20210929164458136](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929164458136.png)
+
+记录右方有多少个连续的1即为right数组，记录下方有多少个连续的1即为down矩阵。
+
+![image-20210929164912398](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929164912398.png)
+
+
+
+求某个数能否求3的模的计算方式，下图中的三者等效。
+
+![image-20211201163609561](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211201163609561.png)
+
+解题思路：
+乍一看这一题貌似毫无头绪，什么是字典序？如何定位这个数？没错，刚接触这个题目的时候，我的脑筋里也是一团乱麻。
+
+但是我觉得作为一个拥有聪明才智的程序员来说，最重要的能力就是迅速抽象问题、拆解问题的能力。经过一段时间的思考，我的脑筋里还是没有答案。
+
+哈哈。
+
+言归正传，我们来分析一下这个问题。
+
+首先，什么是字典序？
+
+什么是字典序？
+简而言之，就是根据数字的前缀进行排序，
+
+比如 10 < 9，因为 10 的前缀是 1，比 9 小。
+
+再比如 112 < 12，因为 112 的前缀 11 小于 12。
+
+这样排序下来，会跟平常的升序排序会有非常大的不同。先给你一个直观的感受，一个数乘 10，或者加 1，哪个大？可能你会吃惊，后者会更大。
+
+但其实掌握它的本质之后，你一点都不会吃惊。
+
+问题建模：
+画一个图你就懂了。
+
+
+
+每一个节点都拥有 10 个孩子节点，因为作为一个前缀 ，它后面可以接 0~9 这十个数字。而且你可以非常容易地发现，整个字典序排列也就是对十叉树进行先序遍历。1, 10, 100, 101, ... 11, 110 ...
+
+回到题目的意思，我们需要找到排在第k位的数。找到他的排位，需要搞清楚三件事情:
+
+怎么确定一个前缀下所有子节点的个数？
+如果第 k 个数在当前的前缀下，怎么继续往下面的子节点找？
+如果第 k 个数不在当前的前缀，即当前的前缀比较小，如何扩大前缀，增大寻找的范围？
+接下来 ，我们一一拆解这些问题。
+
+理顺思路：
+1. 确定指定前缀下所有子节点数
+现在的任务就是给定一个前缀，返回下面子节点总数。
+
+我们现在的思路就是用下一个前缀的起点减去当前前缀的起点，那么就是当前前缀下的所有子节点数总和啦。
+
+js
+
+//prefix是前缀，n是上界
+var getCount = (prefix, n) => {
+    let cur = prefix;
+    let next = prefix + 1;//下一个前缀
+    let count = 0;
+    //当前的前缀当然不能大于上界
+    while(cur <= n) {
+        count += next - cur;//下一个前缀的起点减去当前前缀的起点
+        cur *= 10; 
+        next *= 10;
+        // 如果说刚刚prefix是1，next是2，那么现在分别变成10和20
+        // 1为前缀的子节点增加10个，十叉树增加一层, 变成了两层
+        
+
+        // 如果说现在prefix是10，next是20，那么现在分别变成100和200，
+        // 1为前缀的子节点增加100个，十叉树又增加了一层，变成了三层
+    }
+    return count;//把当前前缀下的子节点和返回去。
+}
+当然，不知道大家发现一个问题没有，当 next 的值大于上界的时候，那以这个前缀为根节点的十叉树就不是满十叉树了啊，应该到上界那里，后面都不再有子节点。因此，count += next - curcount+=next−cur 还是有些问题的，我们来修正这个问题:
+
+js
+
+count += Math.min(n+1, next) - cur;
+你可能会问:咦？怎么是 n+1 ,而不是 nn 呢？不是说好了 nn 是上界吗？
+
+我举个例子，假若现在上界 nn为 12，算出以 1 为前缀的子节点数，首先 1 本身是一个节点，接下来要算下面 10，11，12，一共有 4 个子节点。
+
+那么如果用 Math.min(n, next) - curMath.min(n,next)−cur 会怎么样？
+
+这时候算出来会少一个，12 - 10 加上根节点，最后只有 3 个。因此我们务必要写 n+1。
+
+现在，我们搞定了前缀的子节点数问题。
+
+2. 第k个数在当前前缀下
+现在无非就是往子树里面去看。
+
+prefix这样处理就可以了。
+
+js
+
+prefix *= 10
+3.第k个数不在当前前缀下
+说白了，当前的前缀小了嘛，我们扩大前缀。
+
+js
+
+prefix ++;
+框架搭建：
+整合一下刚刚的思路。
+
+js
+
+let findKthNumber = function(n, k) {
+  let p = 1;//作为一个指针，指向当前所在位置，当p==k时，也就是到了排位第k的数
+  let prefix = 1;//前缀
+  while(p < k) {
+    let count = getNumber(prefix, n);//获得当前前缀下所有子节点的和
+    if(p + count > k) { //第k个数在当前前缀下
+      prefix *= 10;
+      p++; //把指针指向了第一个子节点的位置，比如11乘10后变成110，指针从11指向了110
+    } else if(p + count <= k) { //第k个数不在当前前缀下
+      prefix ++;
+      p += count;//注意这里的操作，把指针指向了下一前缀的起点
+    }
+  }
+  return prefix;
+};
+完整代码展示：
+js
+
+/**
+ * @param {number} n
+ * @param {number} k
+ * @return {number}
+ */
+    var findKthNumber = function(n, k) {
+    let getCount = (prefix, n) => {
+    let count =  0;
+    for(let cur = prefix, next = prefix + 1; cur <= n; cur *= 10, next *= 10) 
+      count += Math.min(next, n+1) - cur;
+    return count;
+    }
+    let p = 1;
+    let prefix = 1;
+    while(p < k) {
+    let count = getCount(prefix, n);
+    if(p + count > k) {
+      prefix *= 10;
+      p++;
+    } else if(p + count <= k) {
+      prefix ++;
+      p += count;
+    }
+    }
+    return prefix;
+    };
+    成功 AC！
+
+作者：user7056K
+链接：https://leetcode-cn.com/problems/k-th-smallest-in-lexicographical-order/solution/ben-ti-shi-shang-zui-wan-zheng-ju-ti-de-shou-mo-sh/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。

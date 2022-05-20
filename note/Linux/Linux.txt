@@ -1,0 +1,1715 @@
+## Linux 系统相关知识
+
+### **网络连接的三种模式**
+
+**桥接模式、NAT 模式、主机模式**
+
+![image-20210609144257664](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210609144257664.png)
+
+192.168.0. 的 ip 前缀表示三者位于同一网段中，故可以进行网络通讯
+
+若是张三在虚拟机上使用桥接模式，则
+
+![image-20210609144552602](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210609144552602.png)
+
+**桥接模式，虚拟系统可以和外部系统通讯，但是容易造成 ip 冲突**
+
+若是王五在虚拟机上使用 NAT 模式，则
+
+![image-20210609144739685](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210609144739685.png)
+
+注：192.168.0.50 为实际王五主机ip 而192.168.100.99 是虚拟出来的网关，用来和虚拟机相连，虚拟系统可以和李四相连，但是李四无法和该虚拟系统相连。
+
+**NAT模式，网络地址转换模式，虚拟系统可以和外部系统通讯，不造成 IP 冲突。**
+
+**主机模式，独立的系统**
+
+使用快照记录系统状态可以回到可能出现的故障发生之前的系统状态。
+
+### **Linux 目录结构**
+
+蓝色(深浅不确定)表示目录，白色表示文件，黄色表示设备，红色表示压缩包
+
+sda 是硬盘的分区名
+
+**在Linux世界里，一切皆文件！！！**
+
+树状目录结构
+
+根目录下有root、home、bin、etc
+
+daemon 指的是一段连续的程序。
+
+![image-20210918091515940](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918091515940.png)
+
+4核cpu映射的cpu文件夹内容。
+
+![image-20210918091943919](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918091943919.png)
+
+**具体目录结构介绍**
+
+1、/bin 是Binary的缩写，存放着最常用的命令。
+
+2、/sbin s就是Super User的意思，这里存放的是系统管理员使用的系统管理程序。
+
+3、/home 存放普通用户的主目录，在Linux中每个用户都有一个自己的目录，一般该目录名是以用户的账号为名。
+
+![image-20210918092916911](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918092916911.png)
+
+4、/root 该目录为系统管理员，也称作超级权限者的用户主目录。
+
+5、/lib 系统开机所需要最基本的动态连接共享库，其作用类似于Windows里的DLL文件（库文件）。几乎所有的应用程序都需要用到这些共享库。
+
+6、/lost+found 这个目录一般情况下是空的，当系统非法关机后，这里就存放了一些文件。(一般情况看可视化是看不到的)
+
+7、/etc 所有的系统管理所需要的配置文件和子目录，比如redis的redis.conf、mysql的my.conf
+
+8、/usr 这是一个非常重要的目录，用户的很多应用和文件都放在这个目录下，类似与windows下的program files目录。
+
+9、/boot 存放的是启动Linux时使用的一些核心文件，包括一些连接文件以及镜像文件，不要轻易动该文件，动了可能就无法启动了。
+
+10、/proc（不能动） 这个目录是一个虚拟的目录，它是系统内存的映射，访问这个目录来获取系统信息。（其中也存放有系统缓存）
+
+11、/srv（不能动） service的缩写，该目录存放一些服务启动之后需要提取的数据
+
+12、/sys（不能动） 这是linux2.6内核的一个很大的变化。该目录下安装了2.6内核中新出现的一个文件系统sysfs
+
+13、/tmp 这个目录是用来存放一些临时文件的。
+
+14、/dev 类似于windows的设备管理器，把所有的硬件用文件的形式存储。
+
+15、/mnt 系统提供该目录是为了让用户临时挂载别的文件系统的，我们可以将外部的存储挂载在/mnt/上，然后进入该目录就可以查看里面的内容了。
+
+16、/opt 这是给主机额外**安装软件**所存放的目录。如安装ORACLE数据库就可以放到该目录下。
+
+17、/media linux系统会自动识别一些设备，例如U盘、光驱等待，当识别后，linux会把识别的设备挂载到这个目录下。
+
+18、/usr/local 另外的给主机额外安装软件所安装的目录。一般是通过编译源码方式安装的程序。
+
+19、/var 这个目录中存放着不断扩充着的东西，习惯将经常被修改的目录放在这个目录下。包括各种日志文件。
+
+20、/selinux SELinux是一种安全子系统，它能控制程序只能访问特定文件，有三种工作模式，可以自行设置。（启用才看得到）
+
+### vim文本编辑器
+
+Linux系统会内置vi文本编辑器，vim具有程序编辑的能力，可以看做是vi的增强版本，可以主动以字体颜色辨别语法的正确性，方便程序设计。代码补完、编译及错误跳转等方便编程的功能特别丰富，在程序员中被广泛使用。
+
+![image-20210918100106878](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918100106878.png)
+
+**vim的快捷键**
+
+![image-20210918101525291](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918101525291.png)
+
+![image-20210918101556411](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918101556411.png)
+
+### Linux关机&重启
+
+只有root权限才能关机
+
+基本介绍
+
+halt：原意为停止
+
+shutdown -h now 立刻进行关机
+
+shutdown -h 1 1分钟后关机
+
+shutdown -c 撤销关机
+
+shutdown -r now 现在重新启动计算机
+
+halt 关机，作用和上面一样
+
+reboot 现在重新启动计算机
+
+sync 把内存的数据同步到磁盘
+
+注意细节：
+
+1、不管是重启系统还是关闭系统，首先要运行sync命令，把内存中的数据写到磁盘中。
+
+2、目前的 shutdown/reboot/halt 等命令均已经在关机前进行了 sync。
+
+### Linux用户登录和注销
+
+尽量少用root账号登录，登录后再用su - 用户名命令来切换成系统管理员身份。
+
+在提示符下输入logout即可注销用户
+
+使用细节：
+
+​	logout注销指令在图形运行级别无效，在运行级别3下有效。
+
+### Linux用户管理
+
+#### 用户操作
+
+通常由root账号管理员来进行设置。
+
+Linux系统是一个多用户多任务的操作系统
+
+**添加用户**
+
+useradd 添加用户，添加完后会自动创建家目录
+
+也可以 useradd -d 指定目录 新的用户名，给新创建的用户指定家目录。
+
+**对某个用户指定/修改密码**
+
+基本语法： passwd 用户名
+
+用户名要指定清楚，否则可能会把当前正在使用的用户信息给更改了。
+
+**删除用户**
+
+基本语法：userdel 用户名
+
+1、删除用户，但要保留家目录
+
+userdel 用户名
+
+2、删除用户以及用户主目录
+
+userdel -r 用户名
+
+是否保留家目录呢？
+
+一般情况下都要保留，若有重要信息，删除就得不偿失了。
+
+**查询用户信息**
+
+基本语法：id 用户名
+
+**切换用户**
+
+基本语法： su - 用户名
+
+小细节：
+
+1、权限高的用户切换到权限低的用户，不需要输入密码，反之需要。
+
+2、当需要返回到原来的用户时，使用logout/exit指令
+
+**查看当前用户/登录用户**
+
+基本语法： whoami/who am I
+
+紧凑地写指令部分信息会省略，松散的写指令才比较完整。
+
+#### 用户组
+
+类似于角色，系统可以对有共性/权限的多个用户进行统一的管理
+
+**新增组**
+
+指令：groupadd 组名
+
+**删除组**
+
+指令：groupdel 组名
+
+**增加用户时直接加上组**
+
+指令：useradd -g 用户组 用户名
+
+**修改用户的组**
+
+指令：usermod -g 用户组 用户名
+
+#### **用户和组的相关文件**
+
+shell的简单示意图：
+
+![image-20210920095815273](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920095815273.png)
+
+**/etc/passwd 文件：**
+
+用户 (user) 的配置文件，记录用户的各种信息。
+
+每行的含义：用户名 : 口令 : 用户标识号 : 注释性描述 : 主目录 : 登录Shell
+
+![image-20210920095930395](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920095930395.png)
+
+**/etc/shadow 文件：**
+
+口令的配置文件
+
+每行的含义：登录名 : 加密口令 : 最后一次修改时间 : 最小时间间隔 : 最大时间间隔 : 警告时间 : 不活动时间 : 失效时间 : 标志
+
+无密码则为!
+
+![image-20210920100125273](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920100125273.png)
+
+**/etc/group 文件：**
+
+若是用户没有组，会生成一个和该用户同名的组，将用户置于其中。
+
+组(group)的配置文件，记录 Linux 包含的组的信息。
+
+每行含义：组名 : 口令 : 组标识号 : 组内用户列表
+
+![image-20210920100228515](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920100228515.png)
+
+### 实用指令
+
+#### 运行级别相关指令
+
+运行级别说明：
+
+0 : 关机
+
+1 : 单用户 [找回丢失密码]
+
+2 : 多用户状态没有网络服务
+
+3 : 多用户状态有网络服务
+
+4 : 系统未使用保留给用户
+
+5 : 图形界面
+
+6 : 系统重启
+
+常用运行指令是3、5，也可以默认指定运行级别。
+
+命令：init [0123456] 应用案例：通过 init 来切换不同的运行级别，比如动 5 - 3，然后关机。
+
+centos7之前切换运行级别的方式略有不同。
+
+init 3 之后：
+
+![image-20210920101032638](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920101032638.png)
+
+**指定运行级别**
+
+centOS7前 ：
+
+在/etc/inittab文件中进行了简化，如下：
+
+multi - user.target: analogous to runlevel 3
+
+graphical.target: analogous to runlevel 5
+
+centOS7后：
+
+#To view current default target,run:
+
+systemctl get-default
+
+#To set a default target,run:
+
+systemctl set-default TARGET.target
+
+#### *找回root密码*
+
+![image-20210920102239209](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920102239209.png)
+
+![image-20210920102255314](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920102255314.png)
+
+![image-20210920102219018](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920102219018.png)
+
+![image-20210920102328356](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920102328356.png)
+
+![image-20210920102407125](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920102407125.png)
+
+![image-20210920102535865](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920102535865.png)
+
+![image-20210920102544122](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920102544122.png)
+
+6这里有问题，应该是touch和 / 之间有一个空格
+
+![image-20210920102627942](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920102627942.png)
+
+#### 帮助指令
+
+输入 'q' 回退
+
+**man 获得帮助信息**
+
+基本语法：man [命令或配置文件] （功能描述：获得帮助信息）
+
+**help指令**
+
+基本语法：help 命令 (功能描述：获得shell内置命令的帮助信息)
+
+#### 文件目录类
+
+**pwd指令**
+
+基本语法：pwd (功能描述：显示当前工作目录的绝对路径)
+
+**ls指令**
+
+基本语法：ls [选项] [目录或者是文件]
+
+常用选项：
+
+-a : 显示当前目录所有文件和目录，包括隐藏的。 
+
+-l : 以列表的方式显示信息
+
+-h（human-readable） : 以更人性化的方式进行显示。
+
+ **cd指令**
+
+基本语法：cd [参数] (功能描述：切换到指定目录)
+
+cd ~ 或者 cd : 回到自己的家目录
+
+cd .. 回到当前目录的上一级目录
+
+**mkdir指令**
+
+mkdir指令用于创建目录
+
+基本语法：mkdir [选项] 要创建的目录
+
+常用选项：
+
+-p ：创建多级目录
+
+**rmdir指令**
+
+rmdir指令删除空目录
+
+基本语法：rmdir [选项] 要删除的空目录
+
+细节：
+
+若目录下有内容则无法删除，若要删除有内容的目录，需要使用 rm -rf 来删除。
+
+**touch指令**
+
+touch指令创建空文件
+
+基本语法：touch 文件名称
+
+**cp指令**
+
+cp指令拷贝文件到指定目录
+
+基本语法：cp [选项] source dest
+
+常用选项：
+
+-r : 递归复制整个文件夹
+
+细节：
+
+强制覆盖不进行提示的方法：\cp
+
+ **rm指令**
+
+rm指令用于移除文件或目录
+
+基本语法：rm [选项] 要删除的文件或目录
+
+常用选项：
+
+-r : 递归删除整个文件夹
+
+-f : 强制删除不提示
+
+**mv指令**
+
+mv 移动文件与目录或重命名
+
+基本语法：
+
+​	mv oldNameFile newNameFile (重命名)
+
+​	mv /temp/movefile /targetFolder (移动文件)
+
+**cat指令**
+
+cat 查看文件内容，cat为只读，更加安全。
+
+基本语法：cat [选项] 要查看的文件
+
+常用选项：
+
+-n : 显示行号
+
+细节：
+
+一般为了浏览地更方便，会加上管道命令 | more
+
+**more指令**
+
+more指令是一个基于VI编辑器的文本过滤器，它以全屏幕的方式按页显示文本文件的内容。more指令中内置了若干快捷键，详见操作说明。
+
+基本语法： more 要查看的文件
+
+操作说明：
+
+![image-20210920111849424](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920111849424.png)
+
+**less指令**
+
+less指令用来分屏查看文件内容，它的功能和more指令类似，但是比more指令更加强大，支持各种显示终端。less指令在显示文件内容时，并不是一次将整个文件加载之后才显示，而是根据显示需要加载的内容，对于显示大型文件有较高效率。
+
+基本语法：less 要查看的文件
+
+操作说明：
+
+![image-20210920112224354](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920112224354.png)
+
+ **echo指令**
+
+echo输出内容到控制台
+
+基本语法： echo [选项] [输出内容]
+
+**head指令**
+
+head用于显示文件的开头部分内容，默认情况下head指令显示文件的前10行内容
+
+基本语法：
+
+​	head 文件 (查看文件头10行内容)
+
+​	head -n 5 文件 (查看文件头5行内容，这里的5是自己设置的任意行数)
+
+**tail指令**
+
+和head指令相反
+
+特别之处：tail -f 文件 (实时追踪该文档的所有更新)
+
+**'>' 指令和 '>>' 指令**
+
+'>' 输出重定向和 '>>' 追加
+
+基本语法：
+
+1、ls -l > 文件	（功能描述 : 列表内容写入文件a.txt中(覆盖写)）
+
+2、ls -al >> 文件	（功能描述 : 列表内容追加到文件aa.txt的末尾）
+
+3、cat 文件1 > 文件2	（功能描述 : 将文件1的内容覆盖到文件2）
+
+4、echo "内容" >> 文件
+
+双等于是在文件末尾追加，单等于是直接覆盖。
+
+**ln指令**
+
+软连接也称为符号连接，类似于windows里的快捷方式，主要存放了连接其他文件的路径。
+
+基本语法：ln -s [原文件或目录] [软连接名]（功能描述：给原文件创建一个软连接）
+
+细节：当我们使用pwd指令查看目录时，仍然看到的是软连接所在目录。
+
+![image-20210921094022427](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210921094022427.png)
+
+**history指令**
+
+查看已经执行过的历史命令，也可以执行历史指令。
+
+基本语法：history (功能描述 : 查看已经执行过的历史命令)
+
+细节：连续两次相同命令只会记录一次
+
+1、看所有：history
+
+2、看最近10行：history 10 (数字可变)
+
+3、执行历史编号为5的指令：!5
+
+#### 时间日期类指令
+
+**date指令-显示当前日期**
+
+基本语法：
+
+1、date (功能描述：显示当前时间)
+
+2、date +%Y (功能描述：显示当前年份)
+
+3、date +%m (功能描述：显示当前月份)
+
+4、date +%d (功能描述：显示当前是哪一天)
+
+5、date "+%Y-%m-%d %H:%M:%S" (功能描述：显示年月日时分秒) 大小写需要严格遵循！
+
+**date指令-设置日期**
+
+基本语法：date -s 字符串时间
+
+date -s "2020-11-03 20:02:10"
+
+**cal指令**
+
+查看日历指令
+
+基本语法：cal [选项] (功能描述 : 不加选项，显示本月日历)
+
+#### 搜索查找类指令
+
+**find指令**
+
+find指令将从指定目录向下递归地遍历其各个子目录，将满足条件的文件或者目录显示在终端。
+
+基本语法：find [搜索范围] [选项]
+
+选项说明：
+
+![image-20210922090206697](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922090206697.png)
+
+示例：
+
+find /home -name hello.txt
+
+find /opt -user nobody
+
+find / -size +200M (+n 大于，-n 小于，n 等于，单位有k,M,G)
+
+**locate指令**
+
+locate指令可以快速定位文件路径。locate指令利用事先建立的系统中所有文件名称及路径的locate数据库实现快速定位给定的文件。Locate指令无需遍历整个文件系统，查询速度较快。为了保证查询结果的准确度，管理员必须定期更新locate时刻
+
+基本语法：locate 搜索文件
+
+特别说明：由于locate指令基于数据库进行查询，所以第一次运行前，必须用updatedb指令创建locate数据库。(在当前用户目录下写的新文件夹貌似不会加入数据库之中，仅有默认生成的可以)
+
+which指令，可以检索或者查看某个指令在哪个目录下。（which ls）
+
+**grep 指令和管道指令 |**
+
+grep 过滤查找，管道符，"|"，表示将前一个命令的处理结果输出传递给后面的命令处理。
+
+基本语法：grep [选项] 查找内容 源文件
+
+常用选项：
+
+1、-n	显示匹配行及行号
+
+2、-i	忽略字母大小写
+
+#### 压缩和解压类指令
+
+不对项目进行压缩就传输，容易丢失。
+
+**gzip/gunzip指令**
+
+gzip 用于压缩文件，gunzip 用于解压
+
+基本语法：
+
+gzip 文件	(功能描述：压缩文件，只能将文件压缩为*.gz文件)
+
+gunzip 文件.gz	(功能描述：解压缩文件命令)
+
+**zip/unzip指令**
+
+zip用于压缩文件，unzip用于解压，这个在项目打包发布中很有用
+
+基本语法：
+
+zip [选项] XXX.zip	将要压缩的内容(功能描述：压缩文件和目录的命令)
+
+unzip [选项] XXX.zip	(功能描述：解压缩文件)
+
+zip常用选项：
+
+-r：递归压缩，即压缩目录
+
+示例：zip -r myhome.zip /home/	(注意：包含home文件夹及其子文件和子文件夹都被压缩了)
+
+unzip常用选项：
+
+-d<目录>：指定解压后文件的存放位置
+
+实例：unzip -d /opt/tmp myhome.zip
+
+**！tar指令**
+
+tar 指令是打包指令，最后打包后的文件是 .tar.gz 的文件。
+
+基本语法：tar [选项] XXX.tar.gz 打包的内容  (功能描述：打包目录，压缩后的文件格式.tar.gz)
+
+选项说明：
+
+![image-20210922093908421](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922093908421.png)
+
+此图中z有问题，z是压缩或者解压（这里是gzip）
+
+示例：
+
+压缩：
+
+![image-20210922094720640](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922094720640.png)
+
+解压：
+
+![image-20210922094940059](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922094940059.png)
+
+### 组管理和权限管理
+
+linux中的每个用户必须属于一个组，不能独立于组外。在linux中每个文件的所有者、所在组，其他组的概念。
+
+1、所有者(user) 创建文件的人
+
+2、所在组
+
+3、其它组
+
+4、改变用户所在的组
+
+![image-20210922100436307](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922100436307.png)
+
+#### 所有者
+
+一般为文件的创建者，谁创建了该文件，就自然的成为该文件的所有者。
+
+查看文件的所有者：
+
+指令：ls -ahl
+
+修改文件所有者：
+
+指令：chown 用户名 文件名
+
+下图中前面为用户名，后面为组名
+
+![image-20210922100912625](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922100912625.png)
+
+#### 所在组
+
+当某个用户创建一个文件后，这个文件的所在组就是该用户所在的组。
+
+修改文件所在的组：
+
+chgrp 组名 文件名
+
+#### 其它组
+
+除文件的所有者和所在组的用户外，系统的其它用户都是文件的其它组。
+
+#### 改变用户所在组
+
+在添加用户时，可以指定将该用户添加到哪个组中，同样的用root的管理权限可以改变某个用户所在的组。
+
+**·**改变用户所在组
+
+1、usermod -g 组名 用户名
+
+2、usermod -d 目录名 用户名 改变该用户登录的初始目录。特别说明：用户需要有进入新目录的权限。
+
+#### * 权限的基本介绍
+
+![image-20210923085737066](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923085737066.png)
+
+0-9位说明：
+
+1、第0位确定文件类型(d,-,l,c,b) [要记住，面试可能会问！]
+
+​	l 是链接，相当于windows的快捷方式
+
+​	d 是目录，相当于windows的文件夹
+
+​	c 是字符设备文件，相当于鼠标、键盘
+
+​	b 是块设备，比如硬盘
+
+​	- 是普通文件 
+
+2、第1-3位确定所有者(该文件的所有者)拥有该文件的权限。 ---User
+
+3、第4-6位确定所属组(通用户组的)拥有该文件的权限。 ---Group
+
+4、第7-9位确定其他用户拥有该文件的权限。 ---Other
+
+**rwx权限详解**
+
+rwx作用到文件
+
+1、[r]代表可读(read)：可以读取、查看
+
+2、[w]代表可写(write)：可以修改，但是不代表可以删除，删除一个文件的前提条件是对该文件所在的目录有写的权限，才能删除该文件。
+
+3、[x]代表可执行(execute)：可以被执行
+
+rwx作用到目录
+
+1、[r]代表可读(read)：可以读取，ls查看目录内容
+
+2、[w]代表可写(write)：可以修改，对目录内创建+删除+重命名目录
+
+3、[x]代表可执行(execute)：可以进入该目录
+
+![image-20210923092046523](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923092046523.png)
+
+图中蓝加号后面是文件数
+
+#### *** 修改权限-chmod**
+
+通过chmod指令，可以修改文件或者目录的权限
+
+第一种方式：+、-、= 变更权限
+
+u : 所有者   g : 所有组   o : 其他人   a : 所有人(ugo)
+
+1) chmod u=rwx,g=rx,o=x 文件/目录名
+
+2) chomod o+w 文件/目录名
+
+3) chomod a-x 文件/目录名
+
+第二种方式：通过数字变更权限
+
+r=4 w=2 x=1 rwx=4+2+1=7
+
+chmod u=rwx,g=rx,o=x  文件/目录名
+
+相当于chmod 751 文件/目录名
+
+#### *** 修改文件所有者-chown**
+
+基本介绍
+
+chown newowner 文件/目录  改变所有者
+
+chown newowner:newgroup 文件/目录 改变所有者和所在组
+
+-R 如果是目录，则使其下所有子文件或目录递归生效。(-R一定要是大写)
+
+#### 修改文件/目录所在组-chgrp
+
+基本介绍
+
+ chgrp newgroup 文件/目录 改变所在组。
+
+**权限管理练习实例**
+
+小细节：当一个用户无所属组时，建立的和自己用户名同名的组，此时删除该用户，组也会跟着被删除。
+
+1、
+
+![image-20210923100952155](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923100952155.png)
+
+2、
+
+![image-20210923102117098](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923102117098.png)
+
+### crond定时任务调度
+
+反复执行的！
+
+**任务调度：是指系统在某个时间执行的特定的命令或程序。**
+
+crontab 进行 定时任务的设置
+
+![image-20210923105645244](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923105645244.png)
+
+任务调度分类：
+
+1、系统工作：有些重要的工作必须周而复始地进行。如病毒扫描等
+
+2、个别用户工作：个别用户可能希望执行某些程序，比如对mysql数据库的备份。
+
+基本语法： crontab [选项]
+
+常用选项：
+
+-e	编辑crontab定时任务 (edit)
+
+-l	查询crontab任务 (list)
+
+-r	删除当前用户所有的crontab任务 
+
+![image-20210923110028152](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923110028152.png)
+
+示例：
+
+将etc的文件目录定时用覆盖原内容的方式来写入/tmp/to.txt中。
+
+1、设置任务调度文件：/etc/crontab
+
+2、设置个人任务调度。执行crontab -e命令。
+
+3、接着输入任务到调度文件
+
+*/1 * * * * ls -l /etc/ > /tmp/to.txt
+
+意思是每小时的每分钟执行 "ls -l /etc/ > /tmp/to.txt"命令
+
+参数细节说明
+
+5个占位符说明：
+
+![image-20210923110247105](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923110247105.png)
+
+可以意识到，这里的一分钟是整点的一分钟，而不是具体的一分钟(就始末不一定是60s)。
+
+![image-20210923112437596](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923112437596.png)
+
+一些特定时间的任务执行案例：
+
+![image-20210924085311405](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924085311405.png)
+
+将日期和日历每隔一分钟都追加到某个文件的脚本编写：
+
+1、vi my.sh
+
+往其中写入：
+
+date >> /home/mycal
+
+cal >> /home/mycal
+
+2、修改my.sh的权限，加入写的权限
+
+3、测试下my.sh是否可用
+
+4、使用crontab -e，加入*/1 * * * * 脚本所在位置 
+
+![image-20210924092407684](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924092407684.png)
+
+**crontd 的相关指令**
+
+crontab -r ：终止调度
+
+crontab -l ： 列出当前有哪些任务调度
+
+service crond restart [重启任务调度]
+
+### at定时任务
+
+一次性的定时任务！
+
+特点：
+
+1、at的守护进程atd会以后台模式运行，检查作业队列来运行。
+
+2、默认情况下，atd守护进程每60s检查作业队列，有作业时，会检查作业运行时间，如果时间与当前时间匹配，则运行此作业。
+
+3、at命令是一次性定时计划任务，执行完一个任务后不再执行此任务了。
+
+4、在使用at命令时，一定要保证atd进程的启动，可以使用相关指令来查看。
+
+基本介绍： 
+
+at [选项] [时间]
+
+Ctrl + D 结束at命令的输入
+
+ps -ef 检测当前正在运行进程。
+
+若存在下图的进程，表明at正常运行中。
+
+![image-20210925090653211](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925090653211.png)
+
+![image-20210925091114276](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925091114276.png)
+
+相关选项：
+
+![image-20210925091210042](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925091210042.png)
+
+at指定时间的方法：
+
+![image-20210925091328349](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925091328349.png)
+
+### 磁盘分区机制
+
+#### Linux分区
+
+原理介绍：
+
+1、Linux来说无论有几个分区，分给哪一个目录使用，它归根结底就只有一个根目录，一个独立且唯一的文件结构，Linux每个分区都是用来组成整个文件系统的一部分。
+
+2、Linux采用了一种叫“载入”(挂载)的处理方法，它的整个文件系统中包含了一整套的文件和目录，且将一个分区和一个目录联系起来。这时要载入的分区将使它的存储空间在一个目录下获得。
+
+3、示意图：
+
+![image-20210925093447043](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925093447043.png)
+
+硬盘说明：
+
+1、Linux硬盘分为IDE硬盘和SCSI硬盘，目前基本上是SCSI硬盘。
+
+2、对于IDE硬盘，驱动器标识符为“hdx~”，其中“hd”表明分区所在设备的类型，这里是指IDE硬盘了。“x”为盘号（a为基本盘，b为基本从属盘，c为辅助主盘，d为辅助从属盘），“~”代表分区，前四个分区用数字1到4表示，它们是主分区或扩展分区，从5开始就是逻辑分区。例如，hda3表示为第一个IDE硬盘上的第三个主分区或扩展分区，hdb2表示为第二个IDE硬盘上的第二个主分区或扩展分区。
+
+3、对于SCSI硬盘标识为“sdx~”，其他对应关系和IDE一致。
+
+**查看所有设备的挂载情况**
+
+命令：lsblk 或者 lsblk -f
+
+![image-20210925094632312](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925094632312.png)
+
+![image-20210925094652862](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925094652862.png)
+
+**挂载的经典案例，增加硬盘**
+
+1、虚拟机添加硬盘
+
+![image-20210925100617885](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925100617885.png)
+
+2、分区
+
+分区命令 fdisk /dev/硬盘名
+
+开始对某个硬盘就行分区
+
+m 显示命令列表
+
+p 显示磁盘分区 fdisk -l
+
+n 新增分区
+
+d 删除分区
+
+w 写入并退出 
+
+q 不写入退出 
+
+期间若想采取默认设置，直接回车既是默认设置。
+
+说明：开始分区后输入n，新增分区，然后选择p，分区类型为主分区。两次回车默认剩余全部空间。最后输入w写入分区并退出，若不保存退出输入q。
+
+![image-20210925101908148](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925101908148.png)
+
+3、格式化
+
+mkfs -t ext4 /dev/sdb1
+
+ext4是分区类型（文件系统类型）
+
+4、挂载
+
+![image-20210925102731868](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925102731868.png)
+
+![image-20210925102750122](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925102750122.png)
+
+卸载：umount 设备名称或挂载目录
+
+注意：用命令行挂载重启后会失效！
+
+5、设置可以自动挂载
+
+也可以称为永久挂载，通过修改/etc/fstab实现挂载，添加完成后，执行mount -a即刻生效。
+
+#### 磁盘情况查询
+
+**查询系统整体磁盘使用情况**
+
+基本语法：df -h
+
+**查询指定目录的磁盘占用情况**
+
+基本语法：du -h /目录
+
+查询指定目录的磁盘占用情况，默认为当前目录。
+
+常用选项：
+
+-s 指定目录占用大小汇总
+
+-h 带计量单位
+
+-a 含文件
+
+--max-depth=1 子目录深度
+
+-c 列出明细的同时，增加汇总值
+
+**磁盘情况-工作实用指令**
+
+1、统计/opt文件夹下文件的个数
+
+ls -l /opt | grep "^-" | wc -l
+
+2、统计/opt文件夹下目录的个数
+
+ls -l /opt | grep "^d" | wc -l
+
+3、统计/opt文件夹下文件的个数，包括子文件夹里的
+
+ls -lR /opt | grep "^-" | wc -l 
+
+4、统计/opt文件夹下目录的个数，包括子文件夹里的
+
+ls -lR /opt | grep "^d" | wc -l
+
+5、以树状显示目录结构,如果没有tree，则使用 yum install tree 安装。
+
+tree 目录名
+
+### 网络配置
+
+**原理图：**
+
+![image-20210926094033824](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926094033824.png)
+
+#### **Linux网络环境配置**
+
+指定ip
+
+直接修改配置文件来指定IP，并可以连接到外网（程序员推荐）。
+
+编辑：vi /etc/sysconfig/network-scripts/ifcfg-ens33
+
+要求：将ip地址配置成静态的，比如ip地址为10.3.64.199
+
+![image-20210926095343685](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926095343685.png)
+
+![image-20210926100718572](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926100718572.png)
+
+![image-20210926100729867](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926100729867.png)
+
+![image-20210926100743101](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926100743101.png)
+
+**主机名修改**
+
+hostname：查看当前主机名
+
+修改文件在/etc/hostname，修改后，重启生效
+
+**设置主机名和hosts映射**
+
+设置hosts映射
+**Windows** 
+
+在C:\Windows\System32\drivers\etc\hosts文件指定即可。
+
+**Linux**
+
+在/etc/hosts 文件指定
+
+*** 主机名解析过程分析(Hosts、DNS)**
+
+Hosts是什么？
+
+一个文本文件，用来记录 IP 和 Hostname(主机名)的映射关系
+
+DNS
+
+1、DNS，就是Domain Name System的缩写，翻译过来就是域名系统
+
+2、是互联网上作为域名和IP地址相互映射的一个分布式数据库
+
+![image-20210926103234858](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926103234858.png)
+
+浏览器缓存->DNS缓存->hosts->DNS(公网的分布式数据库)
+
+![image-20210926104239285](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926104239285.png)
+
+### * 进程管理
+
+基本介绍
+
+1、在Linux中，每个执行的程序都称为一个进程。每一个进程都分配一个ID号(pid,进程号)。
+
+2、每个进程都可能以两种方式存在。前台与后台，所谓前台进程就是用户目前屏幕上可以进行操作的。后台进程则是实际在操作，但是屏幕上无法看到的进程。
+
+3、一般系统的服务都是以后台进程的方式存在，而且都会常驻在系统中。直到关机才结束。
+
+#### **ps指令**
+
+基本介绍：
+
+ps命令用于查看目前系统中，有哪些正在执行，以及他们的执行状况。可以不加任何参数。
+
+ps显示的信息选项：
+
+PID		进程识别号
+
+TTY		终端机号(长了会缩写，就成了?)
+
+TIME	 此进程所消耗的 CPU 时间
+
+CMD	 正在执行的命令或者进程名(COMMAND)
+
+VSZ	   占用虚拟内存大小(Virtual Memory Size)
+
+RSS	   占用物理内存大小(Resident Set Size)
+
+STAT	 当前进程的运行状态。
+
+START   进程的开始时间
+
+**STAT详解**
+
+1、S-睡眠，s-表示该进程是会话的先导进程
+
+2、N-表示进程拥有比普通优先级更低的优先级。
+
+3、R-正在运行
+
+4、D-短期等待
+
+5、Z-僵死进程(进程死了，但是内存没有释放)
+
+6、T-被追踪或者被停止
+
+常用选项：
+
+-a	显示所有tty值存在的且session值不等于当前进程tgid(pid)值的进程
+
+-u	以用户的格式显示进程信息
+
+-x	显示后台进程运行的参数
+
+**显示系统执行的进程**
+
+以全格式显示当前所有进程，查看进程的父进程。
+
+ps -ef是以全格式显示当前所有的进程
+
+-e 显示所有进程。 -f 全格式
+
+上述显示风格称为BSD风格
+
+UID：用户ID
+
+PID：进程ID
+
+PPID：父进程ID
+
+C：CPU用于计算执行优先级的因子。数值越大，表明进程是CPU密集型运算，执行优先级会降低；数值越小，表明进程是I/O密集型运算，执行优先级会提高。
+
+STIME：进程启动时间
+
+TTY：完整的终端名称
+
+TIME：CPU时间
+
+CMD：启动进程所用的命令和参数
+
+**终止进程**
+
+介绍
+
+若是某个进程执行一半需要停止时，或是已经消耗了很大的系统资源时，此时可以考虑停止该进程。使用kill命令来完成此项任务。
+
+基本语法
+
+kill [选项] 进程号（功能描述：通过进程号杀死/终止进程）
+
+killall 进程名称（功能描述：通过进程名称杀死/终止进程，也支持通配符，这在系统因负载过大而变得很慢时很有用）
+
+常用选项
+
+-9：表示强制进程立即停止
+
+注意：若以killall来终止进程，其子进程都会被终止。
+
+![image-20210927093256597](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210927093256597.png)
+
+**查看进程树pstree**
+
+基本语法：
+
+pstree [选项]，可以更加直观地看进程信息。
+
+常用选项：
+
+-p：显示进程的PID
+
+-u：显示进程的所属用户
+
+#### 服务管理
+
+介绍：
+
+服务(service)本质就是进程，是运行在后台的，通常都会监听某个端口，等待其它程序的请求，比如(mysql,sshd,防火墙等)，因此我们又称为守护进程，是Linux中非常重要的知识点。
+
+service管理指令：
+
+1、service 服务名 [start | stop | reload | status]
+
+2、在CentOS7.0后，很多服务不再使用service，而是systemctl
+
+3、service指令管理的服务在/etc/init.d查看
+
+指令：ls -l /etc/init.d 
+
+**查看服务名：**
+
+1、使用setup -> 系统服务，就可以看到全部。
+
+带有星号的服务会自动启动
+
+2、/etc/init.d 看到 service 指令管理的服务 ls -l /etc/init.d
+
+服务的运行级别(7)
+
+常用为级别3和5
+
+0、系统停机状态，系统默认运行级别不能为0，否则无法正常启动。
+
+1、单用户工作状态，root权限，用于系统维护，禁止远程登陆。
+
+2、多用户状态(没有NFS)，不支持网络
+
+3、完全的多用户状态(有NFS)，登陆后进入控制台命令行模式
+
+4、系统未使用，保留
+
+5、X11控制台，登陆后进入图形GUI模式
+
+6、系统正常关闭并重启，默认运行级别不能为6，否则不能正常启动
+
+![image-20210927095216307](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210927095216307.png)
+
+BIOS：Basic Input Output System
+
+![image-20210927095510323](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210927095510323.png)
+
+**chkconfig指令**
+
+介绍：
+
+1、通过chkconfig命令可以给服务对应某个运行级别设置自启动/关闭
+
+2、chkconfig指令管理的服务在/etc/init.d查看
+
+3、注意：Centos7.0后，很多服务使用systemctl管理
+
+基本语法：
+
+查看服务 chkconfig	--list [| grep xxx]
+
+chkconfig 服务名 --list
+
+chkconfig --level 5 服务名 on/off
+
+#### *** systemctl指令**
+
+基本语法：systemctl [start | stop | restart | status] 服务名
+
+systemctl指令管理的服务在 /usr/lib/systemd/system 查看
+
+systemctl设置服务的自启动状态（他的自启动控制的是3、5两个运行状态）
+
+1、systemctl list-unit-files [| grep 服务名] (查看服务开机启动状态，grep可以进行过滤)
+
+2、systemctl enable 服务名（设置服务开机启动）
+
+3、systemctl disable 服务名（关闭服务开机启动）
+
+4、systemctl is-enabled 服务名（查询某个服务是否是自启动的）
+
+**防火墙操作**
+
+firewall指令
+
+打开端口：firewall-cmd --permanent --add-port=端口号/协议
+
+关闭端口：firewall-cmd --permanent --remove-port=端口号/协议
+
+重新载入，才能生效：firewall-cmd --reload
+
+查询端口是否开放：firewall-cmd --query-port=端口/协议
+
+**动态监控进程**
+
+top和ps命令很相似。它们都用来显示正在执行的进程。Top与ps最大的不同之处，在于top在执行一段时间可以更新正在运行的进程。
+
+默认3s一刷新。
+
+基本语法
+
+top [选项]
+
+选项说明：
+
+-d 秒数（指定每次监听进程的监听时间间隔）
+
+-i 使top不显示任何闲置或者僵死进程
+
+-p 通过指定监控进程ID来仅仅监控某个进程的状态
+
+交互操作说明：
+
+P、M比较好用，毕竟管理内存是基本
+
+P	以CPU使用率排序，默认是此项
+
+M	以内存的使用率排序
+
+N	以PID排序
+
+u 	查看某个用户的进程
+
+k	终止指定进程（输入进程的ID号）（和killall一致）
+
+q	退出top
+
+**监控网络状态**
+
+基本语法：netstat [选项]
+
+选项说明：
+
+-an	按一定顺序排列输出
+
+-p	  显示哪个进程在调用
+
+示例：查看服务名为 sshd 的服务信息。
+
+netstat -anp | grep sshd 
+
+#### **rpm包的管理**
+
+介绍
+
+rpm用于互联网下载包的打包及安装工具，它包含在某些Linux分发版中。它生成具有.RPM扩展名的文件。
+
+RPM(RedHat Package Manager)[RedHat软件包管理工具]，类似于setup.exe。
+
+**rpm指令**
+
+查询已安装的rpm列表	rpm -qa | grep xx
+
+![image-20210928092954655](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210928092954655.png)
+
+rpm -qa：查询所安装的所有rpm软件包
+
+rpm -qa | more
+
+rpm -qa | grep xx
+
+rpm -q [softwareName]：查询软件包是否安装
+
+rpm -qi [softwareName]：查询软件包信息
+
+rpm -ql [softwareName]：查询软件包中的文件
+
+rpm -qf 文件全路径名 查询文件所属的软件包
+
+**卸载rpm包**
+
+基本语法：rpm -e RPM包的名称
+
+如果其他软件包依赖于您要卸载的软件包，卸载时则会产生错误信息。
+
+![image-20210928094721743](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210928094721743.png)
+
+ nodeps可以看出指的是不检测和该软件包相关的依赖。
+
+**安装rpm包**
+
+基本语法：rpm -ivh RPM包全路径名称
+
+参数说明：
+
+i = install 安装
+
+v = verbose 提示(冗长的)
+
+h = hash 进度条
+
+*** yum**
+
+yum 是一个shell前端软件包管理器。基于RPM包管理，能够从指定的服务器自动下载RPM包并且安装，可以自动处理依赖性关系，并且一次安装所有依赖的软件包。
+
+yum的基本指令
+
+查询yum服务器是否有需要安装的软件
+
+yum list|grep xx软件列表
+
+安装指定的yum包
+
+yum install xxx 下载安装
+
+### shell编程
+
+Shell是一个命令行解释器，它为用户提供了一个向Linux内核发送请求以便运行程序的界面系统级程序，用户可以用Shell来启动、挂起、停止甚至是编写一些程序。
+
+#### **Shell脚本的执行方式**
+
+**脚本格式要求**
+
+1、脚本以#!/bin/bash开头
+
+2、脚本需要有可执行权限
+
+**编写第一个Shell脚本**
+
+需求说明：创建一个Shell脚本，输出hello world！
+
+**脚本的常用执行方式**
+
+方式一(输入脚本的绝对路径或相对路径)：
+
+首先要赋予 helloworld.sh 脚本+x权限，再执行脚本
+
+方式二：
+
+不用赋予脚本+x权限，直接执行即可（使用sh命令）
+
+#### Shell的变量
+
+系统变量
+
+**Shell变量介绍**
+
+1、Linux Shell中的变量分为系统变量和用户自定义变量。
+
+2、系统变量：$HOME、$PWD、$SHELL、$USER等待，比如：echo $HOME 等待..
+
+3、显示当前shell中所有变量：set
+
+**Shell变量的定义**
+
+基本语法
+
+1、定义变量：变量=值
+
+2、撤销变量：unset 变量
+
+3、声明静态变量：readonly 变量，注意：不能unset
+
+A=$A在后面没有跟东西的情况下，和"A=$A"等效
+
+![image-20210929102848272](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929102848272.png)
+
+![image-20210929102900875](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929102900875.png)
+
+![image-20210929103028639](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929103028639.png)
+
+![image-20210929103042099](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929103042099.png)
+
+定义变量的规则
+
+1、变量名称以字母、数字、下划线组成，不能以数字开头。
+
+2、等号两侧不能有空格
+
+3、变量名称一般习惯写成大写的
+
+特别：将命令的返回值赋给变量
+
+1、``反引号，其中写入命令，表示该命令的执行结果。
+
+2、$()，其中写入命令，等价于反引号
+
+**设置环境变量**
+
+简单理解为全局变量
+
+基本语法
+
+1、export 变量名=变量值（功能描述：将shell变量输出为环境变量）
+
+2、source 配置文件（功能描述：让修改后的配置信息立即生效）
+
+3、echo $变量名（功能描述：查询环境变量的值）
+
+![image-20210929103717846](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929103717846.png)
+
+shell脚本多行注释
+
+:<<! 内容 !
+
+**位置参数变量**
+
+当我们执行一个shell脚本时，如果希望获取到命令行的参数信息，就可以用到位置参数变量。
+
+如：./myshell.sh 100 200
+
+基本语法：
+
+![image-20210929105014716](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929105014716.png)
+
+**预定义变量**
+
+就是shell设计者实现已经定义好的变量，可以直接在shell脚本中使用
+
+![image-20210929105458234](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929105458234.png)
+
+**运算符**
+
+![image-20210929105906581](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929105906581.png)
+
+expr中的乘才要和上图的3中一样处理。
+
+![image-20210929110452096](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929110452096.png)
+
+可以看出第三种极度麻烦，用第二种比较好，当然第一种和第三种要能看懂。
+
+**条件判断**
+
+判断语句：
+
+基本语法
+
+[ condition ] (注意condition前后要有空格)
+
+#非空返回true，可使用$?验证(0为true, >1为false)
+
+![image-20210930091832518](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210930091832518.png)
+
+常用判断条件：
+
+1）= 字符串比较
+
+2）两个整数的比较
+
+-lt 小于
+
+-le 小于等于
+
+-eq 等于
+
+-gt 大于
+
+-ge 大于等于
+
+-ne 不等于
+
+3）按照文件权限进行判断
+
+-r 有读的权限
+
+-w 有写的权限
+
+-x 有执行的权限
+
+4）按照文件类型进行判断
+
+-f 文件存在并且是一个常规文件
+
+-e 文件存在
+
+-d 文件存在并且是一个目录
+
+p97-p115
+
+## Linux高级篇
+
+### 日志管理
+
+ 日志文件是重要的系统信息文件，其中记录了许多重要的系统事件，包括用户的登录信息、系统的启动信息、系统的安全信息、邮件相关信息、各种服务相关信息等。
+
+日志对于安全来说也很重要，它记录了系统每天发生的各种事情，通过日志来检查错误发生的原因，或者受到攻击时攻击者留下的痕迹。
+
+日志是用来记录重大事件的工具
+
+**系统常用日志**
+
+/var/log/ 目录就是系统日志文件的保存位置
+
+![image-20210930095436783](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210930095436783.png)
+
+![image-20210930095550972](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210930095550972.png)
+
+ ![image-20210930100502458](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210930100502458.png)
+
+#### **日志管理服务 rsyslogd**
+
+![image-20210930100916379](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210930100916379.png)
+
+记录rsyslog配置的配置文件/etc/rsyslog.conf
+
+![image-20210930101420853](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210930101420853.png)
+
+grep -v 反向匹配，
+
+![image-20210930101505258](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210930101505258.png)
+
+表示包含rsyslog与不包含grep的匹配结果。
+
+![image-20210930101842463](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210930101842463.png)
+
+![image-20210930101904894](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210930101904894.png)
+
+  日志文件格式包含以下4列：
+
+事件的产生时间
+
+产生事件的服务器的主机名
+
+产生事件的服务名或程序名
+
+事件的具体信息
+
+![image-20210930102620642](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210930102620642.png)
+
+日志管理服务应用实例：
+
+![image-20211007100935416](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007100935416.png)
+
+改完不生效就重启一下日志管理服务(rsyslog)
+
+#### **日志轮替**
+
+日志轮替就是把旧的日志文件移动并改名，同时建立新的空日志文件，当旧日志文件超出保存的范围后，就会进行删除
+
+**日志轮替文件命名**
+
+![image-20211007101844572](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007101844572.png)
+
+logrotate：轮替	rotate：旋转
+
+**logrotate配置文件**
+
+/etc/logrotate.conf 为 logrotate 的全局配置文件
+
+![image-20211007102903710](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007102903710.png)
+
+其中的logrotate.d的文件，是用来设置自定义轮替规则的。
+
+**自定义日志轮替**
+
+参数说明：
+
+![image-20211007103221259](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007103221259.png)
+
+自定义轮替
+
+![image-20211007103428570](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007103428570.png)
+
+![image-20211007103651821](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007103651821.png)
+
+**日志轮替机制原理**
+
+日志轮替之所以可以在指定时间备份日志，是依赖系统定时任务。在/etc/cron.daily/目录，就会发现这个目录中是有 logrotate 文件(可执行)，logrotate 通过这个文件依赖定时任务执行的。
+
+![image-20211007103914652](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007103914652.png)
+
+#### **查看内存日志**
+
+**实时变化的日志内容写入内存日志中，而不是直接写入硬盘文件中（基本上后台程序日志都在内存里，满足一定条件才会写入硬盘）。**
+
+journalctl 可以查看内存日志
+
+journalctl -n 3  #查看最新3条
+
+journalctl --since 19:00 --until 19:10:10  #查看起始时间到结束时间的日志
+
+journalctl -p err  #报错日志
+
+journalctl -o verbose  #日志详细内容
+
+journalctl_PID=1245 _COMM=sshd  #查看包含这些参数的日志(在详细日志查看)
+
+或者 journalctl | grep sshd
+
+特别注意：journalctl 查看的是内存日志，重启会清除。
+
+#### 定制自己的Linux系统
+
+创建一个小小的 Linux 小系统
+
+Linux的启动流程：
+
+1、首先Linux要通过自检，检查硬件设备有没有故障
+
+2、如果有多块启动盘的话，需要在BIOS中选择启动的磁盘
+
+3、启动MBR(Master Boot Record[主引导记录])中的bootloader引导程序
+
+4、加载内核文件
+
+5、执行所有进程的父进程、老祖宗systemd
+
+6、欢迎界面
+
+![image-20211007105244031](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007105244031.png)
+
+p126 03:00
+

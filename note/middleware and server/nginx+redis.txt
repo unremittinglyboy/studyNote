@@ -1,0 +1,2379 @@
+## **Nginx**
+
+session不共享，导致简单横向扩展会出现乱套的情况。
+
+没有什么是加一层解决不了的（架构思维）
+
+Nginx 是一个高性能（响应快、并发高）的HTTP和反向代理 web 服务器，同时提供了 IMAP/POP3/SMTP（发送和接收邮件相关） 服务。
+
+**Nginx特点**
+
+占有内存少、并发能力强，可以支持50000个连接的并发响应。
+
+### **Nginx主要功能**
+
+#### **反向代理**
+
+作为代理的对象相当于请求的中转站。
+
+正向代理代理客户端。
+
+反向代理代理服务端。
+
+配置实例：
+
+实例一
+
+1、实现效果
+
+​	(1) 打开浏览器，在浏览器地址栏输入地址 www.123.com, 跳转到 Linux 系统中的 tomcat 主页面。
+
+2、准备工作
+
+​	(1) 在 Linux 系统中安装上tomcat，使用默认端口号 8080
+
+​	(2)设置开放端口 80、8080、8081、8082、9001
+
+3、访问过程的分析
+
+![image-20211010092704740](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010092704740.png)
+
+4、具体配置
+
+第一步 在 windows 系统的 host 文件进行域名和 ip 对应关系的配置(因为没有对应www.123.com的域名ip)
+
+![image-20211010093047946](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010093047946.png)
+
+(1)添加内容到host文件
+
+![image-20211010093213911](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010093213911.png)
+
+第二步 在 nginx 进行请求转发的配置(反向代理配置)
+
+![image-20211010094117815](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010094117815.png)
+
+5、最终测试
+
+![image-20211010094751004](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010094751004.png)
+
+实例二
+
+1、实现效果：使用nginx反向代理，根据访问的路径跳转到不同端口的服务中。
+
+​	nginx监听端口为9001
+
+​	访问 http://127.0.0.1:9001/edu/ 直接跳转到127.0.0.1:8080
+
+​	访问 http://127.0.0.1:9001/vod/ 直接跳转到127.0.0.1:8081
+
+2、准备工作
+
+(1) 准备两个tomcat服务器，一个是8080端口，一个是8081端口。
+
+将压缩包的内容分别解压到两个文件夹中，分别对其中的server.xml进行修改
+
+(2) 创建文件夹和测试页面
+
+![image-20211010102924466](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010102924466.png)
+
+![image-20211010102946350](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010102946350.png)
+
+3、配置nginx.conf
+
+![image-20211010103808303](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010103808303.png)
+
+4、最终测试
+
+![image-20211010104149248](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010104149248.png)
+
+![image-20211010104138052](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010104138052.png)
+
+**location指令说明**
+
+​	该指令用于匹配URL
+
+```
+location [ = | ~ | ~* | ^~ ] uri{
+
+}
+```
+
+1、=：用于不含正则表达式的 uri 前，要求请求字符串与 uri 严格匹配，如果匹配成功，就停止继续向下搜索并立即处理该请求。
+
+2、~：用于表示 uri 包含正则表达式，并且区分大小写。
+
+3、 ~*：用于表示 uri 包含正则表达式，并且不区分大小写。
+
+4、 ^~：用于不含正则表达式的 uri 前，要求 nginx 服务器找到标识 uri 和请求字符串匹配度最高的 location 后，立即使用此 location 处理请求，而不再使用 location 块中的正则 uri 和请求字符串做匹配。
+
+注意：如果 uri 包含正则表达式，则必须要有2、3
+
+#### **负载均衡**
+
+1、实现效果
+
+(1) 浏览器地址栏输入地址 http://192.168.17.129/edu/a.html，负载均衡效果，平均8080和8081端口中。
+
+2、准备工作
+
+(1) 准备两台 tomcat 服务器，一台是8080、一台是8081。
+
+(2) 在两台 tomcat 的 webapps 目录中，创建名称是 edu 的文件夹，在 edu 中创建页面 a.html，用于测试。
+
+3、在 nginx 的配置文件中进行负载均衡的配置
+
+![image-20211011090625971](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011090625971.png)
+
+![image-20211011090733727](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011090733727.png)
+
+4、nginx分配服务器策略
+
+**(1)、轮询（默认）**
+
+平均分担请求
+
+![image-20210602143800205](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210602143800205.png)
+
+**(2)、加权轮询**
+
+权重高的分担更多的请求
+
+**(3)、iphash**
+
+iphash 对客户端请求的 ip 进行 hash 操作，然后根据 hash 结果将同一个客户端 ip 的请求分发给同一台服务器进行处理，可以解决 session 不共享的问题。（存在弊端：假设存储 session 数据的服务器挂了则数据会丢失）[通常采用 redis 解决 session 不共享的问题]
+
+**(4)、fair (第三方)**
+
+按服务器的响应时间来分配请求，响应时间短的优先分配。
+
+![image-20211011095213343](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011095213343.png)
+
+#### **动静分离**
+
+​	把静态资源和动态资源分开部署。不能理解成只是单纯的把动态页面和静态页面物理分离。严格意义上来说是将动态请求和静态请求分开。
+
+​	即将不需要后端处理的一系列静态资源和需要后台处理的动态资源进行分离，由此提高效率和资源的条理性。
+
+目前主流推崇的方案是纯粹把静态文件独立成单独的域名，放在单独的服务器上，除此之外，还有另一种方法，就是把动态和静态文件混合在一起发布，通过nginx分开。
+
+![image-20211012091117790](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012091117790.png)
+
+![image-20211012091426612](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012091426612.png)
+
+1、准备工作
+
+建立一个文件夹用于存放静态资源（我这里放在根目录的data中）
+
+2、修改nginx.conf，对动静分离中的静态请求进行配置
+
+![image-20211012094636021](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012094636021.png)
+
+3、最终测试
+
+![image-20211012095325109](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012095325109.png)
+
+autoindex 就是用于设置是否允许列举文件夹的开关，默认为off。
+
+### Nginx配置高可用集群
+
+1、何为 nginx 高可用集群
+
+![image-20211012100030368](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012100030368.png)
+
+nginx宕了之后还能实现效果就是nginx的高可用
+
+![image-20211012100531259](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012100531259.png)
+
+keepalived  心跳机制
+
+这里的虚拟ip可以理解为是一个网关，数据通过虚拟ip转发到虚拟网关，再通过VRRP判断走哪台服务器。
+
+2、配置高可用的准备工作
+
+(1) 需要两台服务器
+
+(2) 在两台服务器安装nginx
+
+(3) 在两台服务器安装keepalived
+
+3、在服务器中都安装上keepalived
+
+(1) 使用 yum 进行安装
+
+yum install keepalived -y
+
+(2) 安装之后，在 etc 里面生成目录 keepalived，有文件 keepalived.conf
+
+4、完成高可用配置 (主从配置)
+
+(1) 配置keepalived.conf
+
+![image-20211012102631353](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012102631353.png)
+
+router_id	LVS_DEVEL (当前配置文件所有者的主机名)
+
+设置lvs的id，在一个网络内应该是唯一的
+
+主服务器：
+
+![image-20211012103605487](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012103605487.png)
+
+从服务器：
+
+![image-20211012103115498](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012103115498.png)
+
+上图为配置主从统一的虚拟ip主要配置域
+
+adver_int 发送心跳的时间(单位为秒)
+
+(2) 在/usr/local/src 添加检测脚本
+
+脚本文件的具体内容：
+
+![image-20211012103824051](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012103824051.png)
+
+图中存在错误，-no-header 应为 --no-header
+
+(3) 把两台服务器上 nginx 和 keepalived 启动
+
+### Nginx的原理
+
+nginx执行的基本流程：
+
+![image-20211012111142127](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012111142127.png)
+
+worker 如何进行工作的
+
+![image-20211012111344009](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012111344009.png)
+
+这里的争抢的确切实现，是进程池中睡眠的进程被唤醒。
+
+**master&worker模式的好处：**
+
+(1) 可以使用 nginx -s reload 热部署，利用 nginx 进行热部署操作。
+
+(2) worker是独立的进程，不需要加锁，省掉了锁带来的开销，互相之间不会存在影响，服务不容易中断。
+
+**设置多少个worker最合适呢？**
+
+nginx 同 redis 类似，都采用了 io 多路复用机制，每个worker都是一个独立的进程，但每个进程里只有一个主线程，通过异步非阻塞的方式来处理请求，即使是很多的请求也不在话下，每个worker的线程可以把一个 cpu 的性能发挥到极致。所以 worker 数和服务器的 cpu数相等是最为适宜的。设少了浪费  cpu，设多了会造成 cpu 频繁换上下文带来的损耗。
+
+![image-20211013085055739](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013085055739.png)
+
+**连接数worker_connection**
+
+![image-20211013085148636](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013085148636.png)
+
+发送请求，占用了worker的几个连接数？
+
+2个或者4个，因为请求静态一来一回，请求动态额外一来一回。
+
+nginx 有一个 master，有四个worker，每个worker支持的最大连接数为 1024，支持的最大并发数为：
+
+![image-20211013090001249](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013090001249.png)
+
+#### **常用命令**
+
+```nginx
+cd /usr/local/nginx/sbin/
+./nginx 启动
+./nginx -s stop 停止
+./nginx -s quit 安全退出
+./nginx -s reload 重新加载配置文件
+ps aux|grep nginx 查看nginx进程
+```
+
+**常见配置文件**
+
+nginx.conf 
+
+**第一部分：全局块**
+
+​	从配置文件开始到 events 块之间的内容，主要会设置一些影响 nginx 服务器整体运行的配置指令，主要包括配置运行 Nginx 服务器的用户(组)、允许生成的 worker process 数，进程 PID 存放路径、日志存放路径和类型以及配置文件的引入等。
+​	例子：
+
+```
+worker_processes auto;[1、...]
+```
+
+​	nginx服务器并发处理服务的关键配置，值越大，可以支持的并发处理量越多，会受到硬件、软件等设备的制约。
+
+**第二部分：events块**
+
+```
+events {
+    worker_connections 1024;
+}
+```
+
+​	events 块涉及的指令主要影响 Nginx 服务器与用户的网络连接，常用的设置包括是否开启对多个 work process 下的网络连接进行序列化，是否运行同时接收多个网络连接，选取哪种事件驱动模型来处理连接请求，每个 word process 可以同时支持的最大连接数等。
+
+​	对Nginx的性能影响较大
+
+**第三部分：http块**
+
+​	配置最为频繁的部分，代理、缓存、日志定义等绝大多数功能和第三方模块的配置都在这里。
+
+注：http块包括http全局块、server块。
+
+​	**http全局块：**
+
+​	和虚拟主机有密切关系，虚拟主机从用户角度看，和一台独立的硬件主机是完全一样的，该技术的产生是为了节省互联网服务器硬件成本。
+
+​	每个全局块可以包含多个server块，每个server相当于一台虚拟主机。
+
+​	每个server块也可以作为全局，其中包含location块。
+
+​	**server块：**
+​		**全局server块：**
+
+​		最常见的配置是本虚拟机主机的监听配置和本虚拟主机的名称或者IP配置
+
+​		**location块：**
+
+​		这块的主要作用是基于 Nginx 服务器接收到的请求字符串(如 server_name/uri-string)，对虚拟主机名称之外的字符串进行匹配，对特定请求进行处理。地址定向、数据缓存和应答控制等功能，还有许多第三方模块配置也在这里进行。
+
+```
+http {
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 4096;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+
+    # Load modular configuration files from the /etc/nginx/conf.d directory.
+    # See http://nginx.org/en/docs/ngx_core_module.html#include
+    # for more information.
+    include /etc/nginx/conf.d/*.conf;
+
+    server {
+        listen       80;
+        listen       [::]:80;
+        server_name  _;
+        root         /usr/share/nginx/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        error_page 404 /404.html;
+            location = /40x.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+            location = /50x.html {
+        }
+    }
+```
+
+----------------------------------------------------------------
+
+```yml
+//一个站点配置多个域名
+server {
+	listen 80;
+	server_name aaa.cn bbb.cn;
+}
+//一个服务器配置多个站点
+server {
+	listen 80;
+	server_name aaa.cn;
+	location/ {
+		root /home/project/pa;
+		index index.html;
+	}
+}
+server {
+	listen 80;
+	server_name bbb.cn ccc.cn;
+	location/ {
+		root /home/project/pb;
+		index index.html;
+	}
+}
+server {
+	listen 80;
+	server_name ddd.cn;
+	location/ {
+		root /home/project/pc;
+		index index.html
+	}
+}
+```
+
+**静态资源缓存**
+
+```yml
+location ~ .*\.(?:js|css|jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm)$ {
+
+expires 7d; //失效日期
+
+}
+location ~ .*\.(?:htm|html)$ {
+
+add_header Cache-Control "private, no-store, no-cache, must-revalidate, proxy-revalidate";
+
+}
+```
+
+这里注意：no-cache与no-store的区别，no-cache表示不缓存过期资源，缓存会向服务器进行有效处理确认之后处理资源，而no-store才是真正的不进行缓存。
+
+**Nginx的三种虚拟主机**
+
+基于IP的虚拟主机： 需要你的服务器上有多个地址，每个站点对应不同的地址，这种方式使用的比较少
+
+基于端口的虚拟主机： 每个站点对应不同的端口，访问的时候使用ip:port的方式访问，可以修改listen的端口来使用
+
+基于域名的虚拟主机： 使用最广的方式，上边例子中就是用了基于域名的虚拟主机，前提条件是你有多个域名分别对应每个站点，server_name填写不同的域名即可
+
+**开启 gzip 压缩**
+
+gzip 压缩介绍：https://www.cnblogs.com/gg-qq/p/11121896.html
+
+```yml
+http {
+
+gzip on; #开启gzip压缩功能
+
+gzip_disable "MSIE [1-6]\.(?!.*SV1)"; #配置禁用gzip条件，支持正则。此处表示ie6及以下不启用gzip（因为ie低版本不支持）
+
+gzip_proxied any; #无条件压缩所有结果数据
+
+gzip_min_length 10k; #设置允许压缩的页面最小字节数; 这里表示如果文件小于10个字节，就不用压缩，因为没有意义，本来就很小.
+
+gzip_comp_level 6; #设置压缩比率，最小为1，处理速度快，传输速度慢；9为最大压缩比，处理速度慢，传输速度快; 这里表示压缩级别，可以是0到9中的任一个，级别越高，压缩就越小，节省了带宽资源，但同时也消耗CPU资源，所以一般折中为6
+
+gzip_buffers 16 8k; #设置压缩缓冲区大小，此处设置为16个8K内存作为压缩结果流缓存
+
+gzip_http_version 1.1; #压缩版本
+
+gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript; #制定压缩的类型,线上配置时尽可能配置多的压缩类型!
+
+gzip_vary on; #选择支持vary header(写在响应头之中)；改选项可以让前端的缓存服务器缓存经过gzip压缩的页面; 这个可以不写，表示在传送数据时，给客户端说明我使用了gzip压缩
+
+}
+```
+
+**cpu 亲和力优化**
+
+默认情况下可能多个进程跑在一个CPU上或某一核上，导致Nginx进程使用硬件资源不均匀，此次优化是尽可能地分配不同的Nginx进程给不同的CPU处理。
+
+两颗CPU参数配置：
+
+worker_processes 2;
+
+worker_cpu_affinity 0101 1010;
+
+四颗CPU参数配置：
+
+worker_processes 4;
+
+worker_cpu_affinity 0001 0010 0100 1000;
+
+八颗CPU参数配置：
+
+worker_processe8;
+
+worker_cpu_affinity 00000001 00000010 00000100 00001000 00010000 00100000 01000000 10000000;
+
+**Nginx 运行工作进程数量**
+
+Nginx运行工作进程个数一般设置CPU的核心或者核心数x2。如果不了解cpu的核数，可以top命令之后按1看出来，也可以查看/proc/cpuinfo文件 grep ^processor /proc/cpuinfo | wc -l
+
+[root@lx~]# vi/usr/local/nginx1.10/conf/nginx.conf
+
+worker_processes 4;
+
+[root@lx~]# /usr/local/nginx1.10/sbin/nginx-s reload
+
+[root@lx~]# ps -aux | grep nginx |grep -v grep
+
+**Nginx 最大打开文件数**
+
+worker_rlimit_nofile 65535;
+
+指当一个 nginx 进程打开的最多**文件描述符**数目，理论值应该是 Linux 最多打开文件数（ulimit -n）与 nginx 进程数相除，但是 nginx 分配请求并不是那么均匀，所以最好与 ulimit -n 的值保持一致。
+
+注：文件资源限制的配置可以在 /etc/security/limits.conf 设置，针对 root/user 等各个用户或者*代表所有用户来设置。
+
+linux 默认值 open files为1024。查看当前系统值：
+
+\# ulimit -n
+
+1024
+
+说明server只允许同时打开1024个文件。
+
+**Nginx 事件处理模型**
+
+events {
+
+​	use epoll;
+
+​	work_connections 65535;
+
+​	multi_accept on;
+
+}
+
+ginx采用epoll事件模型，处理效率高。
+
+work_connections是单个worker进程允许客户端最大连接数，这个数值一般根据服务器性能和内存来制定，实际最大值就是worker进程数乘以work_connections。
+
+实际我们填入一个65535，足够了，这些都算并发值，一个网站的并发达到这么大的数量，也算一个大站了！
+
+multi_accept 告诉nginx收到一个新连接通知后接受尽可能多的连接，默认是on，设置为on后，多个worker按串行方式来处理连接，也就是一个连接只有一个worker被唤醒，其他的处于休眠状态，设置为off后，多个worker按并行方式来处理连接，也就是一个连接会唤醒所有的worker，直到连接分配完毕，没有取得连接的继续休眠。当你的服务器连接数不多时，开启这个参数会让负载有一定的降低，但是当服务器的吞吐量很大时，为了效率，可以关闭这个参数。
+
+**开启高效传输模式**
+
+http {
+
+​	include mime.types;
+
+​	default_type application/octet-stream;
+
+​	......
+
+​	sendfile on;
+
+​	tcp_nopush on;
+
+​	......
+
+}
+
+**·** Include mime.types ：媒体类型,include 只是一个在当前文件中包含另一个文件内容的指令。
+
+**·** default_type application/octet-stream ：默认媒体类型。
+
+**·** sendfile on：开启高效文件传输模式，sendfile指令指定nginx是否调用sendfile函数来输出文件，对于普通应用设为 on，如果用来进行下载等应用磁盘IO重负载应用，可设置为off，以平衡磁盘与网络I/O处理速度，降低系统的负载。注意：如果图片显示不正常把这个改成off。
+
+**·** tcp_nopush on：必须在sendfile开启模式才有效，防止网路阻塞，积极的减少网络报文段的数量（将响应头和正文的开始部分一起发送，而不一个接一个的发送。）
+
+**连接超时时间**
+
+主要目的是保护服务器资源，CPU，内存，控制连接数，因为建立连接也是需要消耗资源的。
+
+keepalive_timeout 60;
+
+tcp_nodelay on;
+
+client_header_buffer_size 4k;
+
+open_file_cache max=102400 inactive=20s;
+
+open_file_cache_valid 30s;
+
+open_file_cache_min_uses 1;
+
+client_header_timeout 15;
+
+client_body_timeout 15;
+
+reset_timedout_connection on;
+
+send_timeout 15;
+
+server_tokens off;
+
+client_max_body_size 10m;
+
+keepalived_timeout ：客户端连接保持会话超时时间，超过这个时间，服务器断开这个链接。
+
+tcp_nodelay：也是防止网络阻塞，不过要包涵在keepalived参数才有效。
+
+client_header_buffer_size 4k：客户端请求头部的缓冲区大小，这个可以根据你的系统分页大小来设置，一般一个请求头的大小不会超过 1k，不过由于一般系统分页都要大于1k，所以这里设置为分页大小。分页大小可以用命令getconf PAGESIZE取得。
+
+open_file_cache max=102400 inactive=20s ：这个将为打开文件指定缓存，默认是没有启用的，max指定缓存数量，建议和打开文件数一致，inactive 是指经过多长时间文件没被请求后删除缓存。
+
+open_file_cache_valid 30s：这个是指多长时间检查一次缓存的有效信息。open_file_cache_min_uses 1 ：open_file_cache指令中的inactive 参数时间内文件的最少使用次数，如果超过这个数字，文件描述符一直是在缓存中打开的，如上例，如果有一个文件在inactive 时间内一次没被使用，它将被移除。
+
+client_header_timeout ：设置请求头的超时时间。我们也可以把这个设置低些，如果超过这个时间没有发送任何数据，nginx将返回request time out的错误。
+
+client_body_timeout设置请求体的超时时间。我们也可以把这个设置低些，超过这个时间没有发送任何数据，和上面一样的错误提示。
+
+reset_timeout_connection ：告诉nginx关闭不响应的客户端连接。这将会释放那个客户端所占有的内存空间。
+
+send_timeout ：响应客户端超时时间，这个超时时间仅限于两个活动之间的时间，如果超过这个时间，客户端没有任何活动，nginx关闭连接。
+
+server_tokens ：并不会让nginx执行的速度更快，但它可以关闭在错误页面中的nginx版本数字，这样对于安全性是有好处的。
+
+client_max_body_size：上传文件大小限制。
+
+**FastCGI**
+
+介绍：https://www.jianshu.com/p/565217337247
+
+FastCGI 调优
+
+fastcgi_connect_timeout 600;
+
+fastcgi_send_timeout 600;
+
+fastcgi_read_timeout 600;
+
+fastcgi_buffer_size 64k;
+
+fastcgi_buffers 4 64k;
+
+fastcgi_busy_buffers_size 128k;
+
+fastcgi_temp_file_write_size 128k;
+
+fastcgi_temp_path/usr/local/nginx1.10/nginx_tmp;
+
+fastcgi_intercept_errors on;
+
+fastcgi_cache_path/usr/local/nginx1.10/fastcgi_cache levels=1:2 
+
+keys_zone=cache_fastcgi:128minactive=1d max_size=10g;
+
+**·**  fastcgi_connect_timeout 600 ：指定连接到后端FastCGI的超时时间。
+
+**·**  fastcgi_send_timeout 600 ：向FastCGI传送请求的超时时间。
+
+**·**  fastcgi_read_timeout 600 ：指定接收FastCGI应答的超时时间。
+
+**·**  fastcgi_buffer_size 64k ：指定读取FastCGI应答第一部分需要用多大的缓冲区，默认的缓冲区大小为。fastcgi_buffers指令中的每块大小，可以将这个值设置更小。
+
+**·**  fastcgi_buffers 4 64k ：指定本地需要用多少和多大的缓冲区来缓冲FastCGI的应答请求，如果一个php脚本所产生的页面大小为256KB，那么会分配4个64KB的缓冲区来缓存，如果页面大小大于256KB，那么大于256KB的部分会缓存到fastcgi_temp_path指定的路径中，但是这并不是好方法，因为内存中的数据处理速度要快于磁盘。一般这个值应该为站点中php脚本所产生的页面大小的中间值，如果站点大部分脚本所产生的页面大小为256KB，那么可以把这个值设置为“8 32K”、“4 64k”等。
+
+**·**  fastcgi_busy_buffers_size 128k ：建议设置为fastcgi_buffers的两倍，繁忙时候的buffer。
+
+**·**  fastcgi_temp_file_write_size 128k ：在写入fastcgi_temp_path时将用多大的数据块，默认值是fastcgi_buffers的两倍，该数值设置小时若负载上来时可能报502BadGateway。
+
+**·**  fastcgi_temp_path ：缓存临时目录。
+
+**·**  fastcgi_intercept_errors on ：这个指令指定是否传递4xx和5xx错误信息到客户端，或者允许nginx使用error_page处理错误信息。注：静态文件不存在会返回404页面，但是php页面则返回空白页！
+
+**·**  fastcgi_cache_path /usr/local/nginx1.10/fastcgi_cachelevels=1:2 keys_zone=cache_fastcgi:128minactive=1d max_size=10g ：fastcgi_cache缓存目录，可以设置目录层级，比如1:2会生成16*256个子目录，cache_fastcgi是这个缓存空间的名字，cache是用多少内存（这样热门的内容nginx直接放内存，提高访问速度），inactive表示默认失效时间，如果缓存数据在失效时间内没有被访问,将被删除，max_size表示最多用多少硬盘空间。
+
+**·**  fastcgi_cache cache_fastcgi ：#表示开启FastCGI缓存并为其指定一个名称。开启缓存非常有用，可以有效降低CPU的负载，并且防止502的错误放生。cache_fastcgi为proxy_cache_path指令创建的缓存区名称。
+
+**·**  fastcgi_cache_valid 200 302 1h ：#用来指定应答代码的缓存时间，实例中的值表示将200和302应答缓存一小时，要和fastcgi_cache配合使用。
+
+**·**  fastcgi_cache_valid 301 1d ：将301应答缓存一天。
+
+**·**  fastcgi_cache_valid any 1m ：将其他应答缓存为1分钟。
+
+**·**  fastcgi_cache_min_uses 1 ：该指令用于设置经过多少次请求的相同URL将被缓存。
+
+**·**  fastcgi_cache_key http://$host$request_uri ：该指令用来设置web缓存的Key值,nginx根据Key值md5哈希存储.一般根据$host(域名)、$request_uri(请求的路径)等变量组合成proxy_cache_key 。
+
+**·**   fastcgi_pass ：指定FastCGI服务器监听端口与地址，可以是本机或者其它。
+
+**开启 pathinfo 模式**
+
+pathinfo 是一种 url 模式
+
+我们用thinkphp，CodeIgniter框架的时候，地址基本都是/index.php/group_controller？***的模式，通过index.php入口访问php文件，这种模式是path_info模式，pathinfo 模式是index.ph/index/index 这种url格式，nginx默认是不支持的，我们需要配置下
+
+```yaml
+location ~ \.php {
+
+include fastcgi_params;
+
+fastcgi_pass php-fpm:9000;
+
+fastcgi_index index.php;
+
+fastcgi_param SCRIPT_FILENAME /data/www/$fastcgi_script_name;
+
+# 添加以下三行 支持
+
+pathinfofastcgi_split_path_info ^(.+\.php)(.*)$;
+
+fastcgi_param PATH_INFO $fastcgi_path_info;
+
+include fastcgi_params;
+
+}
+```
+
+**默认站点配置**
+
+```yaml
+server {
+
+listen 80 default;
+
+}
+```
+
+当一个nginx服务上创建了多个虚拟主机时默认会从上到下查找，如果匹配不到虚拟主机则会返回第一个虚拟主机的内容，如果你想指定一个默认站点时，可以将这个站点的虚拟主机放在配置文件中第一个虚拟主机的位置，或者在这个站点的虚拟主机上配置listen default
+
+
+
+## **Redis**
+
+Redis 作为缓存中间件的数据库（NoSQL），数据采用字典形式进行存储，大量采用基数算法来提高数据的查找效率，查询数据直接通过内存获取。
+
+主从复制、集群、哨兵
+
+使用nginx管理，达成负载均衡。
+
+解决 session 存放问题
+
+![image-20210609142109810](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210609142109810.png)
+
+解决 IO 压力
+
+![image-20210609142301823](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210609142301823.png)
+
+**NoSQL 数据库概述**
+
+NoSQL = Not Only SQL，泛指非关系型数据库。
+
+不依赖业务逻辑方式存储，而以简单的 key-value 模式存储。因此大大的增加了数据库的扩展能力。
+
+**·** 不遵循 SQL 标准
+
+**·** 不支持 ACID（事务的四个特征）
+
+**·** 远超于 SQL 的性能。
+
+使用场景
+
+**·** 对数据高并发的读写
+
+**·** 海量数据的读写
+
+**·** 对数据高可扩展性的
+
+不适用场景
+
+**·** 需要事务支持
+
+**·** 基于 sql 的结构化查询存储，处理复杂关系，需要即席查询。
+
+**·** **用不着 sql 的和用了 sql 也不行的情况，请考虑 NoSQL**
+
+行式数据库
+
+以行数据为单位进行数据存储，类似主键索引。
+
+select * from user where id = 1 快
+
+select avg(age) from user 慢
+
+列式数据库
+
+以列数据为单位进行数据存储。
+
+查询语句和上述相反。
+
+#### Redis概述
+
+Redis 是一个开源的 key-value 存储系统。
+
+它支持的存储的 value 类型相对更多，包括 string(字符串)、list(链表)、set(集合)、zset(有序集合)、hash(哈希类型)。
+
+支持push/pop、add/remove 及取交集并集和差集及更丰富的操作，这些操作都是原子性的。
+
+与 Memcached 一样，数据都是缓存在内存中。
+
+和 Memcached 的区别：Redis 会周期性的把更新的数据写入磁盘(持久化)或者把修改操作写入追加的记录文件,Redis存储的类型更加丰富,Redis 是单线程+多路 IO 复用技术。
+
+配合关系型数据库进行高速缓存
+
+默认安装路径为 /usr/local/bin
+
+redis-benchmark：性能测试工具，可以在自己本子运行，看看性能如何
+
+redis-check-aof：修复有问题的 AOF 文件，rdb 和 aof 后面讲。
+
+redis-check-dump：修复有问题的 dump.rdb 文件
+
+redis-sentinel：Redis 集群使用
+
+redis-server：Redis 服务器启动命令
+
+redis-cli：客户端，操作入口
+
+**两种启动方式**
+
+前台启动（不推荐）
+
+redis-server 
+
+缺点：将当前终端进程关闭后就不能操作了。
+
+后台启动（推荐）
+
+1、将解压后的 redis 目录下的 redis.conf 复制一份到 /etc 中，将文件内的 daemonize 由 no 改为 yes（效果是使得 redis 支持后台启动）
+
+2、redis-server /etc/redis.conf
+
+ps -ef | grep 'redis' 查看redis的进程
+
+在 /usr/local/bin 下使用 redis-cli 来连接 redis
+
+ping 检测连接状态，若为PONG表示正常连接。
+
+**Redis 关机**
+
+单实例关闭：redis-cli shutdown
+
+多实例关闭，指定端口关闭：redis-cli -p 6379 shutdown 6379为端口号
+
+也可以使用 kill -9 5780 5780为进程号
+
+#### Redis 相关知识
+
+默认有16个数据库，初始默认使用第0号
+
+Redis 是单线程+多路 IO 复用技术
+
+多路复用是指一个线程来检查多个文件标识符（Socket）的就绪状态，比如低啊用
+
+select 和 poll 函数，传入多个文件描述符，如果有一个文件描述符就绪，则返回，否则阻塞直到超时。得到就绪状态后进行真正的操作可以在同一个线程里执行，也可以启动线程执行。
+
+串行 vs 多线程 + 锁(memcached) vs 单线程 + 多路IO复用(Redis)
+
+**key键操作**
+
+keys * 查看当前库的所有key （匹配：keys *1）
+
+exists key 判断某个 key 是否存在
+
+type key 查看 key 是什么类型
+
+del key 删除指定的 key 数据
+
+unlink key 根据 value 选择非阻塞删除（仅将 keys 从 keyspace 元数据中删除，真正的删除会在后续异步操作）
+
+expire key 10 设置 key 的过期时间，单位为秒
+
+ttl key 查看key还有多少秒过期，-1为永不过期，-2为已过期
+
+**Redis字符串(String)**
+
+简介
+
+String 类型是二进制安全的。意味着 Redis 的 string 可以包含任何数据。比如 jpg 图片或者序列化的对象。
+
+字符串 value 最多可以是 512M
+
+相关命令
+
+set <key> <value> 添加键值对 （可覆盖value值）
+
+get <key> 查询对应键值
+
+append <key> <value> 将给定的 value 追加到原值的末尾
+
+strlen <key> 获得值的长度
+
+setnx <key> <value> 只有在 key 不存在时 设置key的值
+
+incr <key> 将 key 中存储的数字值增加1
+
+​					只能对数字操作，如果为空，新增值为1
+
+decr <key> 和incr相反
+
+incrby / decrby <key> <步长> 将 key 中存储的数字增减，步长自定义
+
+原子性
+
+incr key 具有原子性
+
+所谓**原子**操作是指不会被线程调度机制打断的操作
+
+这种操作一旦开始，就一直运行到结束，中间不会有任何 context switch（切换到另一个线程）
+
+（1）在单线程中，能够在单条指令中完成的操作都可以认为是“原子操作”，因为中断只能发生于指令之间。
+
+（2）在多线程中，不能被其它进程（线程）打断的操作就叫原子操作。
+
+Redis 单命令的原子性主要得益于 Redis 的单线程。
+
+**原子举例说明：**
+
+java中的 i++ 是否是一个原子操作？ 不是
+
+i=0 两个线程分别对i进行++100次，值是多少？
+
+2 - 200 	得到 2 时的情况见图：
+
+![image-20210621213759525](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210621213759525.png)
+
+mset <key1><value1><key2><value2>... 同时设置一个或多个 key-value 对，当且仅当所有给定的 key 都不存在。
+
+msetnx 原子性，有一个失败则都失败
+
+getrange <key><起始位置><结束位置>
+
+获得一定范围的值，类似于java中的substring，但是是闭区间
+
+setrange <key><起始位置><value>
+
+setex <key> <过期时间> <value>
+
+getset <key><value> 以新值换旧值，同时获得旧值
+
+数据结构
+
+redis 中的 string 的数据结构为简单动态字符串，是可以修改的字符串，内部结构实现类似于 java 的 ArrayList，采用预分配冗余空间的方式来减少内存的频繁分配。
+
+扩容到1M是每次不是成倍增加容量，而是加1M，最大长度为512M。
+
+**Redis列表(List)**
+
+单键多值
+
+底层是一个双向链表，类似于java中的LinkedList
+
+相关命令
+
+lpush/rpush <key><value1><value2> 从左边/右边插入一个或多个值
+
+lpop/rpop <key> 从左边/右边弹出一个值
+
+有键才有值。
+
+rpoplpush <key1><key2> 从列表1右边弹出一个值加入到列表2的左边。
+
+lrange <key><起始位置><结束位置> 按照索引获得元素（从左到右）
+
+lrange mylist 0 -1 0表示左边第一个，-1表示右边第一个，故该命令为取全部
+
+lindex <key><index> 按照索引下标获得元素
+
+llen <key> 获得列表长度
+
+linsert <key> before/after <value> <newvalue> 在<value>的前面/后面插入newvalue
+
+lrem <key><n><value> 以左边为头、0起始，删除第n个value
+
+lset <key> <index> <valuie> 将列表 key 下标为 index 的值替换成 value
+
+数据结构
+
+List 的数据结构为快速链表 quickList（一般链表 + ziplist）。
+
+首先在列表元素较少的情况下会使用一块连续的内存存储，这个结构是 ziplist，也即是压缩列表。
+
+它将所有的元素紧挨在一起存储，分配的是一块连续的内存。
+
+当数据量比较多才会转为一般链表。
+
+因为普通的链表需要的附加指针空间太大，会比较浪费时间。
+
+**Redis集合(Set)**
+
+string 类型的**无序集合**，它底层其实是一个 value 为 null 的 hash 表，所以添加，删除，查找的**复杂度都是O(1)**。
+
+sadd <key><value1><value2>...
+
+将一个或多个 member 元素加入到集合 key 中，已经存在的 member 元素将被忽略，
+
+smembers <key> 取出该集合的所有值。
+
+sismember <key><value> 判断集合<key>是否为含有该<value>值，有1，没有0
+
+scard <key> 返回该集合的元素个数。
+
+srem <key><value1><value2>... 删除集合中的某个元素
+
+spop <key> 随机从该集合中吐出一个值。
+
+srandmember <key><n> 随机从该集合中取出n个值。不会从集合中删除。
+
+smove <source><destination>value 把集合中一个值从一个集合移动到另一个集合
+
+sinter <key1><key2> 返回两个集合的交集元素
+
+sunion <key1><key2> 返回两个集合的并集元素
+
+sdiff <key1><key2> 返回两个集合的差集元素（key1 中的，不包含 key2 中的）
+
+数据结构
+
+Set 数据结构是 dict 字典，字典是哈希表
+
+**Redis哈希表(Hash)**
+
+Redis hash 是一个键值对集合。
+
+Redis hash 是一个 string 类型的 field 和 value 的映射表，hash 特别适合用于存储对象。
+
+类似 Java 里面的 Map<String, Object>
+
+用户 ID 为查找的 key，存储的 value 用户对象包含姓名，年龄，生日等信息，如果用普通的  key/value 结构来存储
+
+主要有以下两种存储方式：
+
+第一种：
+
+user : {id=1,name=zhangsan,age=20}
+
+第二种：
+
+user:id	1
+
+user:name	zhangsan
+
+user:age	20
+
+第三种：hash
+
+user	 id	1
+
+​			name	zhangsan
+
+​			age	20
+
+hset <key><field><value> 给<key>集合中的 <field>键赋值<value>
+
+hget <key1><field> 从<key1>集合<field>中取出value
+
+hmset <key1><field1><value1><field2><value2>... 批量设置 hash 的值
+
+hexists <key1><field> 查看哈希表 key 中，给定域 field 是否存在
+
+hkeys <key> 列出该 hash 集合的所有 field
+
+hvals <key> 列出该 hash 集合的所有 value
+
+hincrby <key><field><increment> 为哈希表 key 中的域 field 的值加上增量 1 -1
+
+hsetnx <key><field><value> 将哈希表 key 中的域 field 的值设置为 value，当且仅当域 field 不存在
+
+数据结构：
+
+Hash 类型对应的数据结构是两种：ziplist，hashtable。当 field-value 长度较短且个数较少时，使用 ziplist，否则使用 hashtable。
+
+**Redis有序集合(Zset)**
+
+和集合的不同之处是有序集合的每个成员都关联了一个评分(score)，这个评分(score)被用来按照从最低分到最高分的方式排序集合中的成员。集合的成员是惟一的，但是评分可以是重复的。
+
+因为元素是有序的，所以你也可以很快的根据评分(score)或者次序(position)来获取一个范围的元素。
+
+访问有序集合中的中间元素也是非常快的，因此你能够使用有序集合作为一个没有重复成员的智能列表。
+
+zadd <key><score1><value1><score2><value2>...
+
+将一个或多个 member 元素及其 score 值加入到有序集 key 当中。
+
+zrange <key><start><stop> [WITHSCORES]
+
+返回有序集 key 中，下标在<start><stop>之间的元素
+
+含有 WITHSCORES，可以让分数和值一起返回到结果集。
+
+zrangebyscore key <min><max> [WITHSCORES] [limit offset count]
+
+返回有序集 key 中，所有 score 值介于 min 和 max 之间（包括等于 min 或 max）的成员。
+
+有序集成员按 score 值递增(从小到大)次序排列。
+
+zrevrangebyscore <max><min> [WITHSCORES] [limit offset count]
+
+同上，改为从大到小排列。
+
+zincrby <key><increment><value> 为元素的 score 加上增量
+
+zrem <key><value> 删除该集合下，指定值的元素
+
+zcount <key><min><max> 统计该集合，分数区间的元素个数。
+
+zrank <key><value> 返回该值在集合中的排名，从0开始。
+
+数据结构
+
+zset 是 Redis 中存在非常特别的数据结构的一种存储容器，一方面它等价于 Java 的数据结构 Map<String, Double>，可以给每一个元素 value 赋予一个权重 score，另一方面它又类似于 TreeSet，内部的元素按照权重 score 进行排序，可以得到每个元素的名词，还可以通过 score 的范围来获取元素的列表。
+
+底层使用了两个数据结构
+
+(1) hash，hash 的作用就是关联元素 value 和权重 score，保障元素 value 的唯一性，可以通过元素 value 找到相应的 score 值。
+
+(2)跳跃表，跳跃表的目的在于给元素 value 排序，根据 score 的范围获取元素列表。
+
+![image-20210625224312450](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210625224312450.png)
+
+图中的案例跳跃表查找为4次，而常规链表为6次。
+
+#### **配置文件详解**
+
+**###Units 单位###**
+
+配置大小单位，开头定义了一些基本的度量单位，只支持 bytes，不支持 bit，大小写不敏感。
+
+**###INCLUDES 包含###**
+
+配置文件内容包含
+
+**###NETWORK 网络部分###**
+
+bind （限制访问 ip）
+
+默认情况下 bind=127.0.0.1 只能接受本机的访问请求
+
+不写的情况下，无限制接受任何 ip 地址的访问
+
+生产环境肯定要写你应用服务器的地址；服务器时需要远程访问的，所以需要将其注释掉。
+
+如果开启了 protected-mode，那么在没有设定 bind ip 且没有设置密码的情况下，Redis 只允许接受本机的响应。
+
+port 端口，默认6379
+
+tcp-backlog（默认值为511）
+
+设置 tcp 的 backlog，backlog 其实是一个连接队列，backlog 队列总和 = 未完成三次握手队列 + 已经完成三次握手队列
+
+timeout（默认值为0）0表示永不超时。
+
+tcp-keepalive 300（检测心跳，每隔一段时间看是否存在对redis的操作）
+
+**###GENERAL 通用###**
+
+daemonize（守护进程）
+
+设置为yes，则后台启动。
+
+pidfile（存放pid文件的位置，每个实例会产生一个不同的 pid 文件）
+
+loglevel （日志级别）
+
+logfile （设置日志输出的文件路径）
+
+databases （设置 Redis 的默认数据库数量）
+
+**###SECURITY 安全###**
+
+requirepass foobared（设置密码，foobared为默认值）
+
+当然可以通过命令设置
+
+config get requirepass 获取当前
+
+config set requirepass "密码" 设置密码
+
+auth "密码" 给密码授权
+
+**###LIMITS 限制###**
+
+maxclients （设置 redis 同时可以与多少个客户端进行连接）
+
+默认为10000
+
+若达到上限，redis 则会拒绝新的连接请求，并且向这些连接请求发发出“max number of clients reached” 以作回应。
+
+maxmemory（设置 redis 可以使用的内存量）
+
+一旦达到上限，redis 将会试图移除内部数据，移除规则可以通过 maxmemory-policy 来指定。
+
+maxmemory-policy（达到最大容量是采取的策略）
+
+volatile-lru：使用 LRU 算法移除 key，只对设置了过期时间的键有效；（最近最少使用）
+
+allkeys-lru：在所有集合 key 中，使用 LRU 算法移除 key。
+
+volatile-random：在过期集合中移除随机的 key，只对设置了过期时间的键有效
+
+allkeys-random：在所有集合 key 中，移除随机的 key
+
+volatile-ttl：移除那些 TTL 值最小的 key，即那些最近要过期的 key
+
+noeviction：不进行移除。针对写操作，只是返回错误信息。
+
+maxmemory-samples（设置样本数量，即采取移除策略是的样本数）
+
+设置样本数量，LRU算法和最小TTL算法都并非是精确的算法，而是估算值，所以你可以设置样本的大小，redis默认会检查这么多个 key 并选择其中 LRU 的那个。
+
+一般设置 3 到 7 的数字，数值越小样本越不准确，但性能消耗越小。
+
+#### Redis 的发布和订阅
+
+Redis 发布订阅（pub/sub）是一种消息通信模式：发送者（pub）发送消息，订阅者（sub）接收消息。
+
+Redis 客户端可以订阅任意数量的频道。
+
+**发布订阅命令行实现**
+
+1、打开一个客户端订阅 channel1
+
+subscribe channel1
+
+2、打开另一个客户端，给 channel1 发布消息 hello
+
+publish channel1 hello
+
+返回的值为订阅者数量
+
+3、打开第一个客户端可以看到发送的消息
+
+#### Redis 新数据类型
+
+**Bitmaps(位数组)**
+
+可以看作 key + value （value是一个位数组）
+
+1、setbit
+
+setbit <key><offset><value> 设置 Bitmaps 中某个偏移量的值（0 或 1）
+
+setbit <key><value> value为字符串。
+
+offset：偏移量从0开始。
+
+注意：
+
+​	很多应用的用户 id 以指定数字（例如 10000）开头，直接将用户 id 和 Bitmaps 的偏移量对应势必会造成一定的浪费，通常的做法是每次做 setbit 操作时将用户 id 减去这个指定数字。
+
+​	在第一次初始化 Bitmaps 时，假如偏移量非常大，那么整个初始化过程执行会比较慢，可能会造成 Redis 的阻塞。
+
+2、getbit
+
+getbit <key><offset> 获取 Bitmaps 中某个偏移量的值
+
+做每日签到可以拿来用。
+
+3、bitcount
+
+统计字符串被设置为1的 bit 数。一般情况下，给定的整个字符串都会被进行计数，通过指定额外的 start 或者 end 参数，可以让计数只在特定位上进行。start 和 end 参数的设置，都可以使用负数值：比如 -1 表示最后一位，而 -2 表示倒数第二个位，start、end 是指 bit 组的字节的下标数，二者皆包含。
+
+4、bittop
+
+bitop and(or/not/xor) <destkey>[key...] destkey(结果键)
+
+Bitmaps 和 set 作对比
+
+![image-20210626222825960](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210626222825960.png)
+
+活跃用户多的时候对于空间的节省非常大，僵尸用户多、活跃用户少的时候作用不大（set只存储活跃用户，所以有时更好）。
+
+**HyperLogLog(基数)**
+
+用于解决统计 UV（UniqueVisitor，独立访客）、独立 IP、搜索记录数等需要去重和计数的问题。求集合中不重复元素个数的问题称为基数问题。
+
+解决基数问题有多种方案：
+
+1、数据存储在关系数据库表中，使用 distinct count 计算不重复个数
+
+2、使用 Redis 提供的 hash、set、bitmaps 等数据结构来处理。
+
+以上两种方案的结果精确，但随着数据的不断增加，导致占用的空间会越来越大，对于非常大的数据集是不切实际的。
+
+降低精度来平衡存储空间的方案即是采用 HyperLogLog 这种数据类型。
+
+​	Redis HyperLogLog 是用来做基数统计的算法，HyperLogLog 的优点是，在输入元素的数量或者体积非常大时，计算基数所需的空间总是固定且很小。
+
+​	在 Redis 里面，每个 HyperLogLog 键只需要花费 12kb 内存，就可以计算接近 2^64 个不同元素的基数。这和计算基数时，元素越多耗费内存就越多的集合形成鲜明对比。
+
+​	但是，因为 HyperLogLog 只会根据输入元素来计算基数，而不会存储输入元素本身，所以 HyperLogLog 不能像集合那样，返回输入的各个元素。
+
+命令：
+
+1、pfadd
+
+pfadd <key><element> [element...] 添加指定元素到 HyperLogLog 中
+
+返回1则添加成功，0则失败。
+
+2、pfcount
+
+pfcount <key> [key...] 计算 HLL 的近似基数，可以计算多个 HLL，比如用 HLL 存储每天的 UV，计算一周的 UV 可以使用 7 天得 UV 合并计算即可
+
+3、pfmerge
+
+pfmerge <destkey><sourcekey>[sourcekey...] 将一个或多个 HLL 合并后的结果存储在另一个 HLL 中，比如每月活跃用户可以使用每天的活跃用户来合并计算获得。
+
+**Geographic(经纬度)**
+
+1、geoadd
+
+geoadd <key><longitude><latitude><member>[longitude latitude member...]
+
+添加地理位置（经度、纬度、名称）
+
+特别之处：两极位置无法直接添加，有效经度为 -180 度到 180 度。有效纬度为 -85.05112878 度到 85.05112878 度
+
+2、geopos
+
+geopos <key><member>[member...] 获取指定地区的坐标值
+
+3、geodist
+
+geodist <key><member1><member2> [m|km|ft|mi] 获取两个位置之间的直线距离
+
+mi为英里 ft为英尺，默认用米
+
+4、georadius
+
+georadius <key><longitude><latitude>radius m|km|ft|mi
+
+**关于库本身的操作**
+
+select <dbid> 选择数据库
+
+dbsize 查看当前数据库的 key 的数量
+
+flushdb 清空当前库
+
+flushall 通杀全部库
+
+#### Jedis 操作 Redis6
+
+**小测试**
+
+引入依赖
+
+```xml
+<dependency>
+    <groupId>redis.clients</groupId>
+    <artifactId>jedis</artifactId>
+    <version>3.2.0</version>
+</dependency>
+```
+
+测试连接是否正常
+
+```java
+package com.atguigu.jedis;
+
+import redis.clients.jedis.Jedis;
+
+public class JedisDemo1 {
+    public static void main(String[] args) {
+        //创建Jedis对象
+        Jedis jedis = new Jedis("192.168.137.31",6379);
+        //测试
+        String ping = jedis.ping();
+        System.out.println(ping);
+        jedis.close();
+    }
+}
+```
+
+注：结果为 PONG 则没有异常。
+
+常用基本方法Demo
+
+```java
+package com.atguigu.jedis;
+
+import org.junit.Test;
+import redis.clients.jedis.Jedis;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
+public class JedisDemo1 {
+    public static void main(String[] args) {
+        //创建Jedis对象
+        Jedis jedis = new Jedis("192.168.137.31",6379);
+        //测试
+        String ping = jedis.ping();
+        System.out.println(ping);
+        jedis.close();
+    }
+
+//操作key和string类型数据
+    @Test
+    public void test1(){
+        //创建Jedis对象
+        Jedis jedis = new Jedis("192.168.137.31",6379);
+
+//查看所有的key
+//        Set<String> keys = jedis.keys("*");
+//        for(String key : keys){
+//            System.out.println(key);
+//        }
+
+//测试对string操作的set、get、ttl、exists
+//        //添加
+//        jedis.set("name","lucy");
+//        //获取
+//        String name = jedis.get("name");
+//        System.out.println(name);
+//        Long nameAlive = jedis.ttl("name");
+//        System.out.println(nameAlive);
+//        Boolean nameExists = jedis.exists("name");
+//        System.out.println(nameExists);
+
+//测试对string操作的mset、mget
+//        jedis.mset("k1","v1","k2","v2");
+//        List<String> mTest = jedis.mget("k1", "k2");
+//        System.out.println(Arrays.toString(mTest.toArray()));
+        jedis.close();
+    }
+
+    //操作list类型数据
+    @Test
+    public void test2(){
+        //创建Jedis对象
+        Jedis jedis = new Jedis("192.168.137.31",6379);
+
+//测试对list操作的lpush、rpush
+//        jedis.lpush("key1","lucy","mary","jack");
+//        List<String> vs = jedis.lrange("key1", 0, -1);
+//        System.out.println(vs);
+        jedis.close();
+    }
+
+    //操作set类型数据
+    @Test
+    public void test3(){
+        //创建Jedis对象
+        Jedis jedis = new Jedis("192.168.137.31",6379);
+
+//测试对set操作的sadd、smembers、srem
+//        jedis.sadd("name","lucy","jack");
+//        System.out.println(jedis.smembers("name"));
+//        jedis.srem("name","jack");
+//        System.out.println(jedis.smembers("name"));
+        jedis.close();
+    }
+
+    //操作hash类型数据
+    @Test
+    public void test4(){
+        //创建Jedis对象
+        Jedis jedis = new Jedis("192.168.137.31",6379);
+
+//测试对hash操作的hset、hget、hmset、hmget
+//        jedis.hset("hash1","userName","lisi");
+//        System.out.println(jedis.hget("hash1","userName"));
+//        HashMap<String, String> map = new HashMap<String, String>();
+//        map.put("telephone","13810159999");
+//        map.put("address","atguigu");
+//        map.put("email","abc@163.com");
+//        jedis.hmset("hash2",map);
+//        System.out.println(jedis.hmget("hash2","telephone","email"));
+        jedis.close();
+    }
+
+    //操作zset类型数据
+    @Test
+    public void test5(){
+        //创建Jedis对象
+        Jedis jedis = new Jedis("192.168.137.31",6379);
+//测试对hash操作的zadd、zrange
+//        jedis.zadd("zSet1",2,"jack");
+//        jedis.zadd("zSet1",1,"lucy");
+//        System.out.println(jedis.zrange("zSet1",0,-1));
+        jedis.close();
+    }
+}
+```
+
+**模拟验证码发送**
+
+功能分解
+
+1、输入手机号，点击发送后随机生成 6 位数字吗，2 分钟有效
+
+2、输入验证码，点击验证，返回成功或者失败
+
+3、每个手机号每天只能输入 3 次
+
+```java
+package com.atguigu.jedis;
+
+import redis.clients.jedis.Jedis;
+
+import java.util.Random;
+
+public class PhoneCode {
+    public static void main(String[] args) {
+        String phone = "12345654321";
+        String newCode = getCode();
+        verifyCode(phone, newCode);
+        System.out.println(verify(phone,newCode));
+    }
+
+    //1、生成6位数字验证码
+    public static String getCode(){
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < 6; i++){
+            sb.append(random.nextInt(10));
+        }
+        return sb.toString();
+    }
+
+    //2、验证码放在redis里面，且过期时间为120秒
+    public static void verifyCode(String phone, String code){
+        //连接redis
+        Jedis jedis = new Jedis("192.168.137.31",6379);
+
+        //拼接key
+        //手机发送次数 key
+        String countKey = "VerifyCode" + phone + ":count";
+        //验证码 key
+        String codeKey = "VerifyCode" + phone + ":code";
+
+        //每个手机每天只能发送三次
+        String count = jedis.get(countKey);
+        if(count == null){
+            //无发送
+            jedis.setex(countKey,24*60*60,"1");
+            jedis.setex(codeKey,2*60,code);
+        } else if(Integer.parseInt(count) <= 2){
+            //发送次数 + 1
+            jedis.incr(countKey);
+            jedis.setex(codeKey,2*60,code);
+        } else if(Integer.parseInt(count) > 2){
+            //不能进行发送
+            System.out.println("今天的发送次数已经超过三次");
+        }
+        jedis.close();
+    }
+
+    //3、将输入的验证码和redis中的验证码进行比对
+    public static boolean verify(String phone, String verCode){
+        //连接redis
+        Jedis jedis = new Jedis("192.168.137.31",6379);
+        //获取验证码 key 的 value
+        String codeKey = "VerifyCode" + phone + ":code";
+        String code = jedis.get(codeKey);
+        jedis.close();
+        if(code == null){
+            return false;
+        } else {
+            if(verCode.equals(code)){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+}
+```
+
+springboot-redis
+
+1、添加依赖
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.4</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.example</groupId>
+    <artifactId>demo</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>demo</name>
+    <description>Demo project for Spring Boot</description>
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>2.11.1</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+```
+
+2、设置配置文件
+
+![image-20210823145417526](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210823145417526.png)
+
+3、添加redis配置类
+
+```java
+package com.example.demo.Config;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import java.time.Duration;
+
+/**
+ * @version v1.0
+ * @description:
+ * @author: 47 on 2020/4/3 13:45
+ */
+@Configuration
+@EnableCaching
+public class RedisConfig {
+
+    /**
+     * 配置RedisTemplate
+     * @param factory
+     * @return
+     */
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory){
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(factory);
+        //使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值
+        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        //反序列化时候遇到不匹配的属性并不抛出异常
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        //序列化时候遇到空对象不抛出异常
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        //反序列化的时候如果是无效子类型,不抛出异常
+        objectMapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
+        //不使用默认的dateTime进行序列化,
+        objectMapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+        //使用JSR310提供的序列化类,里面包含了大量的JDK8时间序列化类
+        objectMapper.registerModule(new JavaTimeModule());
+        //启用反序列化所需的类型信息,在属性中添加@class
+        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+        RedisSerializer<?> stringSerializer = new StringRedisSerializer();
+        //key序列化
+        redisTemplate.setKeySerializer(stringSerializer);
+        //value序列化
+        redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
+        //Hash key序列化
+        redisTemplate.setHashKeySerializer(stringSerializer);
+        // Hashvalue序列化
+        redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer);
+        redisTemplate.afterPropertiesSet();
+        return redisTemplate;
+    }
+
+    /**
+     * 使用spring的CacheManager
+     * @param factory
+     * @return
+     */
+    @Bean
+    public CacheManager cacheManager(RedisConnectionFactory factory) {
+        RedisSerializer<String> redisSerializer = new StringRedisSerializer();
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+
+        //解决查询缓存转换异常的问题
+        ObjectMapper om = new ObjectMapper();
+        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        jackson2JsonRedisSerializer.setObjectMapper(om);
+
+        // 配置序列化（解决乱码的问题）
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofMinutes(10))
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer))
+                .disableCachingNullValues();
+
+        RedisCacheManager cacheManager = RedisCacheManager.builder(factory)
+                .cacheDefaults(config)
+                .build();
+        return cacheManager;
+    }
+}
+
+```
+
+测试类
+
+```java
+package com.example.demo.Controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/test")
+public class TestController {
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+    @GetMapping
+    public String testRedis(){
+        redisTemplate.opsForValue().set("test","abc");
+        String test = redisTemplate.opsForValue().get("test");
+        return test;
+    }
+}
+```
+
+**Redis中的事务和锁机制**
+
+事务：串连多个命令。
+
+Multi
+
+开启事务（组队阶段）【类似start transaction】
+
+Exec
+
+事务执行（执行阶段）
+
+discard
+
+放弃事务（类似回滚，但是本质不一样）
+
+![image-20210823160035316](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210823160035316.png)
+
+事务的错误处理：
+
+![image-20210823160607864](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210823160607864.png)
+
+执行时有某个命令失败则失败的不管，别的成功。
+
+事务冲突（悲观锁和乐观锁）
+
+![image-20210823161316567](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210823161316567.png)
+
+ ![image-20210823171047899](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210823171047899.png)
+
+
+
+![image-20210823171234671](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210823171234671.png)
+
+WATCH key [key...] 监视 key
+
+![image-20210824145508855](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824145508855.png)
+
+例子：两个终端使用事务对同一个key的value加某个值，其中一个执行后，另一个无法执行。
+
+UNWATCH 取消监视
+
+![image-20210824150827438](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824150827438.png)
+
+案例和基本实现：
+
+![image-20210824151407223](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824151407223.png)
+
+![image-20210824153518923](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824153518923.png)
+
+并发模拟，ab工具
+
+![image-20210824154005691](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824154005691.png)
+
+![image-20210824154000147](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824154000147.png)
+
+![image-20210824154344098](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824154344098.png)
+
+-n表示请求次数，-c表示并发次数
+
+-T表示如果用post/put提交，需要设置提交的数据的类型，设置为：![image-20210824154455344](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824154455344.png)
+
+![image-20210824154745440](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824154745440.png)
+
+-p放置POST参数，需要-T
+
+![image-20210824154939166](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824154939166.png)
+
+写postfile时记得在最后加上'&'
+
+后面最后的是具体访问地址
+
+超卖和超时解决方案案
+
+超时：数据库连接池解决
+
+![image-20210824161127817](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824161127817.png)
+
+![image-20210824155732420](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824155732420.png)
+
+![image-20210824155752586](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824155752586.png)
+
+超卖：加入乐观锁
+
+前面一个watch过程
+
+![image-20210824160911504](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824160911504.png)
+
+库存遗留问题：
+
+乐观锁造成
+
+![image-20210824161840524](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824161840524.png)
+
+解决：redis不能直接使用悲观锁。
+
+lua可以解决库存遗留问题。
+
+![image-20210824162031762](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824162031762.png)
+
+最终实现：
+
+while效率太低了，脚本较好。
+
+![image-20210824162457483](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824162457483.png)
+
+![image-20210824162610746](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824162610746.png)
+
+![image-20210824162618924](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824162618924.png)
+
+![image-20210824162631190](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824162631190.png)
+
+![image-20210824162641488](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824162641488.png)
+
+**redis的持久化操作**
+
+![image-20210824162933293](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824162933293.png)
+
+**RDB：**
+
+在指定的时间间隔内将内存中的数据集快照写入磁盘。
+
+::set nu vi中打开行号
+
+![image-20210824163428899](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824163428899.png)
+
+![image-20210824163938752](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824163938752.png)
+
+
+
+![image-20210824164225156](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824164225156.png)
+
+
+
+![image-20210824164329673](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824164329673.png)
+
+
+
+![image-20210824164518203](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824164518203.png)
+
+![image-20210824164536705](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824164536705.png)
+
+![image-20210824164952663](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824164952663.png)
+
+![image-20210824165824515](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824165824515.png)
+
+![image-20210824165933401](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824165933401.png)
+
+ ![image-20210824170353700](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210824170353700.png)
+
+
+
+缺点：
+1 数据的完整性和一致性不高，因为RDB可能在最后一次备份时宕机了。
+2 备份时占用内存，因为Redis 在备份时会独立创建一个子进程，将数据写入到一个临时文件（此时内存中的数据是原来的两倍哦），最后再将临时文件替换之前的备份文件。所以要考虑到大概两倍的数据膨胀性。
+
+**AOF：**
+
+ ![image-20210825141551019](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825141551019.png)
+
+![image-20210825141654003](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825141654003.png)
+
+![image-20210825141854301](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825141854301.png)
+
+AOF和RDB都开启，默认采用AOF的
+
+![image-20210825142505708](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825142505708.png)
+
+![image-20210825142845152](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825142845152.png)
+
+Rewirte压缩
+
+![image-20210825143233344](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825143233344.png)
+
+触发条件
+
+![image-20210825143319833](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825143319833.png)
+
+![image-20210825143338863](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825143338863.png)
+
+![image-20210825143625060](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825143625060.png)
+
+劣势：
+
+占用更多磁盘空间。
+
+备份恢复速度慢。
+
+每次读写都同步，有一定压力。
+
+存在一定bug。
+
+总结：
+
+官方推荐两个都启用。
+
+如果对数据不敏感，可以单独使用RDB。
+
+不建议单独用AOF，可能出现bug。
+
+如果只是做纯内存缓存，可以都不用。
+
+**主从复制**
+
+4-26
+
+![image-20210825144041660](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825144041660.png)
+
+好处：
+
+1、读和写分离
+
+2、容灾的快速恢复（其中一个从坏了，读操作可以切换到另外一台从）
+
+搭建：
+
+弄前最后关闭下AOF
+
+1、创建/myredis文件夹
+
+2、复制redis.conf配置文件到文件夹中
+
+3、配置一主两从，创建三个配置文件
+
+redis6379.conf
+
+redui6380.conf
+
+redis6381.conf
+
+4、在三个配置文件中写入内容
+
+![image-20210825145155656](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825145155656.png)
+
+下面这图是配置文件压缩重写自动生成的。
+
+![image-20210826180143771](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210826180143771.png)
+
+6380和6381的文件设置大同小异。
+
+5、启动三个redis服务：
+
+![image-20210825145541988](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825145541988.png)
+
+*查看主机运行状况
+
+info replication
+
+看role属性是master还是slave
+
+*多个终端一次连接
+
+![image-20210825145746592](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825145746592.png)
+
+6、将想要做从机的终端执行以下命令
+
+![image-20210825145844101](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825145844101.png)
+
+特点：
+
+1、从服务器重启后会变回独立的服务器
+
+2、重新绑定后数据会复制
+
+3、主服务器挂掉，从服务器不会上位，主服务器重启后正常使用。
+
+*复制原理*
+
+1、当从服务器连上主服务器之后，从服务器向主服务发送需求进行数据同步的信息。
+
+2、主服务器收到从服务器发送来的同步信息，把主服务器数据进行持久化为rdb文件，把rdb文件发送从服务器，从服务器获取到后读取。
+
+3、每次主服务器进行写操作后，由主服务器发起同步。
+
+薪火相传：
+
+ 多叉树结构
+
+特点：和前者一致。
+
+反客为主：
+
+当一个master宕机后，后面的slave可以立刻升级为master，其后面的slave不用做如何修改。
+
+用slaveof no one，将从机变为主机。
+
+**哨兵模式**
+
+反客为主的自动版，能够后台监控主机是否故障，如果故障了根据投票数将从服务器切为主服务器。
+
+配置：
+
+1、在/myredis中新建 sentinel.conf 文件
+
+2、写内容到 sentinel.conf 中
+
+![image-20210825154009432](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825154009432.png)
+
+启动：
+
+redis-sentinel /myredis/sentinel.conf
+
+哪个从机会被选中，根据优先级别的设置：
+
+slave-priority
+
+高版本后改为 -> replica-priority
+
+原主机重启后会变为新主机的从机。
+
+![image-20210825155108133](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825155108133.png)
+
+若优先级一致看偏移量，即为和主服务器的数据总量越接近的从服务器优先级越高
+
+若偏移量也一致，根据redis实例启动后随机获得的runid来选取，越小优先级越高。
+
+复制延时
+
+系统繁忙，会让复制操作变的效率极低
+
+![image-20210825155602197](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825155602197.png)
+
+***Redis集群**
+
+容量不够，redis如何进行扩容？
+
+并发写操作，redis如何分摊？
+
+![image-20210825155923080](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825155923080.png)
+
+无中心化集群
+
+![image-20210825160345957](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825160345957.png)
+
+去除中转站，也可以认为每个主机都是中转站。
+
+![image-20210825160543195](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210825160543195.png)
+
+集群搭建
+
+保留![image-20210826180349590](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210826180349590.png)
+
+注意：appendonly要关掉或者改变名字
+
+redis cluster 配置修改
+
+cluster-enabled yes  打开集群模式
+
+cluster-config-file nodes-6379.conf 设定节点配置文件名
+
+cluster-node-timeout 15000 设定节点失联时间，超过该时间（毫秒），集群自动进行主从切换。
+
+字符全部替换命令：
+
+![image-20210826180955263](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210826180955263.png)
+
+将多个节点形成集群
+
+*旧版本要加ruby环境。
+
+![image-20210826181637857](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210826181637857.png)
+
+有密码1后加 -a password
+
+一台主机，一台从机，正好三组
+
+replicas后的 1 表示从机数量。
+
+![image-20210826182226123](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210826182226123.png)
+
+redis-cli -c -p 6379
+
+cluster nodes 查看集群的节点信息
+
+***redis cluster 如何分配这六个节点？**
+
+一个集群至少要有三个节点
+
+--cluster-replicas 1 表示我们希望为集群中的每个主节点创建一个从节点。
+
+分配原则尽量保证每个主数据库运行在不同的 IP 地址，每个从库和主库不在一个 IP 地址上。
+
+All 16384 slots covered
+
+slots 是插槽，一个集群中含有16384个，数据库中的每个键都属于这16384个插槽的其中一个。
+
+集群使用哈希公式 CRC16(key) % 16384来设置每个key的所属插槽。
+
+集群中的每个节点负责一部分插槽。
+
+CRC叫做循环冗余验证。
+
+![image-20210826183632790](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210826183632790.png)
+
+cluster keyslot keyname 查看key位于哪个插槽
+
+cluster countkeysinslot 插槽号 只能看自己负责的插槽号的插槽值。
+
+cluster getkeysinslot  插槽号 数量 返回某个插槽号中指定数量的键值
+
+故障恢复
+
+![image-20210826184418706](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210826184418706.png)
+
+###### <img src="C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210826184444469.png" alt="image-20210826184444469" style="zoom:200%;" />
+
+**集群的Jedis开发**
+
+![image-20210827145744740](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827145744740.png)
+
+集群好处：
+
+实现扩容、分摊压力、无中心配置相对简单
+
+不足：
+
+1、多建操作不支持
+
+2、多建的 Redis 事务是不被支持的。lua脚本不被支持。
+
+3、由于集群方案出现较晚，很多公司已经采用了其他的集群方案，而代理或者客户端分片的方案想要迁移到 redis cluster，需要整体迁移而不是逐步过渡，复杂度较大。
+
+### 重点内容
+
+***缓存穿透**
+
+![image-20210827150626497](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827150626497.png)
+
+特点：
+
+1、应用服务器压力变大
+
+2、redis命中率降低
+
+3、一直查询数据库
+
+*会造成服务器崩溃问题
+
+起因：
+
+ 1、redis查询不到数据
+
+2、出现很多非正常url访问
+
+*解决方案
+
+1、对空值缓存：若查询返回数据为空，则把空结果进行缓存，设置空结果的过期时间，最长不超过5分钟。
+
+2、设置可访问的名单（黑名单/白名单都行，个人觉得黑名单好）：用bitmaps类型定义一个可以访问的名单，名单 id 作为 bitmaps 的偏移量，每次访问和bitmap里面的 id 进行比较，如果访问 id 不在 bitmaps 里面，进行拦截，不允许访问。
+
+3、采用布隆过滤器：使用一个很长的二进制位图和随机映射函数。
+
+4、实时监控，监控Redis查询命中率
+
+***缓存击穿**
+
+特点：
+
+ 1、数据库访问压力瞬时增大
+
+2、redis里面没有出现大量key过期
+
+3、redis正常运行
+
+起因：
+
+1、redis某个key过期了，瞬时间该key被大量访问。
+
+解决方案：
+
+1、预先设置热门数据：在redis高峰访问之前，把一些热门数据提前存入到redis里面，加大这些热门数据key的时长。
+
+2、实时调整：现场监控哪些数据热门，实时调整key的过期时长。
+
+3、使用锁(降低效率)
+
+(1)在缓存失效时，不是立即去load db。
+
+(2)先使用缓存工具的某些带有成功操作返回值的操作。(Redis 的 SETNX)
+
+(3)当操作返回成功时，再进行load db操作，并回设缓存，最后删除 mutex key
+
+(4)当操作返回失败，证明有线程在 load db，当前线程睡眠一段时间再重试整个get缓存的方法。
+
+![image-20210827152647146](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827152647146.png)
+
+
+
+***缓存雪崩**
+
+与缓存击穿类似，但是雪崩指的是大量并发请求访问多个 key 缓存。
+
+ ![image-20210827160733335](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827160733335.png)
+
+起因：在极少时间内，查询大量key集中过期情况。
+
+解决方案：
+
+1、构建多级缓存架构
+
+2、使用锁或队列
+
+3、设置过期标志更新缓存
+
+4、将缓存失效时间分散开
+
+***分布式锁**
+
+![image-20210827163400725](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827163400725.png)
+
+图中框指的是以前的锁，只对某个节点有效
+
+分布式锁是全部都有效
+
+分布式锁的主流实现方案：
+
+1、基于数据库实现分布式锁。
+
+2、基于缓存
+
+3、基于Zookeeper
+
+每一种解决方案的各自优缺点：
+
+1、性能：redis 最高
+
+2、可靠性：zookeeper 最高
+
+redis 解决方案：
+
+使用 setnx 
+
+![image-20210827163816551](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827163816551.png)
+
+上图中下面没显示的是del释放锁
+
+![image-20210827164016207](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827164016207.png)
+
+步骤：
+
+1、使用setnx上锁，通过del释放锁
+
+2、锁一直没有释放，设置key过期时间，自动释放。
+
+3、上锁之后突然出现异常，无法设置过期时间，解决：上锁时同时设置过期时间，![image-20210827164232242](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827164232242.png)
+
+ ![image-20210827165108444](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827165108444.png)
+
+![image-20210827165152444](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827165152444.png)
+
+网络延时会导致uuid误删，如何防范（指锁）
+
+![image-20210827165443990](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827165443990.png)
+
+1、set lock uuid nx ex <time>
+
+2、释放锁时，判断当前uuid和要释放的锁的uuid是否一致。
+
+![image-20210827165749102](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827165749102.png)
+
+![image-20210827165800315](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827165800315.png)
+
+*删除操作缺乏原子性
+
+![image-20210827170310877](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827170310877.png)
+
+lua脚本
+
+上述讲的都不是集群的，要额外思考解决方案。
+
+应用环境下分布式锁加入的大概脉络：
+
+1、加锁
+
+![image-20210827170619751](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827170619751.png)
+
+2、使用lua释放锁(此步在集群中无效)
+
+![image-20210827170642364](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827170642364.png)
+
+3、重试
+
+![image-20210827170654292](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827170654292.png)
+
+分布式锁要确保的要求：
+
+1、互斥性：任何时刻，一个客户端只能有一把锁。
+
+2、不会发生死锁。
+
+3、自己的锁不能由别人解了。
+
+4、加锁和解锁必须存在原子性。
+
+ACL
+
+acl list 展现所有用户和操作权限
+
+![image-20210827173029567](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210827173029567.png)
+
+acl cat 操作命令显示
+
+acl cat string 具体操作命令显示
+
+acl setuser 用户名 一开始添加后的用户是off，需要打开就在添加命令最后加 on，设置密码则在on后
+
+auth 用户名 密码，切换用户
+
+**IO多线程**
+
+主要处理网络数据读写和协议解析，实际命令还是单线程（多路IO复用单线程）操作
+

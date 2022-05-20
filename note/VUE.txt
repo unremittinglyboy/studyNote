@@ -1,0 +1,273 @@
+## VUE
+
+下图为JAVASCRIPT常规定义对象的两种方式
+
+![image-20220204214343655](D:\Typora图片\image-20220204214343655.png)
+
+此处开始正式学习vue：
+
+#### 绑定
+
+单向绑定
+
+```javascript
+window.onload=function(){
+
+	var vue = new Vue({
+        "el" : "#div0", //el代表element
+        data:{
+            msg:"hello world!",
+            uname:"张三丰"
+        }
+    });
+}
+```
+
+```html
+<div id = "div0">
+    <span> {{msg}} </span>
+    
+	<!-- v-bind:value 表示绑定value属性，v-bind可以省略-->
+	
+	<input type="text" v-bind:value="uname"/>
+</div>  
+```
+
+双向绑定(两个互相绑定的属性，修改时显示效果会互相影响)
+
+window.onload=function(){
+
+```javascript
+var vue = new Vue({
+    "el" : "#div0", //el代表element
+    data:{
+        msg:"hello world!",
+    }
+});
+```
+```html
+<div id = "div0">
+    <span> {{msg}} </span>
+    
+	<!-- 
+	v-model指的是双向绑定，之前的v-bind是单向的，通过msg这个变量来控制input输入框。:value可以省略
+-->
+	
+	<input type="text" v-model:value="msg"/>
+</div> 
+```
+
+#### 各种标签
+
+**trim修饰符**(去除空格)
+
+```
+v-model.trim / v-model:value.trim
+```
+
+**条件渲染**
+
+**v-if / v-else**
+
+```javascript
+var vue = new Vue({
+    "el" : "#div0", //el代表element
+    data:{
+        num:2 
+    }
+});
+```
+
+```html
+<div id="div0">
+    <input type="text" v-model="num"/>
+    <div v-if="num % 2 == 0">123</div>
+    <div v-else="num % 2 == 0">321</div>
+</div>
+```
+
+上述代码双向绑定了num，修改input中的值，下面两个div会跟着自定义条件改变。
+
+注意：v-if 和 v-else 之间不可以有其他节点
+
+**显示与隐藏**
+
+**v-show**
+
+和 **v-if** 的区别是此处仅仅是修改元素的display属性，元素在html文档中还是存在的
+
+```javascript
+var vue = new Vue({
+    "el" : "#div0", //el代表element
+    data:{
+        num:2 
+    }
+});
+```
+
+```html
+<div id="div0">
+    <input type="text" v-model="num"/>
+    <div v-if="num % 2 == 0">123</div>
+    <div v-else="num % 2 == 0">321</div>
+</div>
+```
+
+**迭代**
+
+```html
+<div id="app01">
+	<!-- v-for的值的语法格式为：引用数组元素的变量名 in Vue对象中的数组属性名 -->
+    <!-- 在文本标签体中使用{{引用数组元素的变量名}}渲染每一个数组元素 -->
+    <li v-for="fruit in fruitList">
+        {{fruit.fname}}	
+    </li>
+</div>
+```
+
+```javascript
+var vue = new Vue({
+    "el" : "#app01",
+    data:{
+        fruitList:[
+            {
+                fname:"苹果",
+                price:5,
+                fcoiunt:100,
+                remark:"苹果很好吃"
+            },
+            {
+                fname:"菠萝",
+                price:4,
+                fcoiunt:100,
+                remark:"菠萝很好吃"
+            }
+        ]
+    }
+});
+```
+
+注意：thymeleaf用的是 ":"，vue用的是"in"
+
+**触发事件**
+
+```javascript
+var vue = new Vue({
+    "el" : "#div0",
+    data:{
+        msg:"hello world!"
+    },
+    methods:{
+        myReverse:function(){
+            this.msg = this.msg.split("").reverse().join("");
+            //join函数有连接作用
+        }
+    }
+});
+```
+
+```HTML
+v-on:click="myReverse"
+```
+
+v-on:click 可简写为 @click
+
+注意：这样写相当于以前的 onclick="myReverse()"，以前要括号，在vue中加入括号的话效果将会变化，变为执行该方法后的返回值赋给元素。
+
+获取事件源坐标：
+
+![image-20220208215853429](D:\Typora图片\image-20220208215853429.png)
+
+**侦听属性：**
+
+在watch属性中声明对firstName和lastName属性进行侦听的函数：
+
+![image-20220208215830916](D:\Typora图片\image-20220208215830916.png)
+
+注意：inputValue代表新的值。
+
+例子：
+
+![image-20220208220349135](D:\Typora图片\image-20220208220349135.png)
+
+![image-20220208220356113](D:\Typora图片\image-20220208220356113.png)
+
+#### **Vue对象的生命周期**
+
+![image-20220208220948933](D:\Typora图片\image-20220208220948933.png)
+
+![image-20220208221004533](D:\Typora图片\image-20220208221004533.png)
+
+![image-20220208221058693](D:\Typora图片\image-20220208221058693.png)
+
+![image-20220208221113140](D:\Typora图片\image-20220208221113140.png)
+
+beforeCreate：数据创建前
+
+beforeMount：数据装载前
+
+例子：
+
+```html
+<div id="div0">
+    <span>{{msg}}</span>
+</div>
+```
+
+```javascript
+window.onload = function(){
+    var vue = new Vue({
+        "el":"#div0",
+        data:{
+            msg:"hello"
+        },
+        /*Vue对象创建前*/
+        beforeCreate:funcion(){
+        	console.log("beforeCreate:vue对象创建前");
+    		console.log("msg:" + this.msg);
+    },
+    	/*Vue对象创建后*/
+        created:function(){
+            console.log("created:vue对象创建后");
+    		console.log("msg:" + this.msg);
+        },
+        /*Vue对象数据装载前*/    
+        beforeMount:function(){
+            console.log("beforeMount:Vue对象数据装载前");
+    		console.log("msg:" + document.getElementById("span").innerText);      
+        },
+        /*Vue对象数据装载后*/
+        mounted:function(){
+            console.log("beforeMount:Vue对象数据装载后");
+    		console.log("msg:" + document.getElementById("span").innerText);      
+        },
+        /*Vue对象数据更新前*/    
+        beforeUpdate:function(){
+            
+        },
+        /*Vue对象数据更新后*/    
+        updated:function(){
+            
+        }    
+    });
+}
+```
+
+数据装载结果：
+
+![image-20220208222037055](D:\Typora图片\image-20220208222037055.png)
+
+## Axios
+
+Axios是Ajax的一个框架，简化Ajax操作
+
+Axios执行Ajax操作的步骤：
+
+1、添加并引入axios的js文件
+
+2-1. 客户端向服务器端异步发送普通参数值
+
+
+
+
+

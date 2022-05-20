@@ -1,0 +1,1300 @@
+**MybBatis**
+
+POJO：POJO是Plain OrdinaryJava Object的缩写，但是它通指没有使用Entity Beans的普通java对象，可以把POJO作为支持业务逻辑的协助类。
+
+主流的 ORM 框架，以前叫 iBatis，实现数据持久化的框架。
+
+同时支持 Java、.NET、Ruby 三种语言，MyBatis 是一个对 JDBC 进行封装的框架。
+
+ORM 框架 Hibernate，MyBatis 和 Hibernate 的区别？
+
+(JPA)Hibernate 是一个"全自动化"ORM框架，MyBatis 是一个"半自动化的"ORM框架，MyBatis PLUS是在MyBatis基础上建立的全自动化的ORM框架。
+
+全自动化：开发者只需要调用相关接口就可以完成操作，整个流程框架都已经进行了封装。
+
+Hibernate 实现了 POJO 和数据库表之间的映射，同时可以自动生成 SQL 语句并完成执行。
+
+半自动化：框架只提供一部分功能，剩下的工作仍需要开发者手动完成，MyBatis 没有提供 POJO 与数据库表的映射，只实现了 POJO 与 SQL 之间的映射关系，需要开发者自定义 SQL 语句，以及数据与 POJO 之间的装配关系。
+
+![image-20210531214403774](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210531214403774.png)
+
+虽然功能上没有 Hibernate 更加方便，但是这种"半自动化"的方式**提高了框架的灵活性**，开发者可以根据具体的业务需求，完成定制化的持久层解决方案。
+
+MyBatis 对所有的 JDBC 进行了封装，包括参数设置，SQL执行、结果集解析等，通过 XML 配置/注解的方式完成 POJO 与数据的映射。
+
+简单讲，使用 MyBatis 进行开发，主要完成两步操作：
+
+**·** 自己编写 SQL
+
+**·** 自己完成数据库数据与 POJO 的映射
+
+**MyBatis优点**
+
+**·** 极大地简化了 JDBC 代码的开发
+
+**·** 简单好用、容易上手、具有更好的灵活性
+
+**·** 通过将 SQL 定义在 XML 中的方式来降低程序的耦合性
+
+**·** 支持动态 SQL ，可以根据具体业务需求灵活实现功能
+
+**MyBatis缺点**
+
+**·** 相比于 Hibernate，开发者需要完成更多的工作，比如定义 SQL、设置 POJO 与数据的映射关系等。
+
+**·** 要求开发人员具备一定的 SQL 编写能力，在一些特定场景下工作量比较大。
+
+**·** 数据库移植性差，因为 SQL 依赖于底层数据库，如果要进行数据库迁移，部分 SQL 需要重新编写。
+
+**MyBatis 入门**
+
+1、创建 Maven 工程，pom.xml 引入相关依赖。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.southwind</groupId>
+    <artifactId>mybatis</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <!--MyBatis依赖-->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.6</version>
+        </dependency>
+
+        <!--MySQL驱动-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.23</version>
+        </dependency>
+</project>
+```
+
+2、创建实体类
+
+```java
+@Data
+public class People {
+    private Integer id;
+    private String name;
+    private Double money;
+}
+```
+
+3、配置 MyBatis 环境，在 resources 路径下创建 config.xml (文件名可以自定义)，配置数据源信息。
+
+xml文件中 '& '需要写为“& amp;” 这里 & 与 amp 之间无空隙，typora会读取为html所以分开写。
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--配置 MyBatis 运行环境-->
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"></transactionManager>
+            <!--数据源-->
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"></property>
+                <property name="url" value="jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF-8"></property>
+                <property name="username" value="root"></property>
+                <property name="password" value="200013"></property>
+            </dataSource>
+        </environment>
+    </environments>
+</configuration>
+```
+
+4、MyBatis 开发有两种方式
+
+**·** 使用原生接口
+
+**·** Mapper 代理实现自定义接口
+
+**使用原生接口**
+
+1、创建 Mapper 文件 PeopleMapper.xml。
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.mapper.PeopleMapper">
+    <select id="findById" parameterType="java.lang.Integer" resultType="com.southwind.entity.People">
+        select * from people where id = #{id}
+    </select>
+<!--    <insert id=""></insert>-->
+<!--    <delete id=""></delete>-->
+<!--    <update id=""></update>-->
+</mapper>
+```
+
+namespace 通常设置为文件所在包名 + 文件名，parameterType 是参数的数据类型，resultType 是返回值数据类型。
+
+2、在全局配置文件 config.xml 中注册 PeopleMapper.xml。
+
+```xml
+<mappers>
+    <mapper resource="com/southwind/mapper/PeopleMapper.xml"></mapper>
+</mappers>
+```
+
+小bug：不能用点，会导致系统读取不清楚是包名还是文件名。
+
+3、调用 API 完成操作。
+
+```java
+package com.test;
+
+import com.southwind.entity.People;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import java.io.InputStream;
+
+public class Test {
+    public static void main(String[] args) {
+        //加载MyBatis配置文件
+        InputStream inputStream = Test.class.getClassLoader().getResourceAsStream("config.xml");
+        //获取 SqlSessionFactory
+        SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+        SqlSessionFactory sqlSessionFactory = sqlSessionFactoryBuilder.build(inputStream);
+        //获取 SqlSession
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        //调用 MyBatis 原生接口来执行 sql 语句
+        String statement = "com.southwind.mapper.PeopleMapper.findById";
+        People people = sqlSession.selectOne(statement, 1);
+        System.out.println(people);
+        //记得关闭会话连接对象！
+        sqlSession.close();
+    }
+}
+```
+
+4、IDEA 中无法直接读取 resources 路径外的 XML 文件，需要在 pom.xml 中进行设置。
+
+```xml
+<!--使得程序可以在resources以外的文件中读取配置文件-->
+<build>
+    <resources>
+        <resource>
+            <directory>src/main/java</directory>
+            <includes>
+                <include>**/*.xml</include>
+            </includes>
+        </resource>
+    </resources>
+</build>
+```
+
+**Mapper代理实现自定义接口**
+
+开发者只需要定义接口，并不需要实现接口，具体的实现工作由 Mapper 代理结合配置文件完成。
+
+1、自定义接口
+
+```java
+public interface PeopleRepository {
+    public int save(People people);
+    public int deleteById(Integer id);
+    public int update(People people);
+    public People findById(Integer id);
+    public List<People> findAll();
+}
+```
+
+2、创建 PeopleMapper.xml，定义接口方法对应的 SQL 语句，statement 标签根据 SQL 执行的业务可以选择 select、insert、delete、update，MyBatis 会自动**根据规则**创建 PeopleRepository 接口的实现类代理对象。
+
+**·** PeopleMapper.xml 中的 namespace 为接口的全限定类名（带着包名的类名）
+
+**·** PeopleMapper.xml 中的 statement 的 id 是接口中对应的方法名
+
+**·** PeopleMapper.xml 中的 parameterType 和接口中对应方法的参数类型一致
+
+**·** PeopleMapper.xml 中的 resultType 和接口中对应方法的返回值类型一致
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.PeopleRepository">
+    <insert id="save" parameterType="com.southwind.entity.People">
+        insert into people(name,money) values(#{name},#{money})
+    </insert>
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from people where id = #{id}
+    </delete>
+    <update id="update" parameterType="com.southwind.entity.People">
+        update people set name = #{name},money = #{money} where id = #{id}
+    </update>
+    <select id="findById" parameterType="java.lang.Integer" resultType="com.southwind.entity.People">
+        select * from people where id = #{id}
+    </select>
+    <select id="findAll" resultType="com.southwind.entity.People">
+        select * from people
+    </select>
+</mapper>
+```
+
+3、完成注册
+
+```xml
+<mapper resource="com/southwind/repository/PeopleRepository.xml"></mapper>
+```
+
+4、调用API
+
+```java
+import com.southwind.entity.People;
+import com.southwind.repository.PeopleRepository;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+
+public class Test2 {
+    public static void main(String[] args) {
+        InputStream inputStream = Test2.class.getClassLoader().getResourceAsStream("config.xml");
+        SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+        SqlSessionFactory sf = sqlSessionFactoryBuilder.build(inputStream);
+        SqlSession sqlSession = sf.openSession();
+        //获取实现了自定义接口的代理对象
+        PeopleRepository peopleRepository = sqlSession.getMapper(PeopleRepository.class);
+        //添加
+//        People people = new People();
+//        people.setName("小明");
+//        people.setMoney(Double.parseDouble("666"));
+//        peopleRepository.save(people);
+        //删除
+        peopleRepository.deleteById(4);
+        //修改
+        People changePeople = new People(1,"二狗",1200.0);
+        peopleRepository.update(changePeople);
+        //查询
+//        People people = peopleRepository.findById(3);
+//        System.out.println(people);
+        //查询全部
+        List<People> peoples = peopleRepository.findAll();
+        for(People people : peoples){
+            System.out.println(people);
+        }
+        //对数据有实际操作的要提交事务，否则数据库不会改变。
+        sqlSession.commit();
+        sqlSession.close();
+    }
+}
+```
+
+**Mapper.xml 常用配置**
+
+MyBatis 配置文件有两种：
+
+**·** 全局环境配置文件 （数据源、事务管理、Mapper注册、打印 SQL、惰性加载、二级缓存）
+
+**·** Mapper 配置文件（定义自定义接口的具体实现方案：SQL、数据与 POJO 的映射）
+
+多表关联查询包括一对一、一对多、多对多
+
+**单表查询**
+
+```xml
+<select id="findById" parameterType="java.lang.Integer" resultType="com.southwind.entity.People">
+    select * from people where id = #{id}
+</select>
+```
+
+业务：通过 id 查询 People 对象
+
+目标表：test/people
+
+实体类：com.southwind.entity.People
+
+Mapper.xml 设置相关配置逻辑，由 MyBatis 自动完成查询，生成 POJO。
+
+statement 标签主要属性有 id、parameterType、resultType
+
+id 对应接口的方法名，parameterType 定义参数的数据类型、resultType 定义方法的返回类型（实体类的成员变量列表必须与目标表的字段列表一致）。
+
+**parameterType**
+
+支持基本数据类型、包装类、String、多参数、POJO 等。
+
+1、基本数据类型，通过 id 查询 POJO。
+
+```java
+public People findById(int id);
+```
+
+2、包装类
+
+```java
+public People findById(Integer id);
+```
+
+3、String 类型
+
+```java
+public People findByName(String name);
+```
+
+4、多参数
+
+```java
+public People findByIdAndName(Integer id,String name);
+```
+
+```xml
+<select id="findByIdAndName" resultType="com.southwind.entity.People">
+    select * from people where id = #{param1} and name = #{param2}
+</select>
+```
+
+```xml
+<select id="findByIdAndName" resultType="com.southwind.entity.People">
+    select * from people where id = #{arg0} and name = #{arg1}
+</select>
+```
+
+5、POJO
+
+```java
+public int update(People people);
+```
+
+```xml
+<update id="update" parameterType="com.southwind.entity.People">
+    update people set name = #{name},money = #{money} where id = #{id}
+</update>
+```
+
+**resultType**
+
+resultType 与 parameterType 的使用基本一致。
+
+1、基本数据类型
+
+```java
+public int countDatas();
+```
+
+```xml
+<select id="countDatas" resultType="int">
+    select count(*) from people
+</select>
+```
+
+2、包装类
+
+```java
+public int countDatas();
+```
+
+```xml
+<select id="countDatas" resultType="java.lang.Integer">
+    select count(*) from people
+</select>
+```
+
+3、String
+
+```xml
+<select id="findNameById" parameterType="java.lang.Integer" resultType="java.lang.String">
+    select name from people where id = #{id}
+</select>
+```
+
+4、POJO
+
+```java
+public People findById(Integer id);
+```
+
+```xml
+<select id="findById" parameterType="java.lang.Integer" resultType="com.southwind.entity.People">
+    select * from people where id = #{id}
+</select>
+```
+
+**多表关联查询**
+
+实际开发中最常用的是：一对多和多对多
+
+注意：若属性为集合类型，写入resultMap时用的是ofType，单个则是javaType
+
+**一对多**
+
+1、建表
+
+```sql
+USE test;
+CREATE TABLE `t_classes`(
+    `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` varchar(11) DEFAULT NULL
+);
+CREATE TABLE `t_student`(
+    `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` varchar(11) DEFAULT NULL,
+    `cid` int(11) DEFAULT NULL,
+    KEY `cid` (`cid`),
+    CONSTRAINT `t_student_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `t_classes`(`id`)
+)
+```
+
+2、SQL 
+
+```sql
+SELECT s.id sid,s.name sname,c.id cid,c.name cname FROM t_student s,t_classes c WHERE s.id=1 AND s.cid=c.id;
+```
+
+3、创建实体类
+
+```java
+@Data
+public class Student {
+    private Integer id;
+    private String name;
+    private Classes classes;
+}
+```
+
+```java
+@Data
+public class Classes {
+    private Integer id;
+    private String name;
+    private List<Student> students;
+}
+```
+
+4、StudentRepository
+
+```java
+public interface StudentRepository {
+    public Student findById(Integer id);
+}
+```
+
+5、StudentRepository.xml
+
+resultType 直接将结果集与实体类进行映射，结果集的字段名与实体类的成员变量名相等则映射。
+
+resultMap 可以对结果集进行二次封装，根据需求来完成结果集数据到实体类的映射。
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.StudentRepository">
+    <resultMap id="studentMap" type="com.southwind.entity.Student">
+        <id column="sid" property="id"></id>
+        <result column="sname" property="name"></result>
+        <association property="classes" javaType="com.southwind.entity.Classes">
+            <id column="cid" property="id"></id>
+            <result column="cname" property="name"></result>
+        </association>
+    </resultMap>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="studentMap">
+        SELECT s.id sid,s.name sname,c.id cid,c.name cname FROM t_student s,t_classes c WHERE s.id = 1 AND s.cid = c.id;
+    </select>
+</mapper>
+```
+
+6、ClassesRepository
+
+```java
+public interface ClassesRepository {
+    public Classes findById (Integer id);
+}
+```
+
+7、ClassesRepository.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.ClassesRepository">
+    <resultMap id="classesMap" type="com.southwind.entity.Classes">
+        <id column="cid" property="id"></id>
+        <result column="cname" property="name"></result>
+        <collection property="students" ofType="com.southwind.entity.Student">
+            <id property="id" column="sid"></id>
+            <result property="name" column="sname"></result>
+        </collection>
+    </resultMap>
+    <select id="findById" parameterType="java.lang.Integer" resultMap="classesMap">
+        SELECT c.id cid,  c.name cname, s.id sid, s.name sname FROM t_student s,t_classes c WHERE s.cid=c.id AND c.id = 1;
+    </select>
+</mapper>
+```
+
+collection 和 association 的区别
+
+collection 是将结果集封装成一个集合对象（多个目标对象）
+
+association 是将结果集封装成一个实体类的对象（单个目标对象）
+
+collection 是通过 ofType 来设置数据类型，association 是通过 javaType 来设置数据类型。
+
+**多对多**
+
+多对多是双向的一对多关系
+
+1、建表
+
+```sql
+USE test;
+CREATE TABLE `t_account`(
+    `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` varchar(11) DEFAULT NULL
+);
+CREATE TABLE `t_course`(
+    `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` varchar(11) DEFAULT NULL
+);
+CREATE TABLE `account_course`(
+    `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `aid` int(11) DEFAULT NULL,
+    `cid` int(11) DEFAULT NULL,
+    KEY `aid`(`aid`),
+    KEY `cid`(`cid`),
+    CONSTRAINT `account_course_ibfk_1` FOREIGN KEY (`aid`) REFERENCES `t_account`(`id`),
+    CONSTRAINT `account_course_ibfk_2` FOREIGN KEY (`cid`) REFERENCES `t_course`(`id`)
+);
+```
+
+2、创建实体类
+
+```java
+@Data
+public class Account {
+    private Integer id;
+    private String name;
+    private List<Course> courses;
+}
+```
+
+```java
+@Data
+public class Course {
+    private Integer id;
+    private String name;
+    private List<Account> accounts;
+}
+```
+
+3、AccountRepository
+
+```java
+public interface AccountRepository {
+    public Account findById(Integer id);
+}
+```
+
+4、AccountRepository.xml(记得注册)
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.AccountRepository">
+    <resultMap id="accountMap" type="com.southwind.entity.Account">
+        <id column="aid" property="id"></id>
+        <result column="aname" property="name"></result>
+        <collection property="courses" ofType="com.southwind.entity.Course">
+            <id column="cid" property="id"></id>
+            <result column="cname" property="name"></result>
+        </collection>
+    </resultMap>
+    <select id="findById" parameterType="java.lang.Integer" resultMap="accountMap">
+        SELECT a.id aid, a.name aname, c.id cid,c.name cname FROM t_account a,account_course ac,t_course c WHERE a.id = 1 and a.id = ac.aid and c.id = ac.cid;
+    </select>
+</mapper>
+```
+
+CourseRepository一样。
+
+**MyBatis 逆向工程**
+
+MyBatis 是半自动化的 ORM 框架，SQL 语句需要开发者自定义，SQL 需要单独定义在 Mapper.xml  中，与 Mapper 接口对应，使用 MyBatis 进行开发的基本配置：
+
+**·** 实体类
+
+**·** Mapper 接口
+
+**·** Mapper.xml
+
+这种方式的缺陷是如果参与业务的表太多，每张表的业务都需要自定义 SQL 语句、创建实体类、Mapper 接口，工作量较大。
+
+MyBatis 框架可以自动根据数据表，帮助开发者生成实体类、Mapper接口、Mapper.xml，这就是逆向工程。
+
+**逆向工程概念**
+
+逆向工程是 MyBatis 提供的一种自动化配置方案，针对数据表自动生成 MyBatis 所需要的各种资源（实体类、Mapper接口、Mapper.xml），但是逆向工程只针对于单表，如果数据表之间有级联关系，逆向工程无法自动生成级联关系。
+
+**使用逆向工程**
+
+MyBatis 逆向工程的组件是 MyBatis Generator，简称 MBG，是专为 MyBatis 框架定制的代码自动生成解决方案，MBG 可以根据数据表结构快速生成对应的实体类、Mapper接口、Mapper.xml，并且支持基本的 CRUD 操作，但是业务逻辑相对复杂的操作就需要开发者手动完成。
+
+1、创建 Maven 工程，pom.xml 添加相关依赖。
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>3.5.6</version>
+    </dependency>
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.23</version>
+    </dependency>
+    <dependency>
+        <groupId>org.mybatis.generator</groupId>
+        <artifactId>mybatis-generator-core</artifactId>
+        <version>1.3.2</version>
+    </dependency>
+</dependencies>
+```
+
+2、创建目标表 t_account2
+
+```SQL
+CREATE TABLE `t_account2`(
+    `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` varchar(11) DEFAULT NULL,
+    `password` varchar(11) DEFAULT NULL,
+    `age` int(11) DEFAULT NULL
+);
+```
+
+3、创建 MBG 配置文件 generatorConfig.xml
+
+**·** jdbcConnection 配置数据库连接信息
+
+**·** javaModelGenerator 配置 JavaBean 的生成策略
+
+**·** sqlMapGenerator 配置 SQL 映射文件的生成策略
+
+**·** javaClientGenerator 配置 Mapper 接口的生成策略
+
+**·** table 配置需要 逆向解析的数据表 (tableName: 表名，domainObjectName: 实体类名)
+
+generatorConfig.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <context id="testTables" targetRuntime="MyBatis3">
+        <jdbcConnection
+                        driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/mybatis?useUnicode=true&amp;characterEncoding=UTF-8"
+                        userId="root"
+                        password="200013"
+                        ></jdbcConnection>
+        <javaModelGenerator targetPackage="com.southwind.entity" targetProject="./src/main/java"></javaModelGenerator>
+        <sqlMapGenerator targetPackage="com.southwind.repository" targetProject="./src/main/java"></sqlMapGenerator>
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.southwind.repository" targetProject="./src/main/java"></javaClientGenerator>
+        <table tableName="t_account2" domainObjectName="Account"></table>
+    </context>
+</generatorConfiguration>
+```
+
+4、创建 GeneratorMain 类 (固定写法可复制)，执行自动生成资源的代码。
+
+```java
+public class GeneratorMain {
+    public static void main(String[] args) {
+        List<String> warnings = new ArrayList<String>();
+        boolean overwrite = true;
+        String genCig = "/generatorConfig.xml";
+        File file = new File(GeneratorMain.class.getResource(genCig).getFile());
+        ConfigurationParser configurationParser = new ConfigurationParser(warnings);
+        Configuration configuration = null;
+        try {
+            configuration = configurationParser.parseConfiguration(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XMLParserException e) {
+            e.printStackTrace();
+        }
+        DefaultShellCallback callback = new DefaultShellCallback(overwrite);
+        MyBatisGenerator myBatisGenerator = null;
+        try {
+            myBatisGenerator = new MyBatisGenerator(configuration,callback,warnings);
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+        try {
+            myBatisGenerator.generate(null);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+}
+```
+
+**MyBatis 延迟加载**
+
+让程序自行判断select语句是否需要搜寻存有映射关系的Field，减少搜寻时间。
+
+1、创建实体类
+
+```java
+@Data
+public class Customer {
+    private Integer id;
+    private String name;
+    List<Order> orders;
+}
+```
+
+```java
+@Data
+public class Order {
+    private Integer id;
+    private String name;
+    private Customer customer;
+}
+```
+
+建表
+
+```sql
+USE test;
+CREATE TABLE `customer`(
+    `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` varchar(11) DEFAULT NULL
+);
+CREATE TABLE `orders`(
+    `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` varchar(11) DEFAULT NULL,
+    `cid` int(11),
+    KEY `cid`(`cid`),
+    CONSTRAINT `customer_orders_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `customer`(`id`)
+);
+INSERT INTO `customer`(name) VALUES ('张一');
+INSERT INTO `customer`(name) VALUES ('张二');
+INSERT INTO `customer`(name) VALUES ('张三');
+INSERT INTO `customer`(name) VALUES ('张四');
+INSERT INTO `customer`(name) VALUES ('张五');
+INSERT INTO `customer`(name) VALUES ('张六');
+INSERT INTO `customer`(name) VALUES ('张七');
+INSERT INTO `customer`(name) VALUES ('张八');
+INSERT INTO `customer`(name) VALUES ('张九');
+INSERT INTO `customer`(name) VALUES ('张十');
+INSERT INTO `orders`(name,cid) VALUES ('订单1',10);
+INSERT INTO `orders`(name,cid) VALUES ('订单2',10);
+```
+
+2、config.xml 中开启打印 SQL
+
+```xml
+<settings>
+    <setting name="logImpl" value="STDOUT_LOGGING"></setting>
+</settings>
+```
+
+3、创建 OrderRepository
+
+```java
+public interface OrderRepository {
+    public Order findById(Integer id);
+}
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.OrderRepository">
+
+    <resultMap id="orderMap" type="com.southwind.entity.Order">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <association
+                property="customer"
+                javaType="com.southwind.entity.Customer"
+                select="com.southwind.repository.CustomerRepository.findById"
+                column="cid"
+        ></association>
+    </resultMap>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="orderMap">
+        select * from orders where id = #{id}
+    </select>
+</mapper>
+```
+
+4、创建 CustomerRepository
+
+```java
+public interface CustomerRepository {
+    public Customer findById(Integer id);
+}
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.CustomerRepository">
+    <select id="findById" parameterType="java.lang.Integer" resultType="com.southwind.entity.Customer">
+        select * from customer where id = #{id}
+    </select>
+</mapper>
+```
+
+5、在 config.xml 中开启延迟加载
+
+```xml
+<!--延迟加载-->
+<setting name="lazyLoadingEnabled" value="true"></setting>
+```
+
+![image-20210603222056205](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210603222056205.png)
+
+
+
+![image-20210603222133532](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210603222133532.png)
+
+
+
+MyBatis 延迟加载机制，是实际开发中使用频率较高的一个功能，正确地使用延迟加载，可以有效地减少 Java Application 和数据库的交互次数，从而提高整个系统的运行效率，延迟加载是为了提高程序运行效率的一种手段，一般应用于多表关联查询的业务场景。
+
+**MyBatis 缓存**
+
+使用缓存的作用也是为了减少 Java Application 与数据库的交互次数，从而提升程序的运行效率。
+
+![image-20210603222927136](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210603222927136.png)
+
+MyBatis 有两种缓存：一级缓存和二级缓存。
+
+**一级缓存**
+
+MyBatis 自带一级缓存，并且是无法关闭的，一直存在，一级缓存的数据存储在 SqlSession  中。
+
+即使用同一个 SqlSession 进行查询操作时，一级缓存存在，如果使用多个 SqlSession 进行查询操作，一级缓存不存在，缓存只针对于查询，但是如果 SqlSession 执行了增、删、改操作，MyBatis 会自动清空 SqlSession 缓存中的数据（为了保证数据的一致性）。
+
+一级缓存不需要进行任何的配置，直接使用即可。
+
+1、创建实体类
+
+```java
+@Data
+public class MyClass {
+    private Integer id;
+    private String name;
+}
+```
+
+2、Mapper
+
+```java
+public interface MyClassRepository {
+    public MyClass findById(Integer id);
+}
+```
+
+3、Mapper.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.StudentRepository">
+
+    <select id="findById" parameterType="java.lang.Integer" resultType="com.southwind.entity.MyClass">
+        select * from t_classes where id = #{id}
+    </select>
+</mapper>
+```
+
+4、Test
+
+一级缓存有效：
+
+```
+public static void main(String[] args) {
+    InputStream is = Test6.class.getClassLoader().getResourceAsStream("config.xml");
+    SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+    SqlSessionFactory sf = sqlSessionFactoryBuilder.build(is);
+    SqlSession sqlSession = sf.openSession();
+    MyClassRepository myClassRepository = sqlSession.getMapper(MyClassRepository.class);
+    MyClass myClass = myClassRepository.findById(1);
+    System.out.println(myClass);
+    MyClass myClass2 = myClassRepository.findById(1);
+    System.out.println(myClass);
+    sqlSession.close();
+}
+```
+
+一级缓存失效：
+
+```java
+public static void main(String[] args) {
+    InputStream is = Test6.class.getClassLoader().getResourceAsStream("config.xml");
+    SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+    SqlSessionFactory sf = sqlSessionFactoryBuilder.build(is);
+    SqlSession sqlSession = sf.openSession();
+    MyClassRepository myClassRepository = sqlSession.getMapper(MyClassRepository.class);
+    MyClass myClass = myClassRepository.findById(1);
+    System.out.println(myClass);
+    //关闭 sqlSession
+    sqlSession.close();
+    //开启新的 sqlSession
+    sqlSession = sf.openSession();
+    myClassRepository = sqlSession.getMapper(MyClassRepository.class);
+    MyClass myClass2 = myClassRepository.findById(1);
+    System.out.println(myClass);
+}
+```
+
+**二级缓存**
+
+MyBatis 二级缓存是比一级缓存作用域更大的缓存机制，它是 Mapper 级别的，只要是同一个 Mapper ，无论使用多少个 SqlSession，数据都是共享的。
+
+![image-20210603224143571](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210603224143571.png)
+
+MyBatis 二级缓存默认是关闭的，需要使用时可以通过配置来手动开启。
+
+MyBatis 可以使用自带的二级缓存，也可以使用第三方的 ehcache 二级缓存。
+
+自带二级缓存
+
+1、config.xml 中配置开启二级缓存。
+
+```xml
+<!--开启二级缓存-->
+<setting name="cacheEnabled" value="true"></setting>
+```
+
+2、Mapper.xml 中配置二级缓存。
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.MyClassRepository">
+
+    <cache></cache>
+
+    <select id="findById" parameterType="java.lang.Integer" resultType="com.southwind.entity.MyClass">
+        select * from t_classes where id = #{id}
+    </select>
+</mapper>
+```
+
+3、实体类需要实现序列化接口 Serializable
+
+数据实行序列化才能存入缓存中。
+
+```java
+@Data
+public class MyClass implements Serializable {
+    private Integer id;
+    private String name;
+}
+```
+
+4、Test
+
+```java
+public static void main(String[] args) {
+    InputStream is = Test6.class.getClassLoader().getResourceAsStream("config.xml");
+    SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+    SqlSessionFactory sf = sqlSessionFactoryBuilder.build(is);
+    SqlSession sqlSession = sf.openSession();
+    MyClassRepository myClassRepository = sqlSession.getMapper(MyClassRepository.class);
+    MyClass myClass = myClassRepository.findById(1);
+    System.out.println(myClass);
+    //关闭 sqlSession
+    sqlSession.close();
+    //开启新的 sqlSession
+    sqlSession = sf.openSession();
+    myClassRepository = sqlSession.getMapper(MyClassRepository.class);
+    MyClass myClass2 = myClassRepository.findById(1);
+    System.out.println(myClass);
+}
+```
+
+![image-20210603230256822](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210603230256822.png)
+
+第三方 ehcache 二级缓存
+
+1、pom.xml
+
+```xml
+<!--ehcache-->
+<dependency>
+    <groupId>net.sf.ehcache</groupId>
+    <artifactId>ehcache-core</artifactId>
+    <version>2.4.3</version>
+</dependency>
+
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis-ehcache</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+2、resources 路径下创建 ehcache.xml
+
+```xml
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../config/ehcache.xsd">
+    <diskStore />
+    <defaultCache>
+        maxElementsInMemory="1000"
+        maxElementsOnDisk="10000000"
+        eternal="false"
+        overflowToDisk="false"
+        timeToIdleSeconds="120"
+        timeToLiveSeconds="120"
+        diskExpiryThreadIntervalSeconds="120"
+        memoryStoreEvictionPolicy="LRU"
+    </defaultCache>
+</ehcache>
+```
+
+3、config.xml 中配置二级缓存。
+
+```xml
+<!--开启二级缓存-->
+<setting name="cacheEnabled" value="true"></setting>
+```
+
+4、Mapper.xml 中配置二级缓存。
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.MyClassRepository">
+
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache">
+        <!--缓存创建以后，最后一次访问缓存的时间至失效的时间间隔-->
+        <property name="timeToIdleSeconds" value="3600"></property>
+        <!--缓存自创建起至失效的时间间隔-->
+        <property name="timeToLiveSeconds" value="3600"></property>
+        <!--缓存回收策略 LRU缓存淘汰算法（移除近期最少使用的对象）-->
+        <property name="memoryStoreEvictionPolicy" value="LRU"></property>
+    </cache>
+
+    <select id="findById" parameterType="java.lang.Integer" resultType="com.southwind.entity.MyClass">
+        select * from t_classes where id = #{id}
+    </select>
+</mapper>
+```
+
+5、实体类不需要实现序列化接口。
+
+6、测试
+
+![image-20210605203723229](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210605203723229.png)
+
+```java
+public class Test6 {
+    public static void main(String[] args) {
+        InputStream is = Test6.class.getClassLoader().getResourceAsStream("config.xml");
+        SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+        SqlSessionFactory sf = sqlSessionFactoryBuilder.build(is);
+        SqlSession sqlSession = sf.openSession();
+        MyClassRepository myClassRepository = sqlSession.getMapper(MyClassRepository.class);
+        MyClass myClass = myClassRepository.findById(1);
+        System.out.println(myClass);
+        //关闭 sqlSession
+        sqlSession.close();
+        //开启新的 sqlSession
+        sqlSession = sf.openSession();
+        myClassRepository = sqlSession.getMapper(MyClassRepository.class);
+        MyClass myClass2 = myClassRepository.findById(1);
+        System.out.println(myClass);
+    }
+}
+```
+
+**MyBatis 动态SQL**
+
+```java
+public class User {
+ private Integer id;
+ private String username;
+ private String password;
+ private Integer age;
+}
+```
+
+**·** 通过 id 和 username 查询 User
+
+**·** 通过 username 和 password 查询 User
+
+**·** 通过 password 和 age 查询 User（不太合理）
+
+在 UserRepository 中定义上述 3 个方法
+
+```java
+public User findByUser1(User user);
+public User findByUser2(User user);
+public User findByUser3(User user);
+```
+
+UserRepository.xml
+
+```xml
+<select id = "findByUser1" parameterType="User" resultType="User">
+	select * from t_user where id = #{id} and username = #{username}
+</select>
+<select id = "findByUser2" parameterType="User" resultType="User">
+	select * from t_user where username = #{username} and password = #{password}
+</select>
+<select id = "findByUser3" parameterType="User" resultType="User">
+	select * from t_user where password = #{password} and age = #{age}
+</select>
+```
+
+MyBatis 动态 SQL、SQL 不是固定的，可以根据不同的参数信息来动态拼接不同的 SQL，以适应不同的需求。
+
+1、创建实体类
+
+```java
+public class User {
+ private Integer id;
+ private String username;
+ private String password;
+ private Integer age;
+}
+```
+
+2、UserRepository
+
+```java
+public User findByUser(User user);
+```
+
+3、UserRepository.xml
+
+**·** if 标签的作用：若满足 test 属性的内容，则填入 if 标签中的内容，否则不填。
+
+**·** choose - when 作用与 if 标签类似，和 switch case 有点相似。
+
+**·** where 标签的作用：看 where 到头一个占位符之间是否有 and，有则去掉。
+
+**·** trim 标签的作用：通过设置 prefix 和 suffix 参数来完成使用的。
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.repository.UserRepository">
+    
+<!--        <select id="findByUser" parameterType="com.southwind.entity.User" resultType="com.southwind.entity.User">-->
+<!--            select * from user-->
+<!--            <where>-->
+<!--                <if test="id!=null">id = #{id}</if>-->
+<!--                <if test="username!=null">and username = #{username}</if>-->
+<!--                <if test="password!=null">and password = #{password}</if>-->
+<!--                <if test="age!=null">and age = #{age}</if>-->
+<!--            </where>-->
+<!--        </select>-->
+
+<!--    <select id="findByUser" parameterType="com.southwind.entity.User" resultType="com.southwind.entity.User">-->
+<!--        select * from user-->
+<!--        <where>-->
+<!--            <choose>-->
+<!--                <when test="id!=null">id = #{id}</when>-->
+<!--                <when test="username!=null">and username = #{username}</when>-->
+<!--                <when test="password!=null">and password = #{password}</when>-->
+<!--                <when test="age!=null">and age = #{age}</when>-->
+<!--            </choose>-->
+<!--        </where>-->
+<!--    </select>-->
+
+    <select id="findByUser" parameterType="com.southwind.entity.User" resultType="com.southwind.entity.User">
+        select * from user
+        <trim prefix="where" prefixOverrides="and">
+            <if test="id!=null">id = #{id}</if>
+            <if test="username!=null">and username = #{username}</if>
+            <if test="password!=null">and password = #{password}</if>
+            <if test="age!=null">and age = #{age}</if>
+        </trim>
+    </select>
+    
+</mapper>
+```
+
+**·** set 标签用于 Update 操作，会自动根据参数来选择生成 SQL 语句。 
+
+```java
+public int update(User user);
+```
+
+```xml
+<update id="updateUser" parameterType="com.southwind.entity.User">
+    update user
+    <set>
+        <if test="username!=null">username = #{username},</if>
+        <if test="password!=null">password = #{password},</if>
+        <if test="age!=null">age = #{age}</if>
+    </set>
+    where id = #{id}
+</update>
+```
+
+4、config.xml 注册 mapper.xml
+
+```xml
+<mappers>
+<mapper resource="com/southwind/repository/UserRepository.xml"></mapper>
+</mappers>
+```
+
+5、Test
+
+```java
+public class Test7 {
+    public static void main(String[] args) {
+        InputStream is = Test7.class.getClassLoader().getResourceAsStream("config.xml");
+        SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+        SqlSessionFactory sf = sqlSessionFactoryBuilder.build(is);
+        SqlSession sqlSession = sf.openSession();
+        UserRepository userRepository = sqlSession.getMapper(UserRepository.class);
+//        User userx = new User();
+//        userx.setPassword("123");
+//        User user = userRepository.findByUser(userx);
+//        System.out.println(user);
+        User user = new User();
+        user.setId(2);
+        user.setPassword("123456");
+        userRepository.updateUser(user);
+        sqlSession.commit();
+        sqlSession.close();
+    }
+}
+```
+
+
+

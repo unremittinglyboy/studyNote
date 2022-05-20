@@ -1,0 +1,310 @@
+## 内存与垃圾回收篇
+
+### JVM与Java体系结构
+
+ ![image-20211009114415020](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009114415020.png)
+
+ ![image-20211010110519014](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010110519014.png)
+
+在Java7的正式发布之后，Java虚拟机只关心字节码文件，即不关心其内部的程序到底是使用何种编程语言编写。JVM拥有语言无关性，并不会单纯地与Java语言终身绑定。
+
+只要其他编程语言的编译结果满足并包含Java虚拟机的内部指令集、符号表以及其他辅助信息，它就是一个有效地字节码文件，就能够被虚拟机所识别并装载运行。
+
+**字节码**
+
+我们平时说的java字节码，指的是用java语言编译成的字节码。准确地说任何能在jvm平台上执行的字节码格式都是一样的。所以应该统称为：**jvm字节码**
+
+不同的编译器，可以编译出相同的字节码文件，字节码文件也可以在不同的JVM上运行。
+
+JVM 和 Java 语言并没有必然联系，它只与特定的二进制文件格式---Class文件格式所关联，Class 文件中包含了 Java 虚拟机指令集 (或者成为字节码、Bytecodes) 和符号集，还有一些其他的辅助信息。
+
+**JVM正从“Java语言的虚拟机”向“多语言虚拟机”的方向发展。**
+
+ **虚拟机**
+
+所谓虚拟机，就是一台虚拟的计算机。它是一款软件，用来执行一系列虚拟计算机指令。大体上，虚拟机可以分为系统虚拟机和程序虚拟机。
+
+作用：
+
+JVM是二进制字节码的运行环境，负责装载字节码到内部，解释/编译为对应平台上的机器指令执行。每一条Java指令，Java虚拟机规范中都有详细定义，如怎么取操作数，怎么处理操作数，处理结果放在哪。
+
+特点：
+
+一次编译，到处运行
+
+自动内存管理
+
+自动垃圾回收功能
+
+**JVM的位置**
+
+![image-20211114115800093](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211114115800093.png)
+
+#### JVM整体结构
+
+都需要会画
+
+![image-20211114120143522](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211114120143522.png)
+
+![image-20211114120159254](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211114120159254.png)
+
+**Java代码执行流程**
+
+![image-20211124091801960](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211124091801960.png)
+
+
+
+![image-20211120113612908](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211120113612908.png)
+
+Java编译器又被叫做前端编译器(编译原理)，字节码文件对格式非常严厉，前端编译器任何一个环节出现问题，都无法获取到正常的字节码文件。
+
+主流Java虚拟机都采用解释执行和编译执行并行的设计方式。
+
+解释执行：保证响应时间
+
+需要反复执行的代码称为热点代码，可以用JIT编译器再编译为机器指令，缓存起来。
+
+编译执行(JIT编译器)
+
+#### **JVM架构模型**
+
+Java编译器输入的指令流基本是一种基于栈的指令集架构，另外一种指令集架构则是基于寄存器的指令集架构。
+
+![image-20211124092708949](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211124092708949.png)
+
+一地址指令指的是拥有一个地址的操作数，而零地址指令可想而知。
+
+如果把被储存的东西比作能量：
+
+\1. 寄存器就是 ATP，可以随时拿来用，性能高，但数量有限；
+
+\2. 内存就是葡萄糖，性能一般，但是存量可以比较多；
+
+\3. 外存（比如硬盘）就是脂肪，容量可以非常大，性能很差，要先转化为葡萄糖（存进内存），然后转化为 ATP（放到寄存器）才能直接利用（存取）。
+
+栈的指令集小指令多，而寄存器的指令集大指令少。
+
+![image-20211124093802849](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211124093802849.png)
+
+利用idea查看class文件，看看编译器到底做了什么。
+
+![image-20211125083833889](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211125083833889.png)
+
+#### JVM的生命周期
+
+**虚拟机的启动**
+
+Java虚拟机的启动时通过引导类加载器(bootstrap class loader)创建一个初始类(initial class)来完成的，这个类是由虚拟机大的具体实现指定的。
+
+**虚拟机的执行**
+
+* 一个运行的 Java 虚拟机有着一个清晰的任务：执行 Java 程序。
+
+* 程序开始执行时他才会运行，程序结束时他就停止。
+
+* 执行一个所谓的 Java程序的时候，真真正正在执行的是一个叫做 Java虚拟机的进程。
+
+在Terminal中输入的jps指令，作用是打印当前程序运行中的进程。
+
+**虚拟机的退出**
+
+有如下几种情况：
+
+* 程序正常执行结束
+* 程序在执行过程中遇到了异常或错误而异常终止
+* 由于操作系统出现错误而导致Java虚拟机进程终止
+* 某线程调用Runtime类或者System类的exit方法，或者Runtime类的halt方法，并且Java安全管理器也允许这次exit或halt操作。两者最终都要执行本地方法halt0()
+* 除此之外，JNI(Java Native Interface)规范描述了用JNI Invocation API来加载或者卸载Java虚拟机时，Java虚拟机的退出情况
+
+运行时数据区既是Runtime类的单例对象。
+
+​	**只用JIT的话会使得JVM翻译机暂停时间比较长，因为解释器可以一边解释一边执行，而JIT只能解释完一次性执行。**
+
+​	**用了解释器加JIT还比c慢的部分原因也是因为太过高级的JIT设置会导致编译完成的响应时间变慢，太过低级的JIT设置会导致若存在重复代码解释导致运行时间变慢。**
+
+​	**若用例子解释：可以这样描述，一个人由A地前往B地，而解释器相当于步行，JIT相当于公交车。**
+
+除了HotSpot外的另外两款虚拟机，JRockit 和 J9 虚拟机，JRockit专注于服务器端，只使用JIT编译器做JVM翻译器，且对其的响应时间做了重点优化，JRockit是当前世界上在测试中速度最快的 JVM;J9 号称最快，但是运用于多平台，故没有很大的保证性，而其运行在自家技术领域内的产品快，别的就不太行了。
+
+JMC用于监控内存泄漏的服务套件。
+
+### 类加载子系统
+
+#### 内存结构概述
+
+![image-20211127083451507](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211127083451507.png)
+
+#### 类加载器与类的加载过程
+
+ **类加载子系统作用**
+
+* 类加载器子系统负责从文件系统或者网络中加载Class文件，class文件在文件开头有特定的文件标识。
+* ClassLoader只负责class文件的加载，至于它是否可以运行，则由Execution Engine决定。
+* 加载的类信息存放于一块称为方法区的内存空间。除了类的信息外，方法区中还会存放运行时常量池信息，可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射）
+
+**类加载器ClassLoader角色**
+
+可识别的字节码文件的二进制内容开头都有这个：
+
+![image-20211127094623919](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211127094623919.png)
+
+方法区在7及之前叫永久代，7之后叫元空间。
+
+![image-20211127090859039](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211127090859039.png)
+
+<*clinit*>:在jvm第一次*加载cl*ass文件时调用,包括静态变量初始化语句和静态块的执行 <*init*>:在实例创建出来的时候调用,包括调用new操作符;
+
+**类的加载过程（宏观）**
+
+![image-20211127091459527](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211127091459527.png)
+
+图中的加载是狭义的。
+
+（1）加载：
+
+1、通过一个类的全限定名获取定义此类的二进制字节流。
+
+2、将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构。
+
+3、**在内存中生成一个代表这个类的java.lang.Class对象**，作为方法区这个类的各种数据的访问入口。
+
+（2）链接：
+
+验证：
+
+* 目的在于确保class文件的字节流中包含信息符合当前虚拟机要求，保证被加载类的正确性，不会危害虚拟机自身安全。
+* 主要包括四种验证，文件格式验证，元数据验证，字节码验证，符号引用验证。
+
+准备：
+
+* 为类变量分配内存并且设置该类变量的默认初始值，即零值。
+* **这里不包含用final修饰的static，因为final在编译时就会分配了，准备阶段会显式初始化**
+* **这里不会为实例变量分配初始化**，类变量会分配在方法区中，而实例变量是会随着对象一起分配到Java堆中。
+
+解析：
+
+* 将常量池内的符号引用转换为直接引用的过程。
+* 事实上，解析操作往往会伴随着JVM在执行完初始化之后再执行。
+* 符号引用就是一组符号来描述所引用的目标。符号引用的字面量形式明确定义在《java虚拟机规范》的class文件格式中。直接引用就是直接指向目标的指针、相对偏移量或一个间接定位到目标的句柄。
+* 解析动作主要针对类或接口、字段、类方法、接口方法、方法类型等。对应常量池中的CONSTANT_Class_info、CONSTANT_Fieldref_info、CONSTANT_Methodref_info等。
+
+ （3）初始化：
+
+* 初始化阶段就是执行类构造器方法<clinit> ( ) 的过程。
+* 此方法不需定义，是javac编译器自动收集类中的所有类变量的赋值动作和静态代码块中的语句合并而来。
+* **构造器方法中指令按语句在源文件中出现的顺序执行**。
+* <clinit>( ) 不同于类的构造器。（关联：构造器是虚拟机视角下的<init>( ）
+* 若该类具有父类，JVM会保证子类的<clinit>( )执行前，父类的<clinit>( )已经执行完毕。
+* 虚拟机必须保证一个类的<clinit>( )方法在多线程下被同步加载。
+
+类加载的全过程：加载、验证、准备、解析、初始化
+
+jclasslib插件可以查看class文件内容结构，该插件已经集成到了idea中。
+
+运行这个java文件后查看其class文件，可以看到加载中的准备和初始化阶段两个过程的区别。
+
+```java
+public class ClassInitTest {
+    private static int num = 1;
+
+    static{
+        num = 2;
+        number = 20;
+    }
+
+    private static int number = 10;//linking的prepare：number = 0 --> initialize：20 --> 10
+
+    public static void main(String[] args) {
+        System.out.println(ClassInitTest.num);
+        System.out.println(ClassInitTest.number);
+    }
+}
+```
+
+ 特别之处：![image-20211208110524845](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211208110524845.png)
+
+构造器方法即为<init>：
+
+![image-20211208111517887](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211208111517887.png)
+
+尝试：
+
+```java
+public class ClinitTest {
+    //任何一个类声明以后内部至少存在一个类的构造器
+    private int a = 1;
+    private static int c = 3;
+
+    public static void main(String[] args) {
+        int b = 2;
+    }
+
+    public ClinitTest(){
+        a = 10;
+        int d = 20;
+    }
+}
+```
+
+结果：
+
+![image-20211208111634552](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211208111634552.png)
+
+“JVM会保证子类的<clinit>( )执行前，父类的<clinit>( )已经执行完毕。”的体现
+
+```java
+public class ClinitTest1 {
+    static class Father{
+        public static int A = 1;
+        static {
+            A = 2;
+        }
+    }
+
+    static class Son extends Father{
+        public static int B = A;
+    }
+
+    public static void main(String[] args) {
+        //加载Father类，其次加载Son类。
+        System.out.println(Son.B);
+    }
+}
+```
+
+“虚拟机必须保证一个类的<clinit>( )方法在多线程下被同步加载。”的体现
+
+```java
+public class DeadThreadTest {
+    public static void main(String[] args) {
+        Runnable r = () -> {
+            System.out.println(Thread.currentThread().getName() + "开始");
+            DeadThread dead = new DeadThread();
+            System.out.println(Thread.currentThread().getName() + "结束");
+        };
+
+        Thread t1 = new Thread(r, "线程1");
+        Thread t2 = new Thread(r, "线程2");
+
+        t1.start();
+        t2.start();
+    }
+}
+class DeadThread{
+    static{
+        if(true){
+            System.out.println(Thread.currentThread().getName() + "初始化当前类");
+            while(true){
+
+            }
+        }
+    }
+}
+```
+
+结果：
+
+线程1开始
+线程2开始
+线程1(线程2)初始化当前类
+

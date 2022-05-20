@@ -1,0 +1,32 @@
+2021-09-17 21:45:28,753 INFO Current addressing mode selection : StandaloneMemberLookup
+
+2021-09-17 21:45:28,759 WARN [serverlist] updated to : [Member{ip='10.3.108.40', port=8848, state=UP, extendInfo={raftPort=7848}}]
+
+2021-09-17 21:45:31,703 INFO This node is ready to provide external services
+
+2021-09-17 21:49:49,238 INFO Current addressing mode selection : FileConfigMemberLookup
+
+2021-09-17 21:49:49,239 WARN [serverlist] self ip Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845, version=1.4.1}} not in serverlist [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845, version=1.4.1}}]
+
+2021-09-17 21:49:49,240 WARN [serverlist] updated to : [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845, version=1.4.1}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}]
+
+2021-09-17 21:49:49,248 WARN [serverlist] updated to : [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}]
+
+2021-09-17 21:49:49,249 WARN [serverlist] updated to : [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}]
+
+2021-09-17 21:54:38,524 INFO Current addressing mode selection : FileConfigMemberLookup
+
+2021-09-17 21:54:38,528 WARN [serverlist] updated to : [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}]
+
+2021-09-17 21:54:38,535 WARN [serverlist] updated to : [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}]
+
+2021-09-17 21:54:38,537 WARN [serverlist] updated to : [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}]
+
+2021-09-17 21:56:28,752 INFO Current addressing mode selection : FileConfigMemberLookup
+
+2021-09-17 21:56:28,758 WARN [serverlist] updated to : [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}]
+
+2021-09-17 21:56:28,765 WARN [serverlist] updated to : [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}]
+
+2021-09-17 21:56:28,767 WARN [serverlist] updated to : [Member{ip='127.0.0.1', port=8847, state=UP, extendInfo={raftPort=7847}}, Member{ip='127.0.0.1', port=8846, state=UP, extendInfo={raftPort=7846}}, Member{ip='10.3.108.40', port=8845, state=UP, extendInfo={raftPort=7845}}, Member{ip='127.0.0.1', port=8845, state=UP, extendInfo={raftPort=7845}}]
+

@@ -1,0 +1,324 @@
+链表的头插法和尾插法
+
+头插法：
+
+![在这里插入图片描述](https://img-blog.csdn.net/20180926181043191?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDI4OTg1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+public static Link creat(int len){
+        //定义随机对象
+        Random r=new Random();
+        //定义链表的节点
+        Link newnode,header;
+        //header永远存储第一个节点的地址，tailer永远存储最后一个节点的地址
+        header=null;
+        for (int i = 0; i < len; i++) {
+            //生成一个随机数字
+            int temp=r.nextInt(100);
+            //创建一个临时节点
+            newnode=new Link();
+            //长度
+            length++;
+            //为属性赋值
+            newnode.data=temp;
+            //判断当前链表是否第一次赋值
+            if(header==null){
+                header=newnode;
+            }else{
+                //将新节点连接到链表的头部
+                newnode.next=header;
+                //header永远存储第一个节点的地址
+                header=newnode;
+            }
+        }
+        return header;
+    }
+
+尾插法：
+
+![在这里插入图片描述](https://img-blog.csdn.net/20180926194847575?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDI4OTg1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+public static Link creat(int len){
+        //定义随机对象
+        Random r=new Random();
+        //定义链表的节点
+        Link newnode,header,tailer;
+        //header永远存储第一个节点的地址，tailer永远存储最后一个节点的地址
+        header=tailer=null;
+        for (int i = 0; i < len; i++) {
+            //生成一个随机数字
+            int temp=r.nextInt(100);
+            //创建一个临时节点
+            newnode=new Link();
+            //长度
+            length++;
+            //为属性赋值
+            newnode.data=temp;
+            //判断当前链表是否第一次赋值
+            if(header==null){
+                header=tailer=newnode;
+            }else{
+                //将新节点连接到链表的尾部
+                tailer.next=newnode;
+                //tailer永远存储最后一个节点的地址
+                tailer=newnode;
+            }
+        }
+        return header;
+
+｝
+
+**复杂度分析**
+
+时间复杂度	1s能处理的规模
+     lgn	2^100000000
+     n		100000000
+     n^2	10000
+     n^3  	500(460)
+     2^n	27
+
+复杂度\n 的规模  假设100000000
+     lgn	27/10^8
+     n		1s
+     n^2	100000000s
+     n^3  	10^16s
+     2^n	27(n == 27)
+
+![image-20210529184002945](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210529184002945.png)
+
+
+异或可以理解为不进位加法，如0+0=0 0+1=0 1+1=0
+异或满足交换律、结合律
+同自己求异或为0 同0求异或为自己。
+存在自反性 A^B^B = A^0 = A
+
+随机数的两种方式：
+1，new Random().nextInt(x); [0,x)
+2，Math.random() * x; [0,x)
+
+与（&）运算，用1来运算叫做保留，用0来运算叫做消除。
+二进制的位数由右至左，由0算起
+例子：9的二进制1001，互换之后为0110。
+为了这个互换，我们需要将1001分别与...1010(奇数位保留)和...0101（偶数位保留）进行与运算（结果分别记为A和B），A >> 1 ^ B << 1 即为奇偶位交换后的最终结果。
+奇偶位互换可以直接用16进制的0xaaaaaaaa（...1010）、0x55555555（...0101）表示,减少直接写二进制数的长度。
+
+广度队列，深度栈
+
+异或串还可以做哈希表
+
+获得某个数的二进制1的个数(i=0 i++ i < 32)
+1、N&(1<<i) == 1<<i
+2、N>>>i&1 == 1
+3、while(n!=0){
+		n &= n-1;
+		count++;
+	}
+
+整数转二进制叫做取余留商
+0-1之间的浮点数用二进制表示，乘2看小数点前是否为1（为1则去掉，变为0.1...），直到小数点后为0为止。
+
+ceil用法： double ceil(double x);功能： 返回大于或者等于指定表达式的最小整数
+
+2个相同的二进制数做不进位加法，结果为0，10个相同的10进制数做不进位加法，结果为0。
+由上可知：k个相同的k进制数做不进位加法，结果为0
+
+任意进制转换
+1、手工取余法
+2、Integer.toString(i,radix); radix->所需进制数
+
+不进位加法需要多看看，利用二维数组书写。
+
+最大公约数
+m % n == 0  n为最大公约数 若不是，则判断是否n % k(m%n的结果) == 0，是则k为最大公约数。
+
+
+
+希尔排序为什么快？
+
+元素指的是某次间隔的间隔数中所要操作的数的个数。
+
+无序时，元素少。
+
+元素多时，已经基本有序
+
+最坏与最好：nlogn - n^2
+
+
+
+**递归**
+找重复
+1、找到一种划分方式
+2、找到递推公式或者等价转换，都是父问题转为求解子问题
+找变化的量
+找出出口
+
+汉诺塔
+柱子的角色在变化。
+1-N从A移动到B，C作为辅助
+	等价于：
+	1、1->N-1移动到C，A作为源，B为辅助
+	2、把N从A移动到B
+	3、把1->N-1从C移动到B，A为辅助
+
+递归的二分查找
+low + high >>> 1//防止溢出，且移位更高效。
+
+对result取模1e9+7 等同于 result %= (Math.pow(10, 9) + 7)
+
+![image-20210529171801523](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210529171801523.png)
+
+**递归算法的相关复杂度**
+
+求两个数的最大公约数，每两次递归操作n掉到原来的一半的原因：
+
+m>n 
+
+m%n < m/2
+
+n%(m%n) < n/2
+
+![image-20210529180607058](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210529180607058.png)
+
+1+2+...+2^logn ~ n
+
+1+2+...+2^n ~ 2^n
+
+分治法
+将原问题划分成若干个规模较小而结构与原问题一致的子问题；递归地解决这些子问题，然后
+再合并其结果，就得到原问题的解。
+分治在每一层递归都有三个步骤
+1、分解：将原问题分解成一系列子问题。
+2、解决：递归地解各子问题。若子问题足够小，则直接有解。
+3、合并：将子问题的结果合并为原问题的解。
+快排重划分。
+归排重合并。
+排序列表较短时，使用插入排序。
+
+时针算法：
+存在负角度的求法：
+int oneMinAngle = 6;
+int oneHourAngle = 30;
+
+double minutesAngle = oneMinAngle * minutes;
+double hourAngle = (hour % 12 + minutes / 60.0) * oneHourAngle;
+
+double diff = Math.abs(hourAngle - minutesAngle);
+return Math.min(diff, 360 - diff);
+
+Integer.toBinaryString 求某个十进制数的二进制字符串
+
+四平方和定理证明了任意一个正整数都可以被表示为至多四个正整数的平方和。
+
+将一个数字拆分，其子为 3（余数不足3则2，余数不足2则1） 时，可以得到最大的乘积。
+
+最小可用id
+
+逆序对，merge的过程中，只要抓右侧的数，就存在逆序对，数量是左侧剩余数字的个数
+左为678 右为357
+
+堆的调整方向都是向下调整。
+
+堆排序要先对数组进行堆化
+堆化过程伪代码
+
+```java
+MinHeap(A){
+    n = A.length;
+    for i from n / 2 - 1 down to 0{
+        MinHeapFixDown(A,i,n);
+    }
+}
+MinHeapFixDown(A,i,n){
+
+    //找到左右孩子
+    left = 2 * i + 1;
+    right = 2 * i + 2;
+    //如果左孩子已经越界，i就是叶子节点
+    if(left >= n){
+    return;
+    }
+    min = left;
+    if(right >= n){
+    min = left;
+    }else{
+    if(A[right] < A[left]){
+        min = right;
+      }
+    }
+    //min指向了左右孩子中较小的那个
+    
+    //如果A[i]比两个孩子都要小，不用调整
+    if(A[i] <= A[min]) return;
+    //否则，找到两个孩子中较小的，和i交换
+    temp = A[i];
+    A[i] = A[min];
+    A[min] = temp;
+    //小孩子那个位置的值发生了变化，i变更为小孩子所在位置，递归调整
+    MinHeapFixDown(A,min,n);
+
+}
+
+Sort(A){
+    //先对A进行堆化
+    MinHeap(A);
+    for(int x = n - 1; x >= 0; x--)
+        //把堆顶，即0号元素和最后一个元素对调
+        swap(A,0,x);
+        //缩小堆的范围，对堆顶元素进行向下调整
+        MinHeapFixDown(A,0,x-1)
+}
+```
+
+二叉树中深度为logn
+
+usfca visualization 数据结构可视化网站
+
+**桶排序**
+
+桶排序的常见桶设置
+value * n / (max + 1)
+算出value应该到哪个桶，得出的是桶的下标
+
+O(n) ~ O(nlogn)
+
+**基数排序**
+
+根据数位（各位->更大位）上的数值来排序
+
+O(K*N) 位数乘于个数
+
+挺有意思的题：需排序的子数组长度是多少？
+
+计数排序适用于计数范围小，且已知。
+
+jdk8中：
+//将int数组转换为Integer数组
+int[] nums = {1,2,3};
+//先将int数组转换为数值流
+IntStream stream = Arrays.stream(nums);
+//流中的元素全部装箱，转换为流 ---->int转为Integer
+Stream<Integer> integerStream = stream.boxed();
+//将流转换为数组
+Integer[] integers = integerStream.toArray(Integer[]::new);
+System.out.println(Arrays.toString(integers));
+
+java Integer List转为int型数组
+List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
+int[] arr= list.stream()
+		.mapToInt(Integer::intValue)
+		.toArray();
+
+
+
+
+
+```
+/*
+《编程之美》上这样说:
+    
+    设N = abcde ,其中abcde分别为十进制中各位上的数字。
+    如果要计算百位上1出现的次数，它要受到3方面的影响：百位上的数字，百位以下（低位）的数字，百位以上（高位）的数字。
+    如果百位上数字为0，百位上可能出现1的次数由更高位决定。比如：12013，则可以知道百位出现1的情况可能是：100~199，1100~1199,2100~2199，，...，11100~11199，一共1200个。可以看出是由更高位数字（12）决定，并且等于更高位数字（12）乘以 当前位数（100）。注意：高位数字不包括当前位
+    如果百位上数字为1，百位上可能出现1的次数不仅受更高位影响还受低位影响。比如：12113，则可以知道百位受高位影响出现的情况是：100~199，1100~1199,2100~2199，，....，11100~11199，一共1200个。和上面情况一样，并且等于更高位数字（12）乘以 当前位数（100）。但同时它还受低位影响，百位出现1的情况是：12100~12113,一共14个，等于低位数字（13）+1。 注意：低位数字不包括当前数字
+    如果百位上数字大于1（2~9），则百位上出现1的情况仅由更高位决定，比如12213，则百位出现1的情况是：100~199,1100~1199，2100~2199，...，11100~11199,12100~12199,一共有1300个，并且等于更高位数字+1（12+1）乘以当前位数（100）
+*/
+```

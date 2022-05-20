@@ -1,0 +1,3584 @@
+# Spring
+
+前身EJB配置文件繁琐
+
+lombok可以帮助开发者自动生存实体类相关的方法，在IDEA中使用，必须预先安装插件
+
+```xml
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.18</version>
+        </dependency>
+```
+
+**Spring两大核心机制**
+
+IoC（控制反转）:  工厂模式
+
+AOP（面向切面编程）: 代理模式
+
+IoC
+
+IoC是Spring框架的灵魂，即控制反转。
+
+```java
+    	//传统的开发方式，手动创建对象
+        Student student = new Student();
+        System.out.println(student);
+
+        //IoC容器自动创建对象，开发者只需要取出对象即可
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring.xml");
+        Student studentx = (Student)applicationContext.getBean("student");
+```
+
+实例化对象不像上面一样由程序员实现，而是Spring容器去自动实现。
+
+
+
+**开发步骤**
+
+1、创建Maven工程，pom.xml导入依赖。
+
+```xml
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.5</version>
+        </dependency>
+    </dependencies>
+```
+
+2、在resources路径下创建spring.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	//将Student类注入到容器中
+    <bean id="student" class="com.southwind.entity.Student"></bean>
+</beans>
+```
+
+3、IoC容器通过读取spring.xml配置文件加载bean标来创建对象。
+
+4、调用API获取IoC容器中已经创建的对象。
+
+```java
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring.xml");
+        Student studentx = (Student)applicationContext.getBean("student");
+```
+
+
+
+**IoC容器创建Bean的两种方式**
+
+**·**Student实体类内容
+
+```java
+@Data
+public class Student {
+    private Integer id;
+    private String name;
+    private Integer age;
+}
+```
+
+**·**无参构造函数
+
+```xml
+<bean id="student" class="com.southwind.entity.Student"></bean>
+```
+
+给成员变量赋值（调用set方法）
+
+```xml
+<bean id="student" class="com.southwind.entity.Student">
+	<property name="id" value="1"></property>
+	<property name="name" value="张三"></property>
+	<property name="age" value="22"></property>
+</bean>
+```
+
+**·**有参构造函数
+
+```xml
+<bean id="student" class="com.southwind.entity.Student">
+    <constructor-arg name="id" value="1"/>
+    <constructor-arg name="name" value="张三"/>
+    <constructor-arg name="age" value="22"/>
+</bean>
+```
+
+
+
+```xml
+<bean id="student" class="com.southwind.entity.Student">
+    <constructor-arg index="0" value="1"/>
+    <constructor-arg index="1" value="张三"/>
+    <constructor-arg index="2" value="22"/>
+</bean>
+```
+
+
+
+**从IoC容器中取bean**
+
+**.**通过id取值
+
+```java
+Student studentx = (Student)applicationContext.getBean("student");
+```
+
+**.**通过类型取值（不用强转）
+
+```java
+Student studentx = applicationContext.getBean("Student.class");
+```
+
+**.**当 IoC 容器中同时存在两个以上 Student Bean 的时候会抛出异常，因为此时没有唯一的 bean 指向。
+
+
+
+**bean的value中存在特殊字符，如下处理即可**  (要输入的属性样式为：<一班>)
+
+```xml
+    <!--Classes-->
+    <bean id="classA" class="com.southwind.entity.Classes">
+        <property name="id" value="1"></property>
+        <property name="name">
+        	<value><![CDATA[<一班>]]></value>
+        </property>
+    </bean>
+```
+
+
+
+**IoC DI**
+
+DI 指的是 Bean 之间的依赖注入，设置对象之间的级联关系。
+
+Classes
+
+```java
+@Data
+public class Classes {
+    private Integer id;
+    private String name;
+}
+```
+
+Student
+
+```java
+@Data
+public class Student {
+    private Integer id;
+    private String name;
+    private Integer age;
+    private Classes classA;
+}
+```
+
+spring-di.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--Classes-->
+    <bean id="classA" class="com.southwind.entity.Classes">
+        <property name="id" value="1"></property>
+        <property name="name" value="一班"></property>
+    </bean>
+
+    <!--Student-->
+    <bean id="student" class="com.southwind.entity.Student">
+        <property name="id" value="100"></property>
+        <property name="name" value="张三"></property>
+        <property name="age" value="22"></property>
+        <property name="classA" ref="classA"></property>
+    </bean>
+    
+</beans>
+```
+
+Bean 之间的级联需要使用ref属性完成映射，而不能直接使用 value，否则会抛出类型转换异常。
+
+原因：value 是将 value 解析类型（无法解析自定义类型）然后分配给成员变量，而ref是从容器中搜寻要注入的 Bean，然后赋值给别的Bean。
+
+Student
+
+```java
+@Data
+public class Student {
+    private Integer id;
+    private String name;
+    private Integer age;
+    private Classes classA;
+}
+```
+
+Classes
+
+```java
+@Data
+public class Classes {
+    private Integer id;
+    private String name;
+    private List<Student> students;
+}
+```
+
+spring-di.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--Classes-->
+    <bean id="classA" class="com.southwind.entity.Classes">
+        <property name="id" value="1"></property>
+        <property name="name" value="一班"></property>
+        <property name="students">
+            <list>
+                <ref bean="student"></ref>
+                <ref bean="student2"></ref>
+            </list>
+        </property>
+    </bean>
+
+    <!--Student-->
+    <bean id="student" class="com.southwind.entity.Student">
+        <property name="id" value="100"></property>
+        <property name="name" value="张三"></property>
+        <property name="age" value="22"></property>
+<!--        <property name="classA" ref="classA"></property>-->
+    </bean>
+
+    <bean id="student2" class="com.southwind.entity.Student">
+        <property name="id" value="101"></property>
+        <property name="name" value="李四"></property>
+        <property name="age" value="21"></property>
+<!--        <property name="classA" ref="classA"></property>-->
+    </bean>
+</beans>
+
+```
+
+注释处若取消会造成你取我，我取你的无限循环状态导致栈溢出。
+
+**Spring中的Bean (scope[词汇原意:范围])**
+
+bean是根据scope生成的，表示bean的作用域，scope有4中类型：
+
+**. **singleton，单例，表示通过Spring容器获取的对象是唯一的，默认值。
+
+**. **prototype，原型，表示通过Spring容器获取的对象是不同的。
+
+**. **request，请求，表示在一次HTTP请求内有效。
+
+**. **session，会话，表示在一个用户会话内有效。
+
+request、session适用于web项目。
+
+#singleton 模式下只要加载IoC容器，无论是否从IoC中取出Bean，配置文件中的Bean都会被创建。
+
+#prototype 模式下，如果不从IoC中取Bean，则不创建对象，取一次Bean就会创建一个对象。
+
+```xml
+<?xml version="1.0" encoding="
+
+UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="user1" class="com.southwind.entity.User" scope="singleton">
+        <property name="id" value="1"></property>
+        <property name="name" value="张三"></property>
+    </bean>
+
+    <bean id="user2" class="com.southwind.entity.User" scope="singleton" parent="user1">
+        <property name="id" value="2"></property>
+    </bean>
+
+</beans>
+```
+
+
+
+**Spring的继承**
+
+Spring 的继承不同于 java 的继承，区别：java 中的继承是针对于类的，Spring 中的继承是针对于对象(Bean)的。
+
+Spring 的继承中，子 bean 可以继承父 bean 中的所有成员变量的值。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="user1" class="com.southwind.entity.User">
+        <property name="id" value="1"></property>
+        <property name="name" value="张三"></property>
+    </bean>
+
+    <bean id="user2" class="com.southwind.entity.User" parent="user1">
+        <property name="id" value="2"></property>
+    </bean>
+</beans>
+```
+
+通过设置 bean 标签的 parent 属性建立继承关系，同时子 bean 可以覆盖父 bean 的属性值
+
+Spring 的继承是针对对象的，所以子 bean 和父 bean 并不需要属于同一个类类型，只要起成员变量列表一致即可。
+
+
+
+**Spring的依赖**
+
+用来设置两个 bean 的创建顺序。
+
+IoC 容器默认情况下通过 spring.xml 中 bean 的配置顺序来决定创建顺序的，配置在前面的 bean 会先创建。
+
+在不更改 spring.xml 配置顺序的情况下，可以通过设置 bean 之间的依赖关系来调整 bean 的创建关系。
+
+```xml
+    <bean id="user" class="com.southwind.entity.User" depends-on="account">
+    </bean>
+
+    <bean id="account" class="com.southwind.entity.Account">
+    </bean>
+```
+
+上述代码的结果是先创建 Account，在创建 User。
+
+
+
+**Spring读取外部资源**
+
+实际开发中，数据库的配置一般会单独保存到后缀为 properties 的文件中（为了方便维护和修改且好找），如果使用 Spring 来加载数据源，则需要在 spring.xml 中读取 properties 中的数据，这就是读取外部资源。
+
+jdbc.properties
+
+```properties
+username = root
+password = 200013
+url = jdbc:mysql://localhost:3306/library
+driverName = com.mysql.cj.jdbc.Driver
+```
+
+spring.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 导入外部资源 -->
+    <context:property-placeholder location="jdbc.properties"></context:property-placeholder>
+    <!-- SpEL表达式来引入数据 -->
+    <bean id="dataSource" class="com.southwind.entity.DataSource">
+        <property name="username" value="${username}"></property>
+        <property name="password" value="${password}"></property>
+        <property name="url" value="${url}"></property>
+        <property name="driverName" value="${driverName}"></property>
+    </bean>
+
+</beans>
+```
+
+
+
+**Spring p 命名空间**
+
+p 命名空间可以用来简化 bean 的配置文本
+
+必须有这句：
+
+```xml
+xmlns:p="http://www.springframework.org/schema/p"
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 			xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="student" class="com.southwind.entity.Student" p:id="1" p:name="张三" p:age="22" p:classA-ref="classes">
+    </bean>
+
+    <bean id="classes" class="com.southwind.entity.Classes" p:id="1" p:name="一班">
+    </bean>
+</beans>
+```
+
+
+
+**Spring 工厂方法**
+
+IoC 通过工厂模式创建 bean
+
+**·**静态工厂方法
+
+**·**实例工厂方法
+
+区别：
+
+​	静态工厂方法创建对象不需要实例化工厂对象，因为静态工厂的方法为静态方法(get)，且存在静态代码块得以默认执行，不需要创建对象即可调用，spring.xml 中只需要配置一个 bean，即最终的结果所需的对象即可。
+
+​	实例工厂类方法创建对象需要实例化工厂对象，因为 get 方法是非静态的，就必须通过实例化对象才能调用，所以就必须创建工厂对象，spring.xml 中需要配置两个 bean，一个是工厂 bean，一个是所需的对象的 Bean。
+
+spring.xml 中 class + factory-method 的形式是直接调用类中的工厂方法。
+
+spring.xml 中 factory-bean + factory-method 的形式则是调用工厂bean中的工厂方法，就必须先创建工厂 bean。
+
+静态工厂方法
+
+1、创建Car类
+
+```java
+@Data
+@AllArgsConstructor
+public class Car {
+    private Integer num;
+    private String brand;
+}
+```
+
+2、创建静态工厂类、静态工厂方法
+
+```java
+public class StaticCarFactory {
+    private static Map<Integer, Car> carMap;
+    //主要！
+    static {
+        carMap = new HashMap<Integer, Car>();
+        carMap.put(1,new Car(1,"奥迪"));
+        carMap.put(2,new Car(2,"奥拓"));
+    }
+    public static Car getCar(Integer num){
+        return carMap.get(num);
+    }
+}
+```
+
+3、spring.xml
+
+```xml
+    <bean id="car1" class="com.southwind.Factory.StaticCarFactory" factory-method="getCar">
+        <constructor-arg value="1"></constructor-arg>
+    </bean>
+```
+
+factory-method 指向静态方法
+
+constructor-arg 的value属性是调用静态方法传入的参数
+
+
+
+实例工厂方法
+
+1、创建Car类
+
+```java
+@Data
+@AllArgsConstructor
+public class Car {
+    private Integer num;
+    private String brand;
+}
+```
+
+2、创建实例工厂类、工厂方法
+
+```java
+public class InstanceCarFactory {
+    private Map<Integer, Car> carMap;
+    public InstanceCarFactory(){
+        carMap = new HashMap<Integer, Car>();
+        carMap.put(1,new Car(1,"奥迪"));
+        carMap.put(2,new Car(2,"奥拓"));
+    }
+
+    public Car getCar(Integer num){
+        return carMap.get(num);
+    }
+}
+```
+
+3、spring.xml
+
+```xml
+    <!-- 实例工厂 -->
+    <bean id="instanceCarFactory" class="com.southwind.Factory.InstanceCarFactory"></bean>
+    <!-- 通过实例工厂获取car -->
+    <bean id="car2" factory-bean="instanceCarFactory" factory-method="getCar">
+        <constructor-arg value="2"></constructor-arg>
+    </bean>
+```
+
+------------复习到这-----------
+
+**Spring IoC的自动装载 (autowire)**
+
+自动装载是Spring提供的一种更加简便的方式来完成DI，开发者不需要手动配置property。IoC容器会自动选择bean完成注入。
+
+自动装载有两种方式：
+
+**· **byName，通过成员变量名完成自动装载。
+
+**· **byType，通过属性对应的类型完成自动装载。
+
+byName的操作如下所示：
+
+1、创建Person实体类
+
+```java
+@Data
+public class Person {
+    private Integer id;
+    private String name;
+    private Car car;
+}
+```
+
+2、在 spring.xml 中配置 Car 和 Person 对应的 bean，并且通过自动装载完成依赖注入。
+
+```xml
+<bean id="person" class="com.southwind.entity.Person" autowire="byName">
+    <property name="id" value="1"></property>
+    <property name="name" value="张三"></property>
+    <!--手动配置DI-->
+    <!--<property name="car" ref="car"></property>-->
+</bean>
+
+<bean id="car" class="com.southwind.entity.Car">
+    <constructor-arg name="num" value="1"></constructor-arg>
+    <constructor-arg name="brand" value="奥迪"></constructor-arg>
+</bean>
+```
+
+byType的操作如下所示：
+
+```xml
+<bean id="person" class="com.southwind.entity.Person" autowire="byType">
+    <property name="id" value="1"></property>
+    <property name="name" value="张三"></property>
+    <!--手动配置DI-->
+    <!--<property name="car" ref="car"></property>-->
+</bean>
+
+<bean id="car2" class="com.southwind.entity.Car">
+    <constructor-arg name="num" value="1"></constructor-arg>
+    <constructor-arg name="brand" value="奥迪"></constructor-arg>
+</bean>
+```
+
+使用 byType 进行自动装载时，必须保证IoC中只有一个符合条件的 bean，否则会抛出 NoUniqueBeanDefinitionException。
+
+**Spring IoC 基于注解的开发**
+
+Spring IoC 的作用是帮助开发者创建项目中所需要的 bean，同时完成 bean 之间的依赖注入关系（DI）。
+
+实现该功能有两种方式：
+
+**· **基于 XML 配置
+
+**· **基于注解
+
+基于注解有两步操作
+
+1、配置自动扫包。
+
+2、添加注解。
+
+```xml
+<!--自动扫包-->
+<context:component-scan base-package="com.southwind.entity"></context:component-scan>
+```
+
+```java
+@Data
+@Component
+public class Repository {
+    private DataSource dataSource;
+}
+```
+
+注：可以写@Component(value="xxx") 来改变 bean 的名字。
+
+注解实现自动装载和成员变量赋值
+
+```java
+@Data
+@Component
+public class DataSource {
+    @Value("root")
+    private String username;
+    @Value("root")
+    private String password;
+    @Value("jdbc:mysql://localhost:3306/library")
+    private String url;
+    @Value("com.mysql.cj.jdbc.Driver")
+    private String driverName;
+}
+```
+
+```java
+@Data
+@Component
+public class Repository {
+    @Autowired
+    @Qualifier(value = "dataSource")
+    private DataSource dataSource;
+}
+```
+
+@Autowired注解默认是根据bean的类型进行注入，如果要改为根据bean的名字注入，需要配合@Qualifier注解。（样式如上）
+
+实体类中普通的成员变量（String、包装类等）可以通过@Value注解进行赋值。
+
+如上操作等同于 spring.xml 中的：
+
+```xml
+    <bean id="repository" class="com.southwind.entity.Repository" autowire="byName">
+    </bean>
+
+    <bean id="dataSource" class="com.southwind.entity.DataSource">
+        <property name="username" value="root"></property>
+        <property name="password" value="root"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/library"></property>
+        <property name="driverName" value="com.mysql.cj.jdbc.Driver"></property>
+	</bean>
+```
+
+
+
+**实际开发的使用**
+
+实际开发中我们会将程序分为三层：
+
+**·** Controller
+
+**·** Service
+
+**·** Repository (DAO)
+
+调用关系 Controller -> Service -> DAO
+
+@Component 注解是将标注的类加载到 IoC 容器中，实际开发中可以根据业务需求分别使用@Controller、@Service、@Repository 注解来标注控制层类、业务层类、持久层类。
+
+
+
+**Spring IoC 底层实现**
+
+核心技术点：XML 解析 + 反射
+
+具体思路：
+
+1、根据需求编写 XML 文件来配置需要创建的 Bean。
+
+2、编写程序来读取 XML 文件，获取 Bean 相关信息（类、属性、id）。
+
+3、根据第 2 步获取到的信息，结合反射机制动态创建对象，同时完成属性的赋值。
+
+4、将创建好的 bean 存入Map集合，设置 key-value 映射，key 就是 bean 中 id 值，value 就是bean 对象。
+
+5、提供方法从 Map 中通过 id 获取到对应的 value。
+
+自定义IoC容器
+
+```java
+public class MyClassPathXmlApplicationContext implements ApplicationContext {
+
+    private Map<String, Object> iocMap;
+
+    public MyClassPathXmlApplicationContext(String path){
+        iocMap = new HashMap<String, Object>();
+        //解析XML
+        parseXML(path);
+    }
+
+    public void parseXML(String path){
+        SAXReader saxReader = new SAXReader();
+        try {
+            Document document = saxReader.read("src/main/resources/" + path);
+            //即beans
+            Element root = document.getRootElement();
+            Iterator<Element> rootIterator = root.elementIterator();
+            while(rootIterator.hasNext()){
+                //拿到bean
+                Element bean = rootIterator.next();
+                //拿到bean的id
+                String idStr = bean.attributeValue("id");
+                //拿到bean的名字
+                String className = bean.attributeValue("class");
+                //结合反射机制动态创建对象
+                Class classx = Class.forName(className);
+                //获取无参构造器
+                Constructor constructor = classx.getConstructor();
+                //利用无参构造器创建对象
+                Object o = constructor.newInstance();
+                //给属性(成员变量)赋值
+                Iterator<Element> beanIter = bean.elementIterator();
+                while(beanIter.hasNext()){
+                    Element property = beanIter.next();
+                    String propertyName = property.attributeValue("name");
+                    String propertyValue = property.attributeValue("value");
+                    //获取setter方法
+                    //num-setNum,brand-setBrand
+                    String methodName = "set" + propertyName.substring(0,1).toUpperCase() + 			propertyName.substring(1);
+
+                    //获取属性
+                    Field declaredField = classx.getDeclaredField(propertyName);
+                    //拿到方法
+                    Method method = classx.getMethod(methodName, declaredField.getType());
+                    //中间值
+                    Object value = propertyValue;
+                    //类型转换
+                    String fieldTypeName = declaredField.getType().getName();
+                    switch (fieldTypeName){
+                        case "java.lang.Integer":
+                            value = Integer.parseInt(propertyValue);
+                            break;
+                        case "java.lang.Double":
+                            value = Double.parseDouble(propertyValue);
+                        case "java.lang.Long" :
+                            value = Long.parseLong(propertyValue);
+                        case "java.lang.Byte" :
+                            value = Byte.parseByte(propertyValue);
+                        case "java.lang.Short" :
+                            value = Short.parseShort(propertyValue);
+                        case "java.lang.Float" :
+                            value = Float.parseFloat(propertyValue);
+                        case "java.lang.Boolean" :
+                            value = Boolean.parseBoolean(propertyValue);
+                    }
+                    //调用方法
+                    method.invoke(o, value);
+                }
+                //存入容器（这里是Map）
+                iocMap.put(idStr, o);
+            }
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e){
+            e.printStackTrace();
+        } catch (NoSuchMethodException e){
+            e.printStackTrace();
+        } catch (InstantiationException e){
+            e.printStackTrace();
+        } catch (IllegalAccessException e){
+            e.printStackTrace();
+        } catch (InvocationTargetException e){
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getId() {
+        return null;
+    }
+
+    public String getApplicationName() {
+        return null;
+    }
+
+    public String getDisplayName() {
+        return null;
+    }
+
+    public long getStartupDate() {
+        return 0;
+    }
+
+    public ApplicationContext getParent() {
+        return null;
+    }
+
+    public AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException {
+        return null;
+    }
+
+    public BeanFactory getParentBeanFactory() {
+        return null;
+    }
+
+    public boolean containsLocalBean(String s) {
+        return false;
+    }
+
+    public boolean containsBeanDefinition(String s) {
+        return false;
+    }
+
+    public int getBeanDefinitionCount() {
+        return 0;
+    }
+
+    public String[] getBeanDefinitionNames() {
+        return new String[0];
+    }
+
+    public <T> ObjectProvider<T> getBeanProvider(Class<T> aClass, boolean b) {
+        return null;
+    }
+
+    public <T> ObjectProvider<T> getBeanProvider(ResolvableType resolvableType, boolean b) {
+        return null;
+    }
+
+    public String[] getBeanNamesForType(ResolvableType resolvableType) {
+        return new String[0];
+    }
+
+    public String[] getBeanNamesForType(ResolvableType resolvableType, boolean b, boolean b1) {
+        return new String[0];
+    }
+
+    public String[] getBeanNamesForType(Class<?> aClass) {
+        return new String[0];
+    }
+
+    public String[] getBeanNamesForType(Class<?> aClass, boolean b, boolean b1) {
+        return new String[0];
+    }
+
+    public <T> Map<String, T> getBeansOfType(Class<T> aClass) throws BeansException {
+        return null;
+    }
+
+    public <T> Map<String, T> getBeansOfType(Class<T> aClass, boolean b, boolean b1) throws BeansException {
+        return null;
+    }
+
+    public String[] getBeanNamesForAnnotation(Class<? extends Annotation> aClass) {
+        return new String[0];
+    }
+
+    public Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> aClass) throws BeansException {
+        return null;
+    }
+
+    public <A extends Annotation> A findAnnotationOnBean(String s, Class<A> aClass) throws NoSuchBeanDefinitionException {
+        return null;
+    }
+
+    public Object getBean(String s) throws BeansException {
+        return iocMap.get(s);
+    }
+
+    public <T> T getBean(String s, Class<T> aClass) throws BeansException {
+        return null;
+    }
+
+    public Object getBean(String s, Object... objects) throws BeansException {
+        return null;
+    }
+
+    public <T> T getBean(Class<T> aClass) throws BeansException {
+        return null;
+    }
+
+    public <T> T getBean(Class<T> aClass, Object... objects) throws BeansException {
+        return null;
+    }
+
+    public <T> ObjectProvider<T> getBeanProvider(Class<T> aClass) {
+        return null;
+    }
+
+    public <T> ObjectProvider<T> getBeanProvider(ResolvableType resolvableType) {
+        return null;
+    }
+
+    public boolean containsBean(String s) {
+        return false;
+    }
+
+    public boolean isSingleton(String s) throws NoSuchBeanDefinitionException {
+        return false;
+    }
+
+    public boolean isPrototype(String s) throws NoSuchBeanDefinitionException {
+        return false;
+    }
+
+    public boolean isTypeMatch(String s, ResolvableType resolvableType) throws NoSuchBeanDefinitionException {
+        return false;
+    }
+
+    public boolean isTypeMatch(String s, Class<?> aClass) throws NoSuchBeanDefinitionException {
+        return false;
+    }
+
+    public Class<?> getType(String s) throws NoSuchBeanDefinitionException {
+        return null;
+    }
+
+    public Class<?> getType(String s, boolean b) throws NoSuchBeanDefinitionException {
+        return null;
+    }
+
+    public String[] getAliases(String s) {
+        return new String[0];
+    }
+
+    public void publishEvent(Object o) {
+
+    }
+
+    public String getMessage(String s, Object[] objects, String s1, Locale locale) {
+        return null;
+    }
+
+    public String getMessage(String s, Object[] objects, Locale locale) throws NoSuchMessageException {
+        return null;
+    }
+
+    public String getMessage(MessageSourceResolvable messageSourceResolvable, Locale locale) throws NoSuchMessageException {
+        return null;
+    }
+
+    public Environment getEnvironment() {
+        return null;
+    }
+
+    public Resource[] getResources(String s) throws IOException {
+        return new Resource[0];
+    }
+
+    public Resource getResource(String s) {
+        return null;
+    }
+
+    public ClassLoader getClassLoader() {
+        return null;
+    }
+}
+
+```
+
+**Spring AOP**
+
+AOP (Aspect Oriented Programming) 面向切面编程。
+
+OOP (Object Oriented Programming) 面向对象编程,用对象化的思想来完成程序。
+
+AOP 是对 OOP 的一个补充，是在另外一个维度上抽象出对象。
+
+具体是指程序运行时动态地将非业务代码切入到业务代码中，从而实现程序的解耦合，将非业务代码抽象成一个对象，对该对象编程就是面向切面编程。
+
+常规面向对象编程维护性差，代码复用性差，需要使用 AOP 进行优化。
+
+**·**AOP的优点：
+
+1、可以降低模块之间的耦合性。
+
+2、提高代码复用性。
+
+3、提高代码维护性。
+
+4、集中管理非业务代码，便于维护。
+
+5、业务代码不受非业务代码的影响，逻辑更加清晰。
+
+通过例子来理解AOP
+
+1、创建一个计算器接口 Cal
+
+```java
+public interface Cal {
+    public int add(int num1, int num2);
+    public int sub(int num1, int num2);
+    public int mul(int num1, int num2);
+    public int div(int num1, int num2);
+}
+```
+
+2、创建接口的实现类 CalImpl
+
+```java
+public class CalImpl implements Cal {
+
+    @Override
+    public int add(int num1, int num2) {
+        return num1 + num2;
+    }
+
+    @Override
+    public int sub(int num1, int num2) {
+        return num1 - num2;
+    }
+
+    @Override
+    public int mul(int num1, int num2) {
+        return num1 * num2;
+    }
+
+    @Override
+    public int div(int num1, int num2) {
+        return num1 / num2;
+    }
+}
+```
+
+日志打印
+
+**·** 在每个方法开始位置输出参数信息。
+
+**·** 在每个方法结束位置输出结果信息。
+
+对于计算器来讲，加减乘除就是业务代码，日志打印就是非业务代码。
+
+AOP 如何实现？使用动态代理的方式来实现。
+
+代理首先应该具备 CalImpl 的所有功能，并在此基础上，扩展出打印日志的功能。
+
+1、删除 CalImpl 方法中所有打印日志的代码，只保留业务代码。
+
+2、通过创建MyInvocationHandler 类，实现 InvocationHandler 接口，生成动态代理类。
+
+动态代理类，需要动态生成，需要获取到委托类的接口信息，根据这些接口信息动态生成一个代理类，然后再由 ClassLoader 将动态生成的代理类加载到 JVM 中。
+
+ClassLoader  用来将动态生成的类加载到 JVM 中。
+
+```java
+public class MyInvocationHandler implements InvocationHandler {
+    //委托对象
+    private  Object object = null;
+
+    //返回代理对象
+    public Object bind(Object o){
+        this.object = o;
+        return Proxy.newProxyInstance(o.getClass().getClassLoader(), o.getClass().getInterfaces(),this);
+    }
+
+    //实现业务代码和非业务代码的解耦合
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println(method.getName() + "方法的参数为" + Arrays.toString(args));
+        //完成业务代码的调用，method为调用的方法
+        Object result = method.invoke(this.object, args);
+        System.out.println(method.getName() + "方法的结果为" + result);
+        return result;
+    }
+}
+```
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        //实例化委托对象
+        Cal cal = new CalImpl();
+        //获取代理对象
+        MyInvocationHandler myInvocationHandler = new MyInvocationHandler();
+        Cal proxy = (Cal) myInvocationHandler.bind(cal);
+        proxy.add(10,3);
+        proxy.sub(10,3);
+        proxy.mul(10,3);
+        proxy.div(10,3);
+    }
+}
+```
+
+上述代码通过动态代理机制实现了业务代码和非业务代码的解耦合，这是Spring AOP 的底层实现机制，真正在使用 Spring AOP 进行开发时，不需要怎么复杂，可以用更好的理解方式来完成开发。
+
+Spring AOP 的开发步骤
+
+1、创建切面类。
+
+```java
+@Component
+@Aspect
+public class LoggerAspect {
+    @Before("execution(public int com.southwind.AOP.Impl.CalImpl.add(..))")
+    public void before(JoinPoint joinPoint){
+        //此处的joinPoint连接了add方法
+        String name = joinPoint.getSignature().getName();
+        String args = Arrays.toString(joinPoint.getArgs());
+        System.out.println(name + "方法的参数为" + args);
+    }
+}
+```
+
+**·** @Component，将切面类加载到 IoC 容器中。
+
+**·** @Aspect，表示该类是一个切面类。
+
+**·** @Before，表示方法的执行时机是在业务方法之前，execution 表达式表示切入点。
+
+**·** @After，表示方法的执行时机是在业务方法结束之后，execution表达式表示切入点。
+
+**·** @AfterReturning，表示方法的执行时机是在业务方法返回结果之后，execution表达式表示切入点，注解参数 returning 用于将业务方法返回值和切面类方法的形参进行绑定。
+
+2、委托类也需要@Component
+
+```java
+@Component
+public class CalImpl implements Cal {
+
+    @Override
+    public int add(int num1, int num2) {
+        //        System.out.println("add方法的参数是[" + num1 + "," + num2 + "]");
+        int result = num1 + num2;
+        //        System.out.println("add方法的结果是[" + result + "]");
+        return result;
+    }
+
+    @Override
+    public int sub(int num1, int num2) {
+        //        System.out.println("sub方法的参数是[" + num1 + "," + num2 + "]");
+        int result = num1 - num2;
+        //        System.out.println("sub方法的结果是[" + result + "]");
+        return result;
+    }
+
+    @Override
+    public int mul(int num1, int num2) {
+        //        System.out.println("mul方法的参数是[" + num1 + "," + num2 + "]");
+        int result = num1 * num2;
+        //        System.out.println("mul方法的结果是[" + result + "]");
+        return result;
+    }
+
+    @Override
+    public int div(int num1, int num2) {
+        //        System.out.println("div方法的参数是[" + num1 + "," + num2 + "]");
+        int result = num1 / num2;
+        //        System.out.println("div方法的结果是[" + result + "]");
+        return result;
+    }
+}
+```
+
+3、spring.xml 需要配置自动扫包。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           https://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:component-scan base-package="com.southwind.AOP"></context:component-scan>
+
+    <!--为委托对象自动生成动态代理对象-->
+    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+
+</beans>
+```
+
+**·** aop:aspectj-autoproxy，Spring IoC 容器会结合切面对象和委托对象自动生成动态代理对象，AOP底层就是通过动态代理机制来实现的。
+
+AOP 的概念：
+
+**·** 切面对象：根据切面抽象出的对象，CalImpl 所有方法中需要加入日志的部分，抽象成一个切面类xxxAspect。
+
+**·** 通知：切面对象具体执行代码，即非业务代码，上述例子指的是 xxxAspect 对象打印日志的代码。
+
+**·** 目标：被横切的对象，将通知加入其中。
+
+**·** 代理：切面对象、通知、目标混合之后的结果，即我们使用 JDK 动态代理机制创建的对象。
+
+**·** 连接点：需要被横切的位置，即通知要插入业务代码的具体位置。
+
+# Spring MVC
+
+Spring MVC 是 Spring.Framework 提供的 Web 组件，全称是 Spring Web MVC，是目前主流的实现 MVC 设计模式的框架，提供前端路由映射、视图解析等功能。
+
+Java Web 开发者必须要掌握的技术框架。
+
+**Spring MVC 功能**
+
+MVC: Controller(控制层)、Model(模型层)、View(视图层)
+
+流程：Controller 接收客户端请求，调用相关业务层组件产出 Model，获取业务数据并返回给 Controller 再结合 View 完成业务数据的视图层渲染，并将结果响应给客户端，如下所示：
+
+![image-20210524210140043](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210524210140043.png)
+
+Spring MVC对这套MVC流程进行了封装，帮助开发者来屏蔽底层代码，并且开发出相关接口供开发者调用，让 MVC 开发变得更加简单方便。
+
+**Spring MVC 实现原理**
+
+核心组件
+
+**·** DispatcherServlet: 前置控制器，负责调度其他组件的执行，可以降低不同组件之间的耦合性，是整个Spring MVC 的核心模块。
+
+**·** Handler： 处理器，完成具体的业务逻辑，相当于Servlet。
+
+**·** HandlerMapping： DispatcherServlet 是通过 HandlerMapping 将请求映射到不同的 Handler。
+
+**·** HandlerInterceptor： 处理器拦截器，是一个接口，如果我们需要进行一些拦截处理，可以通过实现该接口来完成。
+
+**·** HandlerExecutionChain： 处理器执行链，包括两部分内容：Handler 和 HandlerInterceptor（系统会有一个默认的 HandlerInterceptor，如果需要额外拦截处理，可以添加拦截器进行设置）。
+
+**·** HandlerAdapter： 处理器适配器，Handler 执行业务方法之前，需要执行一系列的操作包括表单的数据验证、数据类型的转换、将表单数据封装到 POJO 等，这一系列操作都是由 HandlerAdapter 完成，DispatcherServlet 通过 HandlerAdapter 执行不同的 Handler。
+
+**·** ModelAndView：封装了模型数据和视图信息，作为 Handler 的处理结果，返回给 DispatcherServlet。
+
+**·** ViewResolver：视图解析器，DispatcherServlet 通过它将逻辑视图解析为物理视图，最终将渲染的结果响应给客户端。
+
+工作流程
+
+1、客户端请求被 DispatcherServlet 接收。
+
+2、根据 HandlerMapping 映射到具体的 Handler。
+
+3、生成 Handler 和 HandlerInterceptor。
+
+4、Handler 和 HandlerInterceptor 以 HandlerExecutionChain 的形式一并返回给 DispatcherServlet。
+
+5、DispatcherServlet 通过 HandlerAdapter 调用 Handler 的方法完成业务逻辑处理。
+
+6、返回一个 ModelAndView 对象给 DispatcherServlet。
+
+7、DispatcherServlet 将获取的 ModelAndView 对象传给 ViewResolver 视图解析器，将逻辑视图解析为物理视图。
+
+8、ViewResolver 返回一个物理 View 给DispatcherServlet。
+
+9、DispatcherServlet 根据 View 进行视图渲染（将模型数据填充到视图中）。
+
+10、DispatcherServlet 将渲染之后的视图响应给客户端。
+
+![image-20210524213736639](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210524213736639.png)
+
+**Spring MVC 具体使用**
+
+1、创建 Maven 工程、pom.xml
+
+```xml
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-webmvc</artifactId>
+    <version>5.3.4</version>
+</dependency>
+```
+
+2、在 web.xml 中配置 Spring MVC 的 DispatcherServlet。
+
+```xml
+<web-app>
+    <display-name>Archetype Created Web Application</display-name>
+    <servlet>
+        <servlet-name>springmvc</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:springmvc.xml</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>springmvc</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+</web-app>
+```
+
+3、springmvc.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--配置自动扫描-->
+    <context:component-scan base-package="com.southwind.Controller"></context:component-scan>
+
+    <!--视图解析器（ViewResolver）-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--前缀-->
+        <property name="prefix" value="/"></property>
+        <!--后缀-->
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+</beans>
+```
+
+4、创建 Handler
+
+```java
+@Controller
+public class HelloHandler {
+
+    @RequestMapping("/index")
+    public String index(){
+        System.out.println("接收到了请求");
+        //返回逻辑视图
+        return "index";
+    }
+}
+```
+
+流程梳理
+
+1、DispatcherServlet 接收到 URL 请求 index ，结合 @RequestMapping("/index") 注解将该请求交给 index( ) 业务方法进行处理。
+
+2、执行index( ) 业务方法，控制台打印日志，并且返回 “index” 字符串（逻辑视图）。
+
+3、结合 springmvc.xml 中的视图解析器配置，找到目标资源：/index.jsp，即根目录下的 index.jsp 文件，将该 JSP 资源返回给客户端完成响应。
+
+Spring MVC 环境至此搭建成功。
+
+**Spring MVC 常用注解**
+
+@RequestMapping
+
+Spring MVC 通过 @RequestMapping 注解将 URL 请求与业务方法进行映射，在控制器的类定义处以及方法定义处都可以添加 @RequestMapping ，在类定义处添加相当于多了一层访问路径。
+
+```java
+@Controller
+@RequestMapping("/hello")
+public class HelloHandler {
+
+    @RequestMapping("/index")
+    public String index(){
+        System.out.println("接收到了请求");
+        //返回逻辑视图
+        return "index";
+    }
+}
+```
+
+http://localhost:8080/hello/index
+
+@RequestMapping 常用参数
+
+**·** value：指定 URL 请求的实际地址，是 @RequestMapping 的默认值
+
+**·** method：指定请求的 method 类型，包括get、post、put、delete等。
+
+**·** params：指定 request 请求中必须包含参数值，若不包含，无法调用该方法。 书写形式： params = "id" || params = "id=1" || params={"id=1", name="you"} (name和id是示例参数)
+
+**参数的绑定**
+
+params 是对请求参数进行限制，不满足条件的 URL 无法访问该方法，需要在业务方法中获取 URL 的参数值。
+
+1、在业务方法定义时声明参数列表。
+
+2、给参数列表添加 @RequestParam 注解进行绑定, 作用样式如下述：
+
+```java
+@RequestMapping("/index")
+public String index(@RequestParam("num") Integer id){
+    System.out.println("接收到了请求,参数为id=" + id);
+    //返回逻辑视图
+    return "index";
+}
+```
+
+代码参数名是id或者num都能拿到。
+
+Spring MVC 可以自动完成数据类型转换，该工作由 HandlerAdapter 来完成的。
+
+**Spring MVC 也支持 RESTful 风格的 URL 参数获取**
+
+RESTful 风格是一种互联网架构风格。
+
+传统的 URL：localhost:8080/hello/index?id=1&name=tom
+
+RESTful URL：localhost:8080/hello/restful/1/tom
+
+```java
+@RequestMapping("/restful/{id}/{name}")
+public String restful(@PathVariable("id") Integer id,@PathVariable("name") String name){
+    System.out.println("接收到了请求,参数为id=" + id + ",名字为name=" + name);
+    return "index";
+}
+```
+
+将参数列表的注解改为 @PathVariable("id") 即可。
+
+**映射Cookie**
+
+```java
+@RequestMapping("/cookies")
+public String getCookie(@CookieValue("JSESSIONID") String SessionId){
+    System.out.println(SessionId);
+    return "index";
+}
+```
+
+**使用 POJO 绑定参数**
+
+Spring MVC 会根据请求参数名和 POJO 属性名进行匹配，自动为该对象填充属性值，并且支持属性级联。
+
+如果出现中文乱码，可以通过配置过滤器来解决，在web.xml中添加配置即可。
+
+```xml
+<filter>
+    <filter-name>encodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+        <param-name>encoding</param-name>
+        <param-value>UTF-8</param-value>
+    </init-param>
+</filter>
+
+<filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+Address
+
+```java
+@Data
+public class Address {
+    private Integer code;
+    private String value;
+}
+```
+
+User
+
+```java
+@Data
+public class User {
+    private Integer id;
+    private String name;
+    private Address address;
+}
+```
+
+addUser.jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/25
+            Time: 20:23
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+    <head>
+    </head>
+    <body>
+        <form action="/hello/add" method="post">
+            <table>
+                <tr>
+                    <td>编号：</td>
+                    <td>
+                        <input type="text" name="id">
+                    </td>
+                </tr>
+                <tr>
+                    <td>姓名：</td>
+                    <td>
+                        <input type="text" name="name">
+                    </td>
+                </tr>
+                <tr>
+                    <td>地址编号：</td>
+                    <td><input type="text" name="address.code"></td>
+                </tr>
+                <tr>
+                    <td>地址信息：</td>
+                    <td>
+                        <input type="text" name="address.value">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" value="提交">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>
+
+```
+
+Handler
+
+```java
+@PostMapping("/add")
+public String add(User user){
+    System.out.println(user);
+    return "index";
+}
+```
+
+主体对象可以没有无参构造，但是其级联对象必须有无参构造。
+
+**JSP页面的转发和重定向**
+
+Spring MVC 默认以转发的形式响应 JSP，可以手动进行修改。
+
+重定向(页面操作后的网址会变化)
+
+```java
+@RequestMapping("/restful/{id}/{name}")
+public String restful(@PathVariable("id") Integer id,@PathVariable("name") String name){
+    System.out.println("接收到了请求,参数为id=" + id + ",名字为name=" + name);
+    return "redirect:/index.jsp";
+}
+```
+
+设置重定向的时候不能写逻辑视图，必须写明资源的物理路径，如“redirect:/ index.jsp”
+
+转发
+
+```java
+@RequestMapping("/restful/{id}/{name}")
+public String restful(@PathVariable("id") Integer id,@PathVariable("name") String name){
+    System.out.println("接收到了请求,参数为id=" + id + ",名字为name=" + name);
+    return "forward:/index.jsp";
+}
+```
+
+等同于
+
+```java
+@RequestMapping("/restful/{id}/{name}")
+public String restful(@PathVariable("id") Integer id,@PathVariable("name") String name){
+    System.out.println("接收到了请求,参数为id=" + id + ",名字为name=" + name);
+    return "index";
+}
+```
+
+**Spring MVC 的数据绑定**
+
+数据绑定：在后台业务方法中直接获取前端 HTTP 中请求中的参数。
+
+HTTP 请求传输的参数都是 String 类型的，Handler 业务方法中的参数是开发者指定的数据类型，int、Integer 等等，因此需要进行数据类型的转换。
+
+Spring MVC 的 HandlerAdapter 组件会在执行 Handler 业务方法之前，完成参数的绑定，开发者直接使用即可。
+
+@ResponseBody 注解标注的 Handler 方法不调用视图解析器，直接将返回值写于浏览器中。
+
+**·** 基本数据类型
+
+```java
+@RequestMapping("/baseType")
+@ResponseBody
+public String baseType(int id){
+    return "id:" + id;
+}
+```
+
+客户端 HTTP 请求中必须包含 id 参数，否则抛出500异常，因为 id 不能为 null。
+
+同时 id 的值必须和形参所写的数据类型保持一致，否则抛出400异常。
+
+**·** 包装类
+
+```java
+@RequestMapping("/packageType")
+@ResponseBody
+public String packageType(Integer id){
+    return "id:" + id;
+}
+```
+
+如果 HTTP 请求中没有包含 id 参数，不会报错，id 的值为null，会直接返回 id:null(上述例子) 给客户端。
+
+但是如果类型不匹配，仍会抛出400异常。
+
+可以给参数列表添加 @RequestParam 注解对参数进行相关操作。
+
+```java
+@RequestMapping("/packageType")
+@ResponseBody
+public String packageType(@RequestParam(value = "id", required = true, defaultValue = "0") Integer id){
+    return "id:" + id;
+}
+```
+
+**·** value=“id”：将 HTTP 请求中名为 id 的参数与 Handler 业务方法中的形参进行映射。
+
+**·** required=true：true表示id参数必填，false表示非必填。（出错时错误码为400）
+
+**·** defaultValue=“0”：表示当 HTTP 请求在没有id参数时，形参的默认值为0.
+
+**对数组进行绑定**
+
+```java
+@RequestMapping("/arrayType")
+@ResponseBody
+public String arrayType(String[] names){
+    StringBuffer sb = new StringBuffer();
+    for(String name : names){
+        sb.append(name).append(" ");
+    }
+    return "names:" + sb.toString();
+}
+```
+
+**对POJO进行绑定**
+
+上面的 User、Address就是这种形式。
+
+```java
+@PostMapping("/add")
+public String add(User user){
+    System.out.println(user);
+    return "index";
+}
+```
+
+解决响应时乱码问题,在 springmvc.xml 中配置转换器即可：
+
+```xml
+<mvc:annotation-driven>
+    <!--消息转换器-->
+    <mvc:message-converters>
+        <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+            <property name="supportedMediaTypes" value="text/html;charset=UTF-8"></property>
+        </bean>
+    </mvc:message-converters>
+</mvc:annotation-driven>
+```
+
+**对List进行绑定**
+
+Spring MVC 不支持 List 类型的直接转换，需要包装成 Object。
+
+List 的自定义包装类
+
+```java
+@Data
+public class UserList {
+    private List<User> users;
+}
+```
+
+业务方法
+
+```java
+@RequestMapping("/listType")
+@ResponseBody
+public String listType(UserList users){
+    StringBuffer sb = new StringBuffer();
+    for(User user : users.getUsers()){
+        sb.append(user);
+    }
+    return "用户：" + sb.toString();
+}
+```
+
+JSP
+
+```jsp
+<%--
+  Created by IntelliJ IDEA.
+  User: 桁仔
+  Date: 2021/5/25
+  Time: 21:37
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+<form action="/hello/listType">
+        用户1ID: <input type="text" name="users[0].id"><br>
+        用户1姓名: <input type="text" name="users[0].name"><br>
+        用户2ID: <input type="text" name="users[1].id"><br>
+        用户2姓名: <input type="text" name="users[1].name"><br>
+        用户3ID: <input type="text" name="users[2].id"><br>
+        用户3姓名: <input type="text" name="users[2].name"><br>
+    <input type="submit" value="提交">
+</form>
+</body>
+</html>
+```
+
+需要注意的是 User 类一定要有无参构造函数，否则抛出异常。
+
+**对JSON格式数据进行绑定**
+
+![image-20210526205331343](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210526205331343.png)
+
+JSP
+
+```jsp
+<%--
+  Created by IntelliJ IDEA.
+  User: 桁仔
+  Date: 2021/5/25
+  Time: 21:47
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script>
+    $(function () {
+        var user = {
+            "id" : 1,
+            "name" : "张三"
+        };
+        $.ajax({
+            url:"/hello/jsonType",
+            data:JSON.stringify(user),
+            type:"POST",
+            contentType:"application/json;charset=UTF-8",
+            dataType:"JSON",
+            success:function(data){
+                alert(data.id)
+                alert(data.name)
+            }
+        })
+    })
+</script>
+</body>
+</html>
+```
+
+注意
+
+**·** JSON 数据必须用 JSON.stringify() 方法转换成字符串
+
+**·** contentType：“application/json;charset=UTF-8” 不能省略（告诉后端所传数据为 json 格式）
+
+业务方法
+
+```java
+@PostMapping("/jsonType")
+@ResponseBody
+public User jsonType(@RequestBody User user){
+    System.out.println(user);
+    user.setId(2);
+    return user;
+}
+```
+
+@RequestBody 注解
+
+读取 HTTP 请求参数，通过Spring MVC 提供的 HttpMessageConverter 接口将读取的参数转为 JSON、XML 格式的数据，绑定到业务方法的形参。
+
+@ResponseBody 注解
+
+将业务方法返回的对象，通过 HttpMessageConverter 接口转为指定格式的数据，JSON、XML 等，响应给客户端。
+
+需要使用组件结合 @RequestBody 注解将 JSON 转为 Java Bean，这里使用 FastJson，如果属性为空就不会将其转为 JSON。
+
+如何使用 FastJson
+
+1、pom.xml 中添加 FastJson 相关依赖。
+
+```xml
+<!--fastjson-->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.76</version>
+</dependency>
+```
+
+2、springmvc.xml 中配置FastJson
+
+```xml
+<mvc:annotation-driven>
+    <!--消息转换器-->
+    <mvc:message-converters>
+        <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+            <property name="supportedMediaTypes" value="text/html;charset=UTF-8"></property>
+        </bean>
+        <!--fastJson-->
+        <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter"></bean>
+    </mvc:message-converters>
+</mvc:annotation-driven>
+```
+
+**Spring MVC 视图层的解析**
+
+调用 Web 资源给域对象传值，
+
+page（一般不考虑，作用域过小）
+
+request
+
+session
+
+application
+
+业务数据的绑定是指业务数据绑定给 JSP 域对象，业务数据的绑定是由 ViewResolver 来完成的，开发时，我们先添加业务数据，再交给 ViewResolver 来绑定，因此学习的重点在于如何添加业务数据，Spring MVC 提供了以下几种方式来添加业务数据：
+
+**·** Map
+
+**·** Model
+
+**·** ModelAndView
+
+**·** @SessionAttribute
+
+**·** @ModelAttribute
+
+**·** Servlet API
+
+**业务数据绑定到 request 域对象**
+
+Map
+
+Spring MVC 在调用业务方法之前会创建一个隐含对象作为业务数据的存储容器，设置业务方法的入参为 Map 类型，Spring MVC 会将隐含对象的引用传递给入参。
+
+```java
+@RequestMapping("/map")
+public String map(Map<String,Object> map){
+    User user = new User();
+    user.setId(1);
+    user.setName("张三");
+    map.put("user",user);
+    return "show";
+}
+```
+
+```jsp
+<%--
+  Created by IntelliJ IDEA.
+  User: 桁仔
+  Date: 2021/5/26
+  Time: 21:13
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page isELIgnored="false"%>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+        ${requestScope.user}
+</body>
+</html>
+```
+
+Model
+
+Model 与 Map 类似，业务方法也是通过入参来完成业务数据的绑定。
+
+```java
+@RequestMapping("/model")
+public String model(Model model){
+    User user = new User();
+    user.setId(1);
+    user.setName("李四");
+    model.addAttribute("user", user);
+    return "show";
+}
+```
+
+ModelAndView
+
+与 Map 或者 Model 不同的是，ModelAndView 不但包含业务数据，同时也封装了视图信息，如果使用 ModelAndView 来处理业务数据，业务方法的返回值必须是 ModelAndView 对象。
+
+业务方法中对 ModelAndView 进行两个操作：
+
+**·** 填充业务数据
+
+**·** 绑定视图信息
+
+```java
+@RequestMapping("/mav1")
+public ModelAndView modelAndView1(){
+    ModelAndView modelAndView = new ModelAndView();
+    User user = new User();
+    user.setId(1);
+    user.setName("王五");
+    //填充业务数据
+    modelAndView.addObject("user", user);
+    //绑定视图信息
+    modelAndView.setViewName("show");
+    return modelAndView;
+}
+
+@RequestMapping("/mav2")
+public ModelAndView modelAndView2(){
+    ModelAndView modelAndView = new ModelAndView();
+    User user = new User();
+    user.setId(1);
+    user.setName("元一");
+    modelAndView.addObject("user", user);
+    View view = new InternalResourceView("/show.jsp");
+    modelAndView.setView(view);
+    return modelAndView;
+}
+
+@RequestMapping("/mav3")
+public ModelAndView modelAndView3(){
+    ModelAndView modelAndView = new ModelAndView("show");
+    User user = new User();
+    user.setId(1);
+    user.setName("元一");
+    modelAndView.addObject("user", user);
+    return modelAndView;
+}
+
+@RequestMapping("/mav4")
+public ModelAndView modelAndView4(){
+    View view = new InternalResourceView("/show.jsp");
+    ModelAndView modelAndView = new ModelAndView(view);
+    User user = new User();
+    user.setId(1);
+    user.setName("元一");
+    modelAndView.addObject("user", user);
+    return modelAndView;
+}
+
+@RequestMapping("/mav5")
+public ModelAndView modelAndView5(){
+    Map<String,Object> map = new HashMap<>();
+    User user = new User();
+    user.setId(1);
+    user.setName("元一");
+    map.put("user",user);
+    ModelAndView modelAndView = new ModelAndView("show", map);
+    return modelAndView;
+}
+
+@RequestMapping("/mav6")
+public ModelAndView modelAndView6(){
+    Map<String,Object> map = new HashMap<>();
+    User user = new User();
+    user.setId(1);
+    user.setName("元一");
+    map.put("user",user);
+    View view = new InternalResourceView("/show.jsp");
+    ModelAndView modelAndView = new ModelAndView(view, map);
+    return modelAndView;
+}
+
+@RequestMapping("/mav7")
+public ModelAndView modelAndView7(){
+    User user = new User();
+    user.setId(1);
+    user.setName("元一");
+    ModelAndView modelAndView = new ModelAndView("show", "user", user);
+    return modelAndView;
+}
+
+@RequestMapping("/mav8")
+public ModelAndView modelAndView8(){
+    User user = new User();
+    user.setId(1);
+    user.setName("元一");
+    View view = new InternalResourceView("/show.jsp");
+    ModelAndView modelAndView = new ModelAndView(view, "user", user);
+    return modelAndView;
+}
+```
+
+**HTTPServletRequest**
+
+Spring MVC 可以在业务方法中直接获取 Servlet 原生 Web 资源，只需要在方法定义时添加 HttpServletRequest 入参即可，在方法体中直接使用 request 对象。
+
+```xml
+<!--servlet-->
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>servlet-api</artifactId>
+    <version>3.0-alpha-1</version>
+```
+
+```java
+@RequestMapping("/request")
+public String request(HttpServletRequest request){
+    User user = new User();
+    user.setId(1);
+    user.setName("元一");
+    request.setAttribute("user", user);
+    return "show";
+}
+```
+
+**@ModelAttribute**
+
+Spring MVC 还可以通过 @ModelAttribute 注解的方式添加业务数据，具体使用步骤如下：
+
+1、定义一个方法，该方法用来返回要填充到业务数据中的对象。
+
+2、给该方法添加 @ModelAttribute 注解，不是响应请求的业务方法。
+
+```java
+@RequestMapping("/modelAttribute")
+public String modelAttribute(){
+	return "show";
+}
+
+@ModelAttribute
+public User getUser(){
+	User user = new User();
+	user.setId(1);
+	user.setName("元一");
+return user;
+}
+```
+
+@ModelAttribute 注解的作用是，当 Handler 接收到一个客户端请求之后，无论调用哪个业务方法，都会优先调用被 @ModelAttribute 注解修饰的方法，并将其返回值作为业务数据，再进入到业务方法中，此时业务方法只需要返回视图信息即可，不需要返回业务数据，即使返回业务数据，也会被 @ModelAttribute 注解修饰的方法返回的数据所覆盖。
+
+域对象中存值都是以 key-value 形式去存的，那么此时的 key 值是什么？默认值是业务数据对应的类的类名首字母小写之后的结果。
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/26
+            Time: 21:13
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page isELIgnored="false"%>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        ${requestScope.user}
+    </body>
+</html>
+```
+
+如果说 getUser 没有返回值，则必须手动在该方法中填充业务数据，使用 Map 或者 Model 均可。
+
+```java
+@ModelAttribute
+public void getUser(Model model){
+    User user = new User();
+    user.setId(1);
+    user.setName("元一");
+    model.addAttribute("user", user);
+}
+```
+
+如果存在两个都标有 @ModelAttribute 注解的两个方法。
+
+```java
+@ModelAttribute
+public User getUser(){
+    User user = new User();
+    user.setId(2);
+    user.setName("李四");
+    return user;
+}
+
+@ModelAttribute
+public void getUser(Model model){
+    User user = new User();
+    user.setId(1);
+    user.setName("张三");
+    model.addAttribute("user", user);
+}
+```
+
+手动填充业务数据的数据优先级更高。
+
+**业务数据绑定到 session 域对象**
+
+**·** HttpSession
+
+```java
+@RequestMapping("/session")
+public String sessopm(HttpSession session){
+    User user = new User();
+    user.setId(1);
+    user.setName("张三");
+    session.setAttribute("user",user);
+    return "show";
+}
+```
+
+**JSP**
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/26
+            Time: 21:13
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page isELIgnored="false"%>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        ${sessionScope.user}
+    </body>
+</html>
+```
+
+**@SessionAttribute**
+
+@SessionAttribute 注解是给类进行添加的。
+
+```java
+@SessionAttributes(value = "user")
+public class ViewHandler {
+    ···
+}
+```
+
+只要给类添加了 @SessionAttributes 注解之后，无论类中的哪个业务方法被访问，将业务数据绑定到 request 域对象的同时，也会将业务数据绑定到 session 域对象中，也就是说 request 和 session 对象会同时存在业务数据，前提是 request 域中的 key 值需要和 @SessionAttributes 注解中的 value 值一致。
+
+@SessionAttribute 除了可以通过 key 值绑定，也可以通过业务数据的数据类型进行绑定。
+
+```java
+@SessionAttributes(types = User.class)
+public class ViewHandler {
+    ···
+}
+```
+
+@SessionAttributes 还可以同时绑定多个业务数据。
+
+```java
+@SessionAttributes(value = {"user","food"}, types = {User.class,Food.class})
+public class ViewHandler {
+    ···
+}
+```
+
+**Spring MVC 自定义数据类型转换器**
+
+1、创建 DateConverter 类，并实现 org.springframework.core.convert.converter.Converter 接口，这样它就成为了一个自定义数据类型转换器，需要指定泛型<String, Date>,表示将String类型转为Date类型。
+
+```java
+@Data
+public class Student {
+    private Integer id;
+    private String name;
+    private Integer age;
+}
+```
+
+```java
+public class DateConverter implements Converter<String,Date> {
+
+    private String pattern;
+
+    public DateConverter(String pattern){
+        this.pattern = pattern;
+    }
+
+    @Override
+    public Date convert(String s) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(this.pattern);
+        try {
+            return simpleDateFormat.parse(s);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
+```
+
+```java
+public class StudentConverter implements Converter<String, Student> {
+    @Override
+    public Student convert(String s) {
+        String[] args = s.split("-");
+        Student student = new Student();
+        student.setId(Integer.parseInt(args[0]));
+        student.setName(args[1]);
+        student.setAge(Integer.parseInt(args[2]));
+        return student;
+    }
+}
+```
+
+2、在springmvc.xml 中配置 conversionService bean，这个 bean 是 org.springframework.context.support.ConvbersionServiceFactoryBean 的实例化对象，同时 bean 中必须包含一个 converters 属性，在其中注册所有需要使用的自定义转换器。
+
+```xml
+<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+    <property name="converters">
+        <list>
+            <bean class="com.southwind.Converter.DateConverter">
+                <constructor-arg type="java.lang.String" value="yyyy-MM-dd"></constructor-arg>
+            </bean>
+            <bean class="com.southwind.Converter.StudentConverter">
+            </bean>
+        </list>
+    </property>
+</bean>
+```
+
+```xml
+//这一句需要放在最下面才能起效
+<mvc:annotation-driven conversion-service="conversionService"></mvc:annotation-driven>
+```
+
+Handler
+
+```java
+@RequestMapping("/date")
+@ResponseBody
+public String date(Date date){
+    return date.toString();
+}
+
+@RequestMapping("/student")
+@ResponseBody
+public String student(Student student, HttpServletResponse response){
+    response.setContentType("text/json;charset=UTF-8");
+    return student.toString();
+}
+```
+
+如果需要将业务数据转换成 JSON，中文乱码需要在业务方法中通过设置 response 的编码来解决，springmvc.xml 中的 bean 不起作用，如果不需要将业务数据转为 JSON，springmvc.xml 的配置可以完成中文乱码的处理。
+
+以下为整体问题解决后最终的转换器配置：
+
+```xml
+<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+    <property name="converters">
+        <list>
+            <bean class="com.southwind.Converter.DateConverter">
+                <constructor-arg type="java.lang.String" value="yyyy-MM-dd"></constructor-arg>
+            </bean>
+            <bean class="com.southwind.Converter.StudentConverter">
+            </bean>
+        </list>
+    </property>
+</bean>
+
+<mvc:annotation-driven conversion-service="conversionService">
+    <!--消息转换器-->
+    <mvc:message-converters>
+        <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+            <property name="supportedMediaTypes" value="text/html;charset=UTF-8"></property>
+        </bean>
+        <!--fastJson-->
+        <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter"></bean>
+    </mvc:message-converters>
+</mvc:annotation-driven>
+```
+
+**Spring MVC 与 RESTful 的集成**
+
+**·** 什么是 RESTful？
+
+RESTful 是当前比较流行的一种互联网软件架构模型，通过统一的规范来完成不同终端的数据访问和交互，REST 全称是 Representaional State Transfer (资源表现层状态转换)。
+
+RESTful 的优点：结构清晰、有统一标准、扩展性好。
+
+**·** Resources
+
+资源指的是网络中的某个具体文件，类型不限，可以是文本、图片、视频、音频、数据流等，是网络中真实存在的一个实体。如何获取它？可以通过统一资源定位符(URI)来找到实体,每个资源都有一个特定的 URI，通过 URI 就可以找到一个具体的资源。
+
+**·** Pepresentation
+
+资源表现层，资源的具体表现形式，例如一段文字，可以使用 TXT、HTML、XML、JSON 等不同的形式来描述它。
+
+**·** State Transfer
+
+状态转化是指客户端和服务端之间的数据交互，因为 HTTP 请求不能传输数据的状态，所有的状态都保存在服务端，如果客户端希望访问服务端的数据，就需要使其发生状态改变，同时这种状态转化是建立在表现层上的，完成转换就表现资源的表现形式发生了改变。
+
+1、URL 传参更加简洁
+
+**·** 传统形式 URL：http://localhost:8080/findById?id=1
+
+**·** RESTful URL：http://localhost:8080/findById/1
+
+2、完成不同终端之间的资源共享，RESTful 提供了一套规范，不同终端之间只需要遵守该规范，就可以实现数据交互。
+
+RESTful 具体来讲就是四种表现形式，HTTP 协议中四种请求类型（GET、POST、PUT、DELETE）分别表示四种常规操作，CRUD
+
+**·** GET 用来访问、获取资源
+
+**·** POST 用来创建资源
+
+**·**  PUT 用来修改资源
+
+**·** DELETE 用来删除资源
+
+![image-20210527220618335](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210527220618335.png)
+
+两个终端要完成数据交互，基于 RESTful 的方式，CRUD操作分别需要使用不同的 HTTP 请求类型来访问。
+
+传统的 Web 开发中，from 只支持 GET、POST，不支持 PUT、DELETE，如何解决？通过添加 HiddenHttpMethodFilter 过滤器，可以将 POST 请求转为 PUT 或者 DELETE。
+
+**HiddenHttpMethodFilter 的实现原理**
+
+HiddenHttpMethodFilter 检测请求参数是否包含 _method 参数，如果包含则取出它的值，并且判断请求类型，之后完成请求类型的转换，然后继续传递。
+
+![image-20210527221654013](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210527221654013.png)
+
+实现步骤
+
+1、在 form 表单中添加隐藏域标签，name 为 _method，value 为DELETE、PUT。
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/27
+            Time: 22:19
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <form action="/rest/update" method="post">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="submit" value="提交">
+        </form>
+    </body>
+</html>
+```
+
+2、web.xml 中配置 HiddenHttpMethodFilter 
+
+```xml
+<!--HiddenHttpMethodFilter-->
+<filter>
+    <filter-name>HiddenHttpMethodFilter</filter-name>
+    <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>HiddenHttpMethodFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+3、Handler
+
+```java
+@PutMapping("/update")
+@ResponseBody
+public String update(HttpServletResponse response){
+    response.setCharacterEncoding("UTF-8");
+    return "已接收到PUT请求";
+}
+
+@DeleteMapping("/delete")
+@ResponseBody
+public String delete(HttpServletResponse response){
+    response.setCharacterEncoding("UTF-8");
+    return "已接收到DELETE请求";
+}
+```
+
+**需求分析**
+
+**·** 添加课程，成功则返回全部课程信息。
+
+**·** 查询课程，通过 id 查询对应的课程信息。
+
+**·** 修改课程，成功则返回修改之后的全部课程信息。
+
+**·** 删除课程，成功则返回删除之后的全部课程信息。
+
+**代码实现**
+
+1、JSP
+
+**·** 添加课程：add.jsp
+
+**·** 修改课程：edit.jsp
+
+**·** 课程展示：index.jsp
+
+2、Course 实体类
+
+```java
+@Data
+public class Course{
+    private Integer id;
+    private String name;
+    private Double price;
+}
+```
+
+3、CourseRepository
+
+```java
+@Repository
+public class CourseRepository {
+    private Map<Integer, Course> courseMap;
+    public CourseRepository(){
+        courseMap = new HashMap<>();
+        courseMap.put(1, new Course(1,"Java基础",Double.parseDouble("500")));
+        courseMap.put(2, new Course(2,"Java高级",Double.parseDouble("600")));
+        courseMap.put(3, new Course(3,"Spring Boot",Double.parseDouble("700")));
+    }
+
+    public Collection<Course> findAll(){
+        return courseMap.values();
+    }
+
+    public Course findById(Integer id){
+        return courseMap.get(id);
+    }
+
+    public void saveOrUpdate(Course course){
+        courseMap.put(course.getId(), course);
+    }
+
+    public void deleteById(Integer id){
+        courseMap.remove(id);
+    }
+}
+```
+
+4、CourseController
+
+```java
+@Controller
+@RequestMapping("/course")
+public class CourseController {
+
+    @Autowired
+    private CourseRepository courseRepository;
+    
+    @PostMapping("/save")
+    public String save(Course course){
+        courseRepository.saveOrUpdate(course);
+        //        ModelAndView modelAndView = new ModelAndView();
+        //        modelAndView.setViewName("index");
+        //        modelAndView.addObject("list",courseRepository.findAll());
+        //        return modelAndView;
+        return "redirect:/course/findAll";
+    }
+
+    @GetMapping("/findAll")
+    public ModelAndView findAll(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("index");
+        modelAndView.addObject("list",courseRepository.findAll());
+        return modelAndView;
+    }
+
+    @DeleteMapping("/deleteById/{id}")
+    public String deleteById(@PathVariable("id") Integer id){
+        courseRepository.deleteById(id);
+        return "redirect:/course/findAll";
+    }
+
+    @GetMapping("/findById/{id}")
+    public ModelAndView findById(@PathVariable("id") Integer id){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("edit");
+        modelAndView.addObject("course", courseRepository.findById(id));
+        return modelAndView;
+    }
+
+    @PutMapping("/update")
+    public String update(Course course){
+        courseRepository.saveOrUpdate(course);
+        return "redirect:/course/findAll";
+    }
+}
+```
+
+5、JSP
+
+save.jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/28
+            Time: 20:54
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <form action="/course/save" method="post">
+            <table>
+                <tr>
+                    <td>课程编号：</td>
+                    <td><input type="text" name="id"></td>
+                </tr>
+                <tr>
+                    <td>课程名称：</td>
+                    <td><input type="text" name="name"></td>
+                </tr>
+                <tr>
+                    <td>课程价格：</td>
+                    <td><input type="text" name="price"></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="提交"></td>
+                    <td><input type="reset" value="重置"></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>
+```
+
+edit.jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/28
+            Time: 21:12
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page isELIgnored="false"%>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <form action="/course/update" method="post">
+            <input type="hidden" name="_method" value="PUT">
+            <table>
+                <tr>
+                    <td>课程编号：</td>
+                    <td>
+                        <input type="text" name="id" readonly value="${course.id}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>课程名称：</td>
+                    <td>
+                        <input type="text" name="name" value="${course.name}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>课程价格：</td>
+                    <td>
+                        <input type="text" name="price" value="${course.price}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" value="修改">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>
+```
+
+index.jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/27
+            Time: 22:52
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page isELIgnored="false" %>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <th>编号</th>
+                <th>名称</th>
+                <th>价格</th>
+                <th>操作</th>
+            </tr>
+            <c:forEach items="${list}" var="course">
+                <tr>
+                    <td>${course.id}</td>
+                    <td>${course.name}</td>
+                    <td>${course.price}</td>
+                    <td>
+                        <form action="/course/deleteById/${course.id}" method="post">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="submit" value="删除">
+                        </form>
+                        <a href="/course/findById/${course.id}">修改</a>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </body>
+</html>
+```
+
+**Spring MVC 实现文件的上传下载**
+
+文件上传
+
+**单文件上传**
+
+1、底层使用的是 Apache fileupload 组件完成上传功能，Spring MVC 只是对其进行了封装，简化开发。
+
+注意：二进制流也无法转换为对象！
+
+pom.xml
+
+```xml
+<!--apache fileupload-->
+<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.6</version>
+</dependency>
+<dependency>
+    <groupId>commons-fileupload</groupId>
+    <artifactId>commons-fileupload</artifactId>
+    <version>1.3.3</version>
+</dependency>
+```
+
+2、JSP 页面
+
+**·** input 的 type 设置为 file
+
+**·** form 表单的 method 设置为 post
+
+**·** form 表单的 enctype(编码方式) 设置为 multipart/form-data
+
+upload.jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/28
+            Time: 21:32
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page isELIgnored="false"%>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <form action="/file/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="img">
+            <input type="submit" value="提交">
+        </form>
+        <img src="${requestScope.src}" alt="">
+    </body>
+</html>
+```
+
+FileHandler
+
+```java
+@Controller
+@RequestMapping("/file")
+public class FileHandler {
+
+    @PostMapping("/upload")
+    public String upload(@RequestParam("img") MultipartFile img, HttpServletRequest request){
+        if(img.getSize() > 0){
+            String path = request.getSession().getServletContext().getRealPath("file");
+            String filename = img.getOriginalFilename();
+            File file = new File(path, filename);
+            try {
+                img.transferTo(file);
+                request.setAttribute("src", "/file/" + filename);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "upload";
+    }
+}
+```
+
+springmvc.xml
+
+```xml
+<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"></bean>
+```
+
+使选定的静态资源不通过DispatcherServlet处理，而是通过默认形式处理
+
+```xml
+<!--Spring MVC 静态资源访问-->
+<servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.js</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.png</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.jpg</url-pattern>
+</servlet-mapping>
+```
+
+**多文件上传**
+
+JSP
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/29
+            Time: 21:57
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page isELIgnored="false"%>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <form action="/file/uploads" method="post" enctype="multipart/form-data">
+            file1: <input type="file" name="imgs"><br>
+            file2: <input type="file" name="imgs"><br>
+            file3: <input type="file" name="imgs"><br>
+            <input type="submit" value="提交">
+        </form>
+        <c:forEach items="${list}" var="path">
+            <img width="300px" src="${path}" alt="">
+        </c:forEach>
+    </body>
+</html>
+```
+
+Handler
+
+```java
+@PostMapping("/uploads")
+public String uploads(@RequestParam("imgs") MultipartFile[] imgs, HttpServletRequest request){
+    List<String> paths = new ArrayList<>();
+    for(MultipartFile img : imgs){
+        if(img.getSize() > 0){
+            String path = request.getSession().getServletContext().getRealPath("file");
+            String filename = img.getOriginalFilename();
+            File file = new File(path, filename);
+            try {
+                img.transferTo(file);
+                paths.add("/file/" + filename);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    request.setAttribute("list", paths);
+    return "uploads";
+}
+```
+
+**文件下载**
+
+1、JSP 页面中添加超链接，进行下载。
+
+download.jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/29
+            Time: 22:10
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <a href="/file/download?fileName=1.png">1.jpg</a><br>
+        <a href="/file/download?fileName=2.png">2.jpg</a><br>
+        <a href="/file/download?fileName=3.png">3.jpg</a><br>
+    </body>
+</html>
+```
+
+2、业务方法
+
+```java
+@GetMapping("/download")
+public void download(String fileName, HttpServletRequest request, HttpServletResponse response){
+    if(fileName != null){
+        String path = request.getSession().getServletContext().getRealPath("file");
+        File file = new File(path, fileName);
+        OutputStream outputStream = null;
+        if(file.exists()){
+            //设置下载文件
+            response.setContentType("application/force-download");
+            //设置文件名
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+            try {
+                outputStream = response.getOutputStream();
+                outputStream.write(FileUtils.readFileToByteArray(file));
+                //清理输出流缓存
+                outputStream.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally{
+                if(outputStream != null){
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+**Spring MVC 数据校验**
+
+数据校验是每个项目中必不可少的模块，Spring MVC 提供了两种数据校验的组件：
+
+**·** 基于 Validator 接口进行校验
+
+**·** 使用 Annotation JSR-303 标准校验
+
+使用基于 Validator 接口进行校验会复杂一些，具体的数据校验规则需要开发者手动设置。而使用 Annotation JSR-303 标准会相对简单一些，开发者不需要编写校验规则，直接通过注解的形式给每一条数据添加校验规则，具体操作是直接在实体类的属性上添加对应的校验注解即可。
+
+**基于 Validator 接口的方式**
+
+1、创建实体类
+
+```java
+@Data
+public class Student {
+    private String name;
+    private String password;
+}
+```
+
+2、自定义数据校验器 StudentValidation，实现 Validator 接口，重写接口的抽象方法，加入校验规则。
+
+```java
+import com.southwind.Entity.Student;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+
+public class StudentValidation implements Validator {
+    //判定类型，若不符合直接 false，不执行 validate 方法
+    @Override
+    public boolean supports(Class<?> aClass) {
+        return Student.class.equals(aClass);
+    }
+
+    @Override
+    public void validate(Object o, Errors errors) {
+        ValidationUtils.rejectIfEmpty(errors, "name", null, "姓名不能为空");
+        ValidationUtils.rejectIfEmpty(errors, "password", null, "密码不能为空");
+    }
+}
+```
+
+3、控制层业务方法
+
+```java
+import com.southwind.Entity.Student;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/validate")
+public class ValidatedHandler {
+    /**
+     * 给JSP表单绑定模型对象
+     * @param model
+     * @return
+     */
+    @GetMapping("/login")
+    public String login(Model model){
+        model.addAttribute(new Student());
+        return "login";
+    }
+
+    /**
+     * 数据校验（需要绑定模型对象才能生效）
+     * @param student
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping("/login")
+    public String login(@Validated Student student, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            return "login";
+        }
+        return "success";
+    }
+}
+```
+
+4、springmvc.xml 配置 validate
+
+```xml
+<mvc:annotation-driven validator="studentValidator"></mvc:annotation-driven>
+<bean id="studentValidator" class="com.southwind.validation.StudentValidation"></bean>
+```
+
+5、JSP
+
+login.jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/29
+            Time: 22:38
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ page isELIgnored="false"%>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <h1>学生登录</h1>
+        <form:form modelAttribute="student" action="/validate/login" method="post">
+            学生姓名：<form:input path="name"></form:input><form:errors path="name"></form:errors><br>
+            学生密码：<form:input path="password"></form:input><form:errors path="password"></form:errors><br>
+            <input type="submit" value="提交">
+        </form:form>
+    </body>
+</html>
+```
+
+success.jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/29
+            Time: 22:54
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <h1>登录成功！！！</h1>
+    </body>
+</html>
+```
+
+![image-20210530205522235](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210530205522235.png)
+
+**Annotation JSR-303 标准**
+
+Hibernater Validator，通过注解完成校验规则的绑定。
+
+@Null				  只能为null
+
+@NotNull			不能为null
+
+@Size				  设置数据长度
+
+@NotEmpty        不能为空
+
+String str = null;
+
+String str = "";
+
+1、pom.xml
+
+```xml
+<!--JSR-303-->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>7.0.1.Final</version>
+</dependency>
+<dependency>
+    <groupId>javax.validation</groupId>
+    <artifactId>validation-api</artifactId>
+    <version>2.0.1.Final</version>
+</dependency>
+<dependency>
+    <groupId>org.jboss.logging</groupId>
+    <artifactId>jboss-logging</artifactId>
+    <version>3.4.1.Final</version>
+</dependency>
+<dependency>
+    <groupId>com.fasterxml</groupId>
+    <artifactId>classmate</artifactId>
+    <version>1.5.1</version>
+</dependency>
+
+<!--JDK9以上validator要加-->
+<dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+    <version>2.3.1</version>
+</dependency>
+<dependency>
+    <groupId>com.sun.xml.bind</groupId>
+    <artifactId>jaxb-impl</artifactId>
+    <version>3.0.2-b01</version>
+</dependency>
+<dependency>
+    <groupId>com.sun.xml.bind</groupId>
+    <artifactId>jaxb-core</artifactId>
+    <version>3.0.2-b01</version>
+</dependency>
+<dependency>
+    <groupId>javax.activation</groupId>
+    <artifactId>activation</artifactId>
+    <version>1.1.1</version>
+</dependency>
+```
+
+2、创建实体类，通过注解的方式给属性指定校验规则。
+
+```java
+import lombok.Data;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+@Data
+public class Account {
+    @NotEmpty(message = "用户名不能为空")
+    private String username;
+    @Size(min = 6, max = 20, message = "密码长度为6-20位")
+    private String password;
+    @Email(regexp="^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\\\\\\\\.[a-zA-Z0-9-]+)*\\\\\\\\.[a-zA-Z0-9]{2,6}$", message="请输入正确的邮箱")
+    private String email;
+    @Pattern(regexp = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\\\\\\\\\\\\\\\d{8}$", message = "请输入正确的电话格式")
+    private String phone;
+}
+```
+
+3、业务方法
+
+```java
+@GetMapping("/register")
+public String register(Model model){
+    model.addAttribute(new Account());
+    return "register";
+}
+
+@PostMapping("/register")
+public String register(@Valid Account account, BindingResult bindingResult){
+    if(bindingResult.hasErrors()){
+        return "register";
+    }
+    return "success";
+}
+```
+
+4、springmvc.xml
+
+```xml
+<mvc:annotation-driven></mvc:annotation-driven>
+```
+
+5、register.jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/30
+            Time: 21:21
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ page isELIgnored="false"%>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <h1>用户注册</h1>
+        <form:form modelAttribute="account" action="/validate/register" method="post">
+            用户名：<form:input path="username"></form:input>  <form:errors path="username"></form:errors><br>
+            密码：<form:input path="password"></form:input>  <form:errors path="password"></form:errors><br>
+            邮箱：<form:input path="email"></form:input>  <form:errors path="email"></form:errors><br>
+            电话：<form:input path="phone"></form:input>  <form:errors path="phone"></form:errors><br>
+            <input type="submit" value="提交">
+        </form:form>
+    </body>
+</html>
+```
+
+**Spring MVC 表单标签库**
+
+1、Student 实体类
+
+```java
+@Data
+public class Student {
+    private Integer id;
+    private String name;
+    private  Integer age;
+    private String gender;
+}
+```
+
+2、Handler
+
+```java
+package com.southwind.Controller;
+
+import com.southwind.Entity2.Student;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/student")
+public class StudentHandler {
+
+    @RequestMapping("/get")
+    public String get(Model model){
+        Student student = new Student();
+        model.addAttribute("student", student);
+        return "student";
+    }
+}
+```
+
+3、student2.jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/30
+            Time: 21:49
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page isELIgnored="false" %>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <h1>修改学生信息</h1>
+        <form action="" method="post">
+            学生编号：<input type="text" name="id" value="${student.id}" readonly> <br>
+            学生姓名：<input type="text" name="name" value="${student.name}"><br>
+            学生年龄：<input type="text" name="age" value="${student.age}"><br>
+            学生性别：<input type="text" name="gender" value="${student.gender}"><br>
+            <input type="submit" value="提交">
+        </form>
+    </body>
+</html>
+```
+
+使用 Spring MVC 表单标签可以直接将业务数据绑定到 JSP 表单中，非常简便。
+
+**表单标签库的使用**
+
+1、JSP 页面导入 Spring MVC 表单标签库。
+
+```jsp
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+```
+
+2、将 form 表单与业务数据进行绑定，通过 modelAttribute 属性完成绑定，将 modelAttribute 的值设置为控制器向 model 对象存值时的 name 即可。
+
+```jsp
+<form:form modelAttribute="student" action="/student/update" method="post">
+    学生编号：<form:input path="id"></form:input><br>
+    学生姓名：<form:input path="name"></form:input><br>
+    学生年龄：<form:input path="age"></form:input><br>
+    学生性别：<form:input path="gender"></form:input><br>
+    <input type="submit" value="提交">
+</form:form>
+```
+
+**常用标签**
+
+1、form 标签
+
+```jsp
+<form:form modelAttribute="student" method="post"></form>
+```
+
+渲染的是 HTML 中的 <form></form>，通过 modelAttribute 属性绑定具体的业务数据。
+
+2、input 标签
+
+```jsp
+<form:input path="name"></form:input>
+```
+
+渲染的是 HTML 中的 <input type="text"/>，form 标签绑定的是业务数据，input 标签绑定的是业务数据中的属性值，通过 path 与业务数据的属性名对应，并支持级联。
+
+Address
+
+```java
+@Data
+@AllArgsConstructor
+public class Address {
+    private Integer id;
+    private String name;
+}
+```
+
+Student
+
+```java
+@Data
+public class Student {
+    private Integer id;
+    private String name;
+    private  Integer age;
+    private String gender;
+    private Address address;
+}
+```
+
+Handler
+
+```java
+@Controller
+@RequestMapping("/student")
+public class StudentHandler {
+
+    @RequestMapping("/get")
+    public String get(Model model){
+        Student student = new Student();
+        student.setId(1);
+        student.setName("张三");
+        student.setAge(22);
+        student.setGender("男");
+        student.setAddress(new Address(1, "科技路"));
+        model.addAttribute("student", student);
+        return "student2";
+    }
+
+    @PostMapping("/update")
+    public String update(Student student){
+        System.out.println(student);
+        return "student2";
+    }
+}
+```
+
+Jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/30
+            Time: 21:49
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page isELIgnored="false" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <h1>修改学生信息</h1>
+        <form action="/student/update" method="post">
+            学生编号：<input type="text" name="id" value="${student.id}" readonly><br>
+            学生姓名：<input type="text" name="name" value="${student.name}"><br>
+            学生年龄：<input type="text" name="age" value="${student.age}"><br>
+            学生性别：<input type="text" name="gender" value="${student.gender}"><br>
+            <input type="submit" value="提交">
+        </form>
+        <hr>
+        <form:form modelAttribute="student" action="/student/update" method="post">
+            学生编号：<form:input path="id"></form:input><br>
+            学生姓名：<form:input path="name"></form:input><br>
+            学生年龄：<form:input path="age"></form:input><br>
+            学生性别：<form:input path="gender"></form:input><br>
+            学生地址：<form:input path="address.name"></form:input><br>
+            <input type="submit" value="提交">
+        </form:form>
+    </body>
+</html>
+```
+
+3、password 标签
+
+```jsp
+<form:password path="password"></form:password>
+```
+
+渲染的是 HTML 中的 <input type="password"/>，通过 path 与业务数据的属性名对应，password 标签的属性值不会显示。
+
+4、checkbox 标签
+
+```jsp
+<form:checkbox path="hobby" value="读书"></form:checkbox>
+```
+
+渲染的是 HTML 中的<input type="checkbox"/>，通过 path 与业务数据的属性名对应，可以绑定布尔类型、数组和集合。
+
+如果绑定布尔类型的变量，该变量值为 true，则表示选中，false 表示不选中。
+
+````
+student.setFlag(true);
+checkbox：<form:checkbox path="flag" value="1"></form:checkbox>
+````
+
+如果绑定数组和集合类型，集合中的元素等于 checkbox 的 value 值，则该项选中，否则不选中。
+
+```java
+List<String> hobby;
+student.setHobby(Arrays.asList("读书","看电影","旅行"))
+```
+
+```jsp
+<form:checkbox path="hobby" value="读书"></form:checkbox>
+<form:checkbox path="hobby" value="看电影"></form:checkbox>
+<form:checkbox path="hobby" value="旅行"></form:checkbox>
+<form:checkbox path="hobby" value="玩游戏"></form:checkbox>
+<form:checkbox path="hobby" value="听音乐"></form:checkbox>
+```
+
+"读书","看电影","旅行"被选中。
+
+5、checkboxs 标签
+
+```jsp
+<form:checkboxs items="${student.hobby}" path="selectHobby"></form:checkboxs>
+```
+
+渲染的是 HTML 中的一组<input type="checkbox"/>，这里需要结合 items 和 path 两个属性来使用，items 绑定被遍历的集合或数组，path 绑定选中的集合或数组，items 是全部选型，path 为默认选中的选型。
+
+```java
+List<String> hobby;
+List<String> selectHobby;
+student.setHobby(Arrays.asList("读书","看电影","旅行","玩游戏","听音乐"))
+student.setSelectHobby(Arrays.asList("读书","看电影","旅行"))
+```
+
+```jsp
+<form:checkboxs path="selectHobby" items="${student.hobby}"></form:checkboxs>
+```
+
+需要注意的是 path 可以直接绑定业务数据的属性，items 则需要通过 EL 表达式的方式从域对象中取值，不能直接写属性名。
+
+6、radiobutton 标签
+
+```jsp
+<form:radiobutton path="radioId" value="0"></form:radiobutton>
+```
+
+渲染的是 HTML 中的一个<input type="radio"/>，绑定的数据与标签的 value 的值相等则为选中状态，否则为不选中状态。
+
+```
+Integer radioId;
+<form:radiobutton path="radioId" value="0"></form:radiobutton>男
+<form:radiobutton path="radioId" value="1"></form:radiobutton>女
+```
+
+7、radiobuttons 标签
+
+```jsp
+<form:radiobuttons items="${student.grade}" path="selectGrade"></form:radiobuttons>
+```
+
+渲染的是 HTML 中的一组 radio 标签，这里需要结合 items 和 path 两个属性来使用，items 绑定被遍历的集合或数组，path 绑定被选中的选型。
+
+```
+Map<Integer,String> gradeMap;
+Integer selectGrade;
+<form:radiobuttons items="${student.gradeMap}" path="selectGrade"></form:radiobuttons>
+```
+
+8、select 标签
+
+```jsp
+<form:select items=${student.citys} path="selectCity" />
+```
+
+渲染的是 HTML 中的一个<select />，这里需要结合 items 和 path 两个属性来使用，items 绑定被遍历的集合或数组，path 绑定被选中的值，用法和 radiobuttons 标签一致。
+
+```
+Map<Integer,String> cityMap;
+Integer selectCity;
+<form:select item=${student.cityMap} path="selectCity"></form:select>
+```
+
+9、form:select 标签可以结合 form:options 标签使用
+
+form:select 只定义 path 属性，在 form:select 标签内部添加一个子标签 form:options，设置 items 属性。
+
+```jsp
+<form:select path="selectCity">
+	<form:options items="${student.cityMap}"></form:options>
+</form:select>
+```
+
+10、form:select 标签结合 form:option 使用
+
+```jsp
+<form:select path="selectCity">
+	<form:option value="1">西安</form:option>
+    <form:option value="2">杭州</form:option>
+</form:select>
+```
+
+**Spring MVC 国际化（不常用）**
+
+国际化是指同一个应用程序在不同语言设置的浏览器中，自动显示不同的语言，Spring MVC 对国际化操作做了很好的集成，只需要简单的配置即可实现国际化。
+
+1、springmvc.xml 配置
+
+```xml
+<!--国际化资源文件-->
+<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <!--多语言配置文件放在根路径，以 language 开头-->
+    <property name="basename" value="classpath:language"></property>
+    <property name="useCodeAsDefaultMessage" value="true"></property>
+</bean>
+
+<!--拦截器-->
+<mvc:interceptors>
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="lang"></property>
+    </bean>
+</mvc:interceptors>
+
+<!--配置 SessionLocaleResolver 动态获取 Locale 对象，存入 Session-->
+<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"></bean>
+```
+
+2、创建国际化资源文件 language_en_US.properties，language_zh_CN.properties，分别存储英文和中文资源。
+
+language_en_US.properties
+
+```properties
+language.en = English
+language.cn = \u4E2D\u6587
+info = login
+username = username
+password = password
+repassword = repassword
+tel = tel
+email = email
+submit = submit
+reset = reset
+```
+
+language_zh_CN.properties
+
+```properties
+language.en = English
+language.cn = \u4E2D\u6587
+info = \u767b\u9646
+username = \u7528\u6237\u540d
+password = \u5bc6\u7801
+repassword = \u786e\u8ba4\u5bc6\u7801
+tel = \u7535\u8bdd
+email = \u7535\u5b50\u90ae\u7bb1
+submit = \u63d0\u4ea4
+reset = \u91cd\u7f6e
+```
+
+3、Handler
+
+```java
+@Controller
+@RequestMapping("/inter")
+public class InterHandler {
+
+    @GetMapping("/index")
+    public String index(){
+        return "inter";
+    }
+
+}
+```
+
+4、Jsp
+
+```jsp
+<%--
+    Created by IntelliJ IDEA.
+    User: 桁仔
+        Date: 2021/5/31
+            Time: 21:23
+                To change this template use File | Settings | File Templates.
+                --%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        <a href="index?lang=en_US">English</a>
+        <a href="index?lang=zh_CN">中文</a>
+        <h1><spring:message code="info"></spring:message></h1>
+        <form action="">
+            <spring:message code="username"/>:<input type="text"/> <br>
+            <spring:message code="password"/>:<input type="password"/> <br>
+            <spring:message code="repassword"/>:<input type="password"/> <br>
+            <spring:message code="tel"/>:<input type="text"/> <br>
+            <spring:message code="email"/>:<input type="text"/> <br>
+            <input type="submit" value="<spring:message code="submit"/>"/>
+            <input type="reset" value="<spring:message code="reset"/>"/>
+        </form>
+    </body>
+</html>
+```
+

@@ -1,0 +1,18 @@
+HttpSession对象从内存中转移至硬盘的过程称为钝化。
+HttpSession对象从持久化的状态变为运行状态的过程称为活化。
+
+request域对象
+有效范围，一次请求
+
+IP： 网段号 + 唯一编号
+mask：
+10.0.211.7 32bits
+255.255.255.0 11111111 11111111 11111111 00000000
+
+设置Linux IP与windows IP 在同一网段内
+10.0.211.y
+
+查看windows网关和DNS服务器IP
+ipconfig -all
+
+nslookup www.baidu.com 查询IP

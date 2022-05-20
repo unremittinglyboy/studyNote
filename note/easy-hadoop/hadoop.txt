@@ -1,0 +1,4 @@
+Hadoop命令
+hadoop fs
+hdfs dfs
+hdfs中的usr是user

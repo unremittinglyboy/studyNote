@@ -1,0 +1,745 @@
+特别：go语言在高并发场景下效率特别高。
+
+**何为中间件**
+
+为两种服务构建沟通的协议和规范对的中间架构项目，必须具有高可用、持久性。
+
+用来缩短开发周期，减少维护成本。
+
+MQ（Message Queue）指的是是消息队列。
+
+RabbitMQ 是一种分布式消息中间件（发消息、存消息、接收消息的处理件）。
+
+CDN 加速技术（可以关注）
+
+KeepAlive 心跳机制
+
+LVS负载均衡软件
+
+KeepAlive和LVS可以让Nginx提高可用性和负载均衡
+
+**Nginx -> CDN -> LVS -> KeepAlive**
+
+中间件学习技巧：反思为什么要使用该技术，参考平衡点和不同点，利用生活来类比。
+
+分布式系统：一个请求由服务端的多个服务（或系统）协同处理完成。
+
+![image-20210615210931661](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210615210931661.png)
+
+在 ip/tcp 的基础上进行加工，由此形成 AMQP，借此加工数据，然后进行传输。
+
+**网络协议的三要素**
+
+1、语法：指的是用户数据与控制信息的结构以及数据出现的顺序。
+
+2、语义：指的是解释控制信息每个部分的意义。它规定了需要发出何种控制信息，以及完成的动作与做出什么样的响应。
+
+3、时序：对事件发生顺序的详细说明。
+
+http举例分析：
+
+语法：http规定了请求报文和响应报文的格式
+
+语义：客户端发送请求称之为请求
+
+时序：一个请求对应一个响应（一定要先有请求后才有响应）
+
+**面试题：为什么信息中间件不直接使用http协议呢？**
+
+因为http协议的请求报文头和响应报文头过于复杂，包含了cookie、数据的加密和解密、状态码、响应码等功能，对于一个消息而言，我们不需要那么复杂，它仅仅负责数据传递、存储、分发就可以了。
+
+短连接：中断后不会对数据进行持久化。
+
+长连接：和短链接相反。
+
+常见的信息中间件协议：AMQP、MQTT、Kafka协议
+
+kafka不支持事务、重发策略，但其性能最高，因为直接支持底层的二进制机制。
+
+**消息分发策略的机制和对比**
+
+发布订阅，同时推送相同的信息给各个消费者。
+
+轮询分发，给各个消费者发送固定数量的信息（发放顺序随机），无论服务器性能如何，都会公平分配消费信息，然后剩余的信息随机分配。
+
+公平分发，根据性能分发，会造成数据倾斜（在分布式系统中，某个服务器因为某种原因（可能是该服务器性能强，分发策略导致）得到的信息缓存过大）。
+
+重发：指的是中间价存在应答机制，检测消费者是否应答，无应答则将信息发给另外的服务（系统）。
+
+信息拉取：被动拉取机制，即消费者反过来要消息。
+
+**高可用机制：**
+
+集群模式1-Master-slave 主从**共享**数据的部署方式
+
+![image-20210615220329508](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210615220329508.png)
+
+集群模式2-Master-slave 主从**同步**部署方式
+
+![image-20210615220447205](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210615220447205.png)
+
+集群模式3 多主集群**同步**部署方式
+
+![image-20210615220718939](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210615220718939.png)
+
+集群模式4 多主集群**转发**部署方式
+
+![image-20210615220835354](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210615220835354.png)
+
+元数据：消息的描述信息。
+
+集群模式5 Master-slave与Breoker-cluster组合的方案
+
+![image-20210615221114347](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210615221114347.png)
+
+**何为Rabbitmq**
+
+
+
+**RabbitMQ启动**
+
+启动：systemctl start rabbitmq-server
+
+查看状态：systemctl status rabbitmq-server
+
+![image-20210829152210651](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829152210651.png)
+
+**RabbitMQ界面管理**
+
+![image-20210617212943492](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210617212943492.png)
+
+输入 http://ip:15672 可以得到图形化界面，15672这个端口不在防火墙的安全组中，需要关闭服务器防火墙或者添加信任组。
+
+默认账号密码：
+
+账号：guest
+
+密码：guest
+
+这个账号仅限于本机使用，要添加账户才能访问。
+
+**授权账号和密码**
+
+![image-20210616225530431](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210616225530431.png)
+
+2-3对级别1的administrator没有实际作用，因为其身份本身就拥有所有权限。
+
+RabbitMQ角色分类
+
+1、none
+
+无法访问management plugin
+
+2、management
+
+个人中心
+
+只能看自己相关节点信息
+
+3、Policymaker
+
+较高级的个人
+
+包含 management plugin 所有权限
+
+查看和创建和删除自己的 virtual hosts policies 和 parameters 信息
+
+4、Monitoring
+
+只能看的管理员
+
+5、Administrator
+
+管理员
+
+**RabbitMQ入门案例**
+
+![image-20210829154308959](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829154308959.png)
+
+![image-20210829154343511](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829154343511.png)
+
+官方展示的工作模式
+
+前五种必须掌握
+
+'*' 一个 '#' 多个
+
+![image-20210829154617293](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829154617293.png)
+
+![image-20210829154700061](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829154700061.png)
+
+简单模式：
+
+![image-20210829154725519](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829154725519.png)
+
+![image-20210829155034830](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829155034830.png)
+
+![image-20210829155352744](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829155352744.png)
+
+![image-20210829155511653](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829155511653.png)
+
+![image-20210829155527236](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829155527236.png)
+
+这里的connection对象时rabbitmq中的。
+
+非持久化数据会丢失。
+
+**AMQP**
+
+![image-20210829160152592](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829160152592.png)
+
+Broker 表示消费者
+
+tcp 的连接方式会造成很大的开销
+
+amqp 创建的是长连接，通过通道技术支持
+
+**RabbitMQ核心部分**
+
+![image-20210829160655860](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829160655860.png)
+
+erlang就是专门开发交换机的语言
+
+可以有没有交换机的队列吗，不行，不设置交换机则使用默认的。
+
+![image-20210829160915324](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829160915324.png)
+
+broker（经理人）[节点/服务] 才对，图中写错。
+
+交换机负责消息的分发和投递
+
+虚拟机节点做隔离和区分
+
+![image-20210829161746643](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829161746643.png)
+
+![image-20210829162113344](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829162113344.png)
+
+**模式介绍**
+
+队列的 features s列若存在D标记，表示队列持久化
+
+overview 表示队列的状态、内存状况、占用空间
+
+无绑定交换机一定绑定一个默认的交换机。
+
+NACK 不做应答 ACK 做应答，应答后队列消息会清除，故ACK通常不太用。
+
+注意：默认交换机模式事direct（路由模式）
+
+下面介绍中，代码都不含交换机和队列的绑定，因为图形化界面绑定了。
+
+#### 简单模式：
+
+![image-20210829162747858](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829162747858.png)
+
+#### 工作队列模式：
+
+![image-20210829163744976](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829163744976.png)
+
+发布与订阅模式：
+
+![image-20210829163251993](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210829163251993.png)
+
+交换机选择 fanout 模式
+
+订阅了则全部会获得对应消息。
+
+代码形式：
+
+![image-20210830154432317](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210830154432317.png)
+
+#### 路由模式（Routing）：
+
+![image-20210830145201876](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210830145201876.png)
+
+ 满足条件发送，不满足不发送。
+
+只能用direct指定。
+
+代码：
+
+![image-20210830154957954](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210830154957954.png)
+
+#### 主题模式（Topic）：
+
+![image-20210830145752205](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210830145752205.png)
+
+![image-20210830153242771](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210830153242771.png)
+
+course不满足，说明'*'代表只能有一级。'#'表示只能有0级或多级。
+
+代码：
+
+![image-20210830155252060](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210830155252060.png)
+
+#### headers模式：
+
+参数模式，可以根据参数来进行过滤。
+
+相当于以参数条件来发布消息。
+
+#### 图形化绑定加java会比较简洁，上述就是怎么设置的。
+
+![image-20210830155350542](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210830155350542.png)
+
+若队列和交换机的声明在代码中设置，无论在消费者还是生产者声明，效果都一样。
+
+#### Work模式 - 轮询模式 (Round-Robin)
+
+按均分配
+
+![image-20210901174417126](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210901174417126.png)
+
+注：分摊的消息是按消息总量来分的，所以不会受到消费者服务器性能的影响。
+
+#### Work模式 - 公平分发模式
+
+按某种条件分发，手动应答。
+
+![image-20210902142618843](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902142618843.png)
+
+下图表现的就是手动应答
+
+![image-20210902142634261](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902142634261.png)
+
+定下qos指标（qos可以看做分发单位）。
+
+![image-20210902143131668](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902143131668.png)
+
+相当于将服务器当做某进程，来进行抢占式执行。
+
+RabbitMQ占用内存大小上限是物理系统内存的0.4倍（可自行设置，故不一定绝对），下图物理机内存大小为8GB。
+
+![image-20210902143502154](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902143502154.png)
+
+#### RabbitMQ使用场景
+
+最大特点既是异步
+
+解耦（高内聚低耦合）、削峰、异步
+
+订单常见场景
+
+![image-20210902144446043](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902144446043.png)
+
+![image-20210902144519660](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902144519660.png)
+
+订单改善场景
+
+![image-20210902144720908](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902144720908.png)
+
+![image-20210902144728223](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902144728223.png)
+
+耦合度高，这个线程池会占用jvm内存。
+
+最终：
+
+![image-20210902145001726](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902145001726.png)
+
+中间件公司去进行维护、扩展
+
+![image-20210902145038202](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902145038202.png)
+
+解耦体现：
+
+![image-20210902145301740](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902145301740.png)
+
+![image-20210902145328351](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210902145328351.png)
+
+削峰：降低数据库压力。（也可以说缓解消费者压力。）
+
+#### RabbitMQ-SpringBoot 各种模式
+
+准备：
+
+![image-20210903152107378](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903152107378.png)
+
+![image-20210903145214080](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903145214080.png)
+
+`Fanout`模式:
+
+**Producer:**
+
+Configuration 类：
+
+![image-20210903144755688](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903144755688.png)
+
+![image-20210903144446416](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903144446416.png)
+
+![image-20210903144505417](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903144505417.png)
+
+Service 类：
+
+![image-20210903144539663](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903144539663.png)
+
+**Consumer:**
+
+![image-20210903145920007](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903145920007.png)
+
+`direct`模式:
+
+##### Producer：
+
+Configuration（下列图中bean名冲突要改）：
+
+![image-20210903150139487](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903150139487.png)
+
+![image-20210903150203849](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903150203849.png)
+
+Service：
+
+![image-20210903150910410](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903150910410.png)
+
+##### Consumer：
+
+![image-20210903151036067](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903151036067.png)
+
+`topic`模式:
+
+##### Producer：
+
+Configuration（下列图中bean名冲突要改）：
+
+不用配置类，用注解来进行配置的案例
+
+![image-20210903151612786](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903151612786.png)
+
+Service：
+
+![image-20210903151419448](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903151419448.png)
+
+**Consumer：**
+
+![image-20210903151405607](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210903151405607.png)
+
+----------------------------------------------------------------------
+
+面试：先在消费者定义配置类是最好的，因为其直接与队列打交道，反馈快。
+
+**RabbitMQ 高级-过期时间 TTL**
+
+可以对消息设置预期时间，在这个时间内都可以被消费者接收获取，过了之后消息自动删除，RabbitMQ 可以对 **消息和队列** 设置TTL。
+
+移除可以选择直接丢掉或者放入死信队列（通常）中。
+
+通过改变队列参数 x-message-ttl 指定过期时间
+
+![image-20210905205202587](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210905205202587.png)
+
+改变指定信息的过期时间的话：
+
+![image-20210905205603443](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210905205603443.png)
+
+若两种方法同时使用，则消息的过期时间以两者之间TTL较小的那个数值为准。
+
+![image-20210905205946637](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210905205946637.png)
+
+过期队列才支持死信队列机制
+
+**死信队列**
+
+死信队列又称为死信交换机，也有人称为死信邮箱。
+
+信息变为死信会通过专门的交换机存入专门的队列中，该队列即为死信队列。
+
+死信情况：
+
+1、消息被拒绝
+
+2、消息过期
+
+3、队列达到最大长度
+
+本质上DLX和普通交换机没有区别，相当于找个信息的接盘侠。
+
+![image-20210905211121787](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210905211121787.png)
+
+注意：再次创建同名队列，会报错，删除重建才能完成改变，但是在上线时没有办法这样做，故需要新建一个。
+
+![image-20210905211348149](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210905211348149.png)
+
+![image-20210905211650512](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210905211650512.png)
+
+普通队列 + 死信队列 -> 延迟队列（常用）
+
+#### **内存磁盘监控**（小细节）
+
+![image-20210905211907368](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210905211907368.png)
+
+全部队列服务挂起或者阻塞
+
+服务器内存不足。
+
+可能原因：
+
+1、磁盘空间不足
+
+2、业务代码死循环
+
+持久化
+
+![image-20210905212054587](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210905212054587.png)
+
+**内存爆了：**
+
+命令方式
+
+rabbitmqctl set_vm_memory_high_watermark <fraction>【0.4】
+
+rabbitmqctl set_vm_memory_high_watermark absolute 50MB
+
+含义：fraction/value 为内存阈值。默认情况：0.4/2GB，代表含义是：当RabbitMQ的内存超过时会产生警告并且阻塞所有生产者的连接。
+
+建议参数为 0.4 - 0.7 之间
+
+绝对值则以相对值来计算。
+
+**磁盘爆了：**
+
+rabbitmqctl set_disk_free_limit <disk_limit>
+
+rabbitmqctl set_disk_free_limit memory_limit <fraction>
+
+含义：fraction/value 为内存阈值。默认情况：0.4/2GB，代表含义是：当RabbitMQ的占用的磁盘空间超过时会产生警告并且阻塞所有生产者的连接。
+
+建议参数为 0.4 - 0.7 之间
+
+绝对值则以相对值来计算。
+
+**RabbitMQ的内存换页**
+
+在接近但未触及到阈值极限时内存会与磁盘进行交互，将一部分内存信息放入磁盘中。
+
+![image-20210905213441854](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210905213441854.png)
+
+![image-20210905213523199](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210905213523199.png)
+
+#### RabbitMQ集群
+
+因为 RabbitMQ 基于 Erlang 编写，天然具备分布式特性，通过同步Erlang集群各个节点的 magic  cookie 来实现。使得其本身不需要像 ActiveMQ、Kafka 那样通过 ZooKeeper 分别来实现 HA 方案和保存集群的元数据。集群是保证可靠性的一种方案，同时可以水平扩展来增加信息吞吐能力。
+
+以下主要演示的是主从复制集群模式的特征
+
+**集群构建步骤**
+
+此处 rabbit-1 作为主节点，rabbit-2 作为其从节点。
+
+1、启动第一个节点 rabbit-1 
+
+启动命令：
+
+```shell
+sudo RABBITMQ_NODE_PORT=15672 RABBITMQ_NODE_NAME=rabbit-1 rabbitmq-server start &
+```
+
+结束命令：
+
+```shell
+rabbitmqctl -n rabbit-1 stop
+```
+
+2、启动第二个节点 rabbit-2
+
+注意：web 管理插件端口占用，所以还要指定其 web 插件占用的端口号 RABBITMQ_SERVER_START_ARGS=" -rabbitmq_management listener [{port,15673}]"
+
+启动命令：
+
+```shell
+sudo RABBITMQ_NODE_PORT=15673 RABBITMQ_SERVER_START_ARGS="-rabbitmq_management listener[{port,15673}]" RABBITMQ_NODENAME=rabbit-2 rabbitmq-server start &
+```
+
+3、验证启动 “ps aux | grep rabbitmq”
+
+查看是否存在两个start
+
+4、设置主从关系
+
+对两个节点进行以下操作：
+
+#停止应用
+
+```shell
+sudo rabbitmqctl -n rabbit-1 stop_app
+```
+
+#目的是清除节点上的历史数据（如果不清楚，无法将节点加入到集群）
+
+```shell
+sudo rabbitmqctl -n rabbit-1 reset
+```
+
+#启动应用
+
+```shell
+sudo rabbitmqctl -n rabbit-1 start_app
+```
+
+注意：从节点在启动应用操作前要进行集群加入
+
+```shell
+sudo rabbitmqctl -n rabbit-2 join_cluster rabbit-1@'Server-node(主机名)'
+```
+
+![image-20210906203757136](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210906203757136.png)
+
+集群状态查看：
+
+```shell
+sudo rabbitmqctl cluster_status -n rabbit-1
+```
+
+**集群web界面管理调试**
+
+打开 web 界面
+
+```shell
+rabbitmq-plugins enable rabbitmq_management
+```
+
+登录授权
+
+```shell
+rabbitmqctl -n rabbit-1 add_user admin admin
+rabbitmqctl -n rabbit-1 set_user_tags admin administrator
+rabbitmqctl -n rabbit-1 set_permissions -p / admin ".*" ".*" ".*"
+
+rabbitmqctl -n rabbit-2 add_user admin admin
+rabbitmqctl -n rabbit-2 set_user_tags admin administrator
+rabbitmqctl -n rabbit-2 set_permissions -p / admin ".*" ".*" ".*"
+```
+
+不设置rabbit-2也行。
+
+从节点消失几乎无影响，主节点消失则全部业务停止。
+
+![image-20210906205329339](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210906205329339.png)
+
+多个主从构成高可用解决方案 HA
+
+![image-20210906205439946](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210906205439946.png)
+
+**分布式事务**
+
+分布式事务是保证在不同服务中数据保持一致性的解决方案。
+
+实现方案：
+
+1、两阶段提交（2PC） 需要数据库产商的支持， java 组件有 atomikos 等。
+
+通过引入协调者（Coordinator）来协调参与者的行为，并最终决定这些参与者是否要真正执行事务。
+
+准备阶段
+
+协调者询问参与者事务是否执行成功，参与者发回事务执行结果。
+
+![image-20210907210848769](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907210848769.png)
+
+
+
+
+
+存在问题：
+
+(1)、同步阻塞
+
+(2)、单点问题
+
+(3)、数据不一致
+
+(4)、太过保守
+
+2、补偿事务（TCC）严选，阿里、蚂蚁金服
+
+TCC 其实就是采用的补偿机制，其核心思想是：针对每个操作，都要注册一个与其对应的确认和补偿（撤销）操作，它分为三个阶段：
+
+(1) Try 阶段主要是对业务系统做检测及资源预留
+
+(2) Confirm 阶段主要是对业务系统做确认提交，Try 阶段执行成功并开始执行 Confirm 阶段时，默认 ---Confirm 阶段是不会出错的。即：只要 Try 成功，Confirm 一定成功。
+
+(3) Cancel 阶段主要是在业务执行错误，需要回滚的状态下执行的业务取消，预留资源释放。
+
+```
+举个例子，假如 Bob 要向 Smith 转账，思路大概是：我们有一个本地方法，里面依次调用
+1：首先在 Try 阶段，要先调用远程接口把 Smith 和 Bob 的钱冻结起来。
+2：在 Confirm 阶段，执行远程调用的转账操作，转账成功进行解冻。
+3：如果第二步执行成功，那么转账成功，否则调用远程冻结接口对应的解冻方法。
+```
+
+优点：跟 2PC 比，实现以及流程相对简单了些，但数据的一致性比 2PC 也要差一些
+
+缺点：在2、3步中都有可能失败，TCC属于应用层的一种补偿方式，所以需要程序员在实现的时候多写很多补偿的代码，在一些场景中，一些业务流程可能用TCC不太好定义以及处理。
+
+3、本地消息表（异步确保）比如：支付宝、微信支付主动查询支付状态，对账单的形式。
+
+在把业务数据放入消息队列之前，先放到本地的数据表中，再从数据表中把数据放入消息队列之中。
+
+![image-20210907212714322](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907212714322.png)
+
+优点：实现最终一致性
+
+缺点：耦合度高
+
+4、MQ事务消息 异步场景，通用性强，扩展性高。
+
+kafka不支持分布式事务。
+
+优点：实现了最终一致性，不需要依赖本地数据库事务。
+
+缺点：实现难度大，主流MQ不支持，RocketMQ事务消息部分代码也未开源。
+
+分布式事务架构图：
+
+示例：
+
+![image-20210907213100996](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907213100996.png)
+
+![image-20210907213214022](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907213214022.png)
+
+![image-20210907213536703](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907213536703.png)
+
+![image-20210907213626112](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907213626112.png)
+
+![image-20210907213650526](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907213650526.png)
+
+最下面两个依赖是处理在数据传输过程中的 json 转换。
+
+orders：
+
+![image-20210907213732611](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907213732611.png)
+
+dispatcher：
+
+![image-20210907213745857](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907213745857.png)
+
+![image-20210907213917527](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907213917527.png)
+
+![image-20210907214026020](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907214026020.png)
+
+若使用了集群形式，则不能用注释中的写法，注释表示的是单机情形。
+
+ACK机制可以保证消费者如果拿了队列的消息，处理出错了，那么队列中还有这个消息，仍然可以给下个机子来跑。
+
+ 分布式事务问题情景展示：
+
+订单服务和分发服务(A和B)
+
+A服务调用了B服务，B服务数据入库，A服务因为B服务连接超时，A服务异常回滚，导致A服务数据库中数据没有生成，而B服务中有，由此造成了数据的不一致性。
+
+![image-20210907215828120](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210907215828120.png)
+
+使用 Rabbitmq 的解决方案。
+
+![image-20210908211840827](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210908211840827.png)
+
+设计思路
+
+![image-20210908211251967](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210908211251967.png)
+
+通过策略和手段来尽量达成。
+
+数据最终一致性是永远的话题
+
+*可靠生产和推送确认
+
+可靠生产：
+

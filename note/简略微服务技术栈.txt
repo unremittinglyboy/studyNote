@@ -1,0 +1,2927 @@
+## 微服务粗略描述
+
+注册中心：记录微服务中每一个微服务的 ip、端口、功能。（拉取或注册服务信息）
+
+配置中心：配置服务的配置（拉取配置信息）
+
+服务网关：设置访客的服务访问权限。
+
+![image-20210909210115368](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909210115368.png)
+
+常规架构
+
+![image-20210909210245778](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909210245778.png)
+
+上下增添的技术是用于统筹服务、排错的。
+
+![image-20210909210358960](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909210358960.png)
+
+右边为持续集成
+
+## 认识微服务
+
+### 架构
+
+**单体架构**
+
+单体架构：将业务的所有功能集中在一个项目中开发，打包部署。
+
+![image-20210909212034219](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909212034219.png)
+
+优点：
+
+1、架构简单
+
+2、部署成本低
+
+缺点：
+
+1、耦合度高
+
+**分布式架构**
+
+分布式架构：根据业务功能对系统进行拆分，每个业务模块作为独立项目开发，称为一个服务。
+
+![image-20210909212358321](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909212358321.png)
+
+优点：
+
+1、降低服务耦合
+
+2、有利于服务升级扩展
+
+服务治理（分布式架构难点）
+
+![image-20210909212532625](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909212532625.png)
+
+！！！微服务：
+
+微服务是一种经过良好架构设计的**分布式架构**方案，微服务架构特征：
+
+1、单一职责：微服务拆分粒度更小，每一个服务都对应唯一的业务能力，做到单一职责，避免重复业务开发。
+
+2、面向服务：服务对外暴露业务接口(openfeign)。
+
+3、自治：团队独立、技术独立、数据独立、部署独立。
+
+4、隔离性强：服务调用做好隔离、容错、降级，避免出现级联问题。
+
+![image-20210909213415679](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909213415679.png)
+
+### 微服务结构
+
+微服务这种方案需要技术框架来落地，全球的互联网公司都在积极尝试自己的微服务落地技术。在国内最知名的是 SpringCloud 和 阿里巴巴的 Dubbo。
+
+![image-20210909214032208](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909214032208.png)
+
+#### 微服务技术对比
+
+![image-20210909214744949](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909214744949.png)
+
+SpringCloudAlibaba 兼容前两者。
+
+![image-20210909215017909](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909215017909.png)
+
+一种http协议，一种rpc协议，都应掌握。
+
+#### SpringCloud简介
+
+组件
+
+- Distributed/versioned configuration
+
+  统一配置管理
+
+- Service registration and discovery
+
+  服务注册和发现
+
+- Routing
+
+  请求路由（统一网关路由）
+
+- Service-to-service calls
+
+  服务远程调用
+
+- Load balancing
+
+  负载均衡
+
+- Circuit Breakers
+
+  服务链路监控（环路监控）
+
+- Global locks
+
+  分布式锁
+
+- Leadership election and cluster state
+
+  集群控制
+
+- Distributed messaging
+
+  分布式消息传递
+
+SpringCloud 和 SpringBoot 的版本兼容关系如下（官网能查）：
+
+![image-20210909220001100](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909220001100.png)
+
+![image-20210909220006931](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909220006931.png)
+
+#### 服务拆分及远程调用
+
+**注意事项**：
+
+1、不同微服务，不能重复开发相同业务。
+
+2、微服务数据独立，不要访问其他微服务的数据库。
+
+3、微服务可以将自己的业务暴露为接口，供其他微服务调用。
+
+![image-20210909220745173](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210909220745173.png)
+
+数据库账号密码不同的话记得更改配置文件。
+
+做完准备工作后：
+
+![image-20210910220346270](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210910220346270.png)
+
+启动：
+
+![image-20210910220912395](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210910220912395.png)
+
+#### 服务远程调用
+
+需求：根据订单 id 查询订单的同时，把订单所属的用户信息一起返回。
+
+![image-20210910221431156](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210910221431156.png)
+
+**远程调用方式分析**
+
+![image-20210910221603335](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210910221603335.png)
+
+步骤
+
+1、注册 RestTemplate
+
+在 order-service 的 OrderApplication 中注册 RestTemplate
+
+```java
+@MapperScan("cn.itcast.order.mapper")
+@SpringBootApplication
+public class OrderApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(OrderApplication.class, args);
+    }
+    @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
+}
+```
+
+带有入口类注解注释的类本身也是一个配置类。
+
+2、输入完成需求所需要的业务逻辑
+
+：：见项目中
+
+**提供者和消费者**
+
+服务提供者：一次业务中，被其他微服务调用的服务。（提供接口给其他微服务）
+
+服务消费者：一次业务中，调用其他微服务的服务。（调用其他微服务提供的接口）
+
+![image-20210910222857727](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210910222857727.png)
+
+服务A调用服务B，服务B调用服务C，那么服务B是什么角色呢？
+
+注意：一个服务既可以是提供者又可以是消费者。
+
+### Eurka
+
+#### **微服务注册中心**
+
+服务调用会出现的问题：
+
+![image-20210912210949238](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912210949238.png)
+
+在实际开发环境中，user-service通常会有多台，用硬编码设计寻址会出现问题。
+
+![image-20210912211212561](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912211212561.png)
+
+总体会出现的问题如上。
+
+#### **Eureka的作用**
+
+![image-20210912211640660](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912211640660.png)
+
+消费者如何获取提供者的具体信息？
+
+1、服务提供者向eureka注册信息。
+
+2、eureka保存信息。
+
+3、消费者根据服务名称向eureka拉取提供者信息。
+
+如果有多个服务提供者，消费者该如何选择？
+
+服务消费者利用负载均衡算法，从服务列表中挑选一个。
+
+消费者如何感知服务提供者健康状态？
+
+1、服务提供者会每隔30s(可设置)向EurekaServer发送心跳请求，报告健康状态。
+
+2、eureka会更新记录服务列表信息，心跳不正常会被剔除。
+
+3、消费者就可以拉取到最新信息。
+
+![image-20210912212136259](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912212136259.png)
+
+#### 实践一下：
+
+**搭建EurekaServer**
+
+1、创建项目，引入 spring-cloud-starter-netflix-eureka-server 的依赖。
+
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+</dependency>    
+```
+
+2、编写启动类，添加@EnableEurekaServer注解。
+
+3、添加application.yml文件，编写下面的配置：
+
+```yaml
+server:
+	port: 10086
+spring:
+	application:
+		name: eurekaserver
+eureka:
+	client:
+		service-url:
+			defaultZone: http://127.0.0.1:10086/eureka/
+```
+
+启动后最关键的信息：
+
+![image-20210912214349638](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912214349638.png)
+
+![image-20210912214510948](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912214510948.png)
+
+win系统问题，显示的为计算机名，实际上应该为ip。
+
+**Eureka服务注册**
+
+注册user-service到EurekaServer：
+
+1、在user-service项目引入spring-cloud-starter-netflix-eureka-client的依赖。
+
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+</dependency>   
+```
+
+2、在application.yml文件，编写下面的配置：
+
+```yaml
+spring:
+	application:
+		name: userservice
+eureka:
+	client:
+		service-url:
+			defaultZone: http://127.0.0.1:10086/eureka/
+```
+
+全部完成后：
+
+![image-20210912220013419](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912220013419.png)
+
+若我们想给一个服务启动多个实例，模拟多实例部署，但为了避免端口冲突，需要修改端口设置：
+
+![image-20210912220237572](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912220237572.png)
+
+-D 代表参数
+
+![image-20210912220752598](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912220752598.png)
+
+![image-20210912220809236](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912220809236.png)
+
+**Eureka服务发现**
+
+在order-service完成服务拉取
+
+服务拉取是基于服务名称获取服务列表，然后再对服务列表做负载均衡
+
+1、修改OrderService的代码，修改访问的url路径，用服务名代替ip、端口：
+
+```java
+String url = "http://userservice/user/" + order.getUserId();
+```
+
+2、在order-service项目的启动类OrderApplication中的RestTemplate添加**负载均衡**注解：
+
+```java
+@Bean
+@LoadBalanced
+public RestTemplate restTemplate(){
+    return new RestTemplate();
+}
+```
+
+默认负载均衡策略为轮询
+
+Eureka总结：
+
+1、搭建EurekaServer
+
+​	1.1、引入eureka-server依赖
+
+​	1.2、添加@EnableEurekaServer
+
+​	1.3、在application.yml中配置eureka地址
+
+2、服务注册
+
+​	2.1、引入eureka-client依赖
+
+​	2.2、在application.yml中配置eureka地址
+
+3、服务发现
+
+​	3.1、引入eureka-client依赖
+
+​	3.2、在application.yml中配置eureka地址
+
+​	3.3、给RestTemplate添加@LoadBalanced注解
+
+​	3.4、用服务提供者的服务名称远程调用（软编码）
+
+### Ribbon负载均衡
+
+![image-20210912222507699](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912222507699.png)
+
+**负载均衡原理**
+
+![image-20210912222609914](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912222609914.png)
+
+这里实现的接口是采用http协议的客户端请求拦截器
+
+![image-20210912222708607](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912222708607.png)
+
+1、获取到访问的服务名称
+
+![image-20210912223113541](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223113541.png)
+
+2、开始请求eurekaserver拉取服务
+
+![image-20210912223107491](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223107491.png)
+
+![image-20210912223146726](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223146726.png)
+
+3、根据服务名称拉取服务列表后放入loadBalancer对象中
+
+![image-20210912223230453](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223230453.png)
+
+4、负载均衡
+
+![image-20210912223322939](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223322939.png)
+
+![image-20210912223350247](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223350247.png)
+
+![image-20210912223404259](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223404259.png)
+
+![image-20210912223446587](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223446587.png)
+
+![image-20210912223506724](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223506724.png)
+
+查看 IRule 实现类
+
+![image-20210912223518811](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223518811.png)
+
+roundRobin 轮询调度
+
+5、拿到经过负载均衡策略的服务实际的地址
+
+![image-20210912223658700](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223658700.png)
+
+源码流程总结：
+
+![image-20210912223907064](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210912223907064.png)
+
+**负载均衡策略**
+
+![image-20210913213301688](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210913213301688.png)
+
+默认采用以下策略：
+
+![image-20210913213340838](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210913213340838.png)
+
+ 常见规则列表：
+
+![image-20210913213521949](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210913213521949.png)
+
+availability 可利用性
+
+Zone可以在配置文件中进行设置。（个人认为类似哈希分配。）
+
+通过定义IRule实现可以修改负载均衡规则，有两种方式：
+
+1、作用于全局，代码：在order-service中的OrderApplication类中，定义一个新的IRule：
+
+```java
+@Bean
+public IRule randomRule(){
+    return new RandomRule();
+}
+```
+
+2、根据配置文件的所属来作用于选定的服务，配置文件方式：在order-service的application.yml文件中，添加新的配置也可以修改规则（针对某个微服务来配置，更具体）：
+
+```yaml
+userservice:
+	ribbon:
+		NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule #负载均衡规则
+```
+
+**饥饿加载**
+
+Ribbon默认是采用懒加载，即第一次访问时才会去创建LoadBalanceClient（拉取服务列表等），请求时间会很长。而饥饿加载会在项目启动时创建，降低第一次访问的耗时，通过下面配置开启饥饿加载：
+
+```yaml
+ribbon:
+	eager-load:
+		enabled: true #开启饥饿加载
+		clients: userservice # 指定对userservice这个服务饥饿加载
+```
+
+下图为有多个服务的写法
+
+![image-20210913220611884](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210913220611884.png)
+
+**Ribbon总结：**
+
+![image-20210913220807762](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210913220807762.png)
+
+### Nacos注册中心
+
+Nacos是阿里巴巴的产品。
+
+相比Eureka功能更加丰富，在国内受欢迎程度较高。
+
+eureka 1.x 没有停更，停更指的是 eureka 2.x。
+
+![image-20210913221221318](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210913221221318.png)
+
+**Nacos快速入门**
+
+Spring Cloud Commons 规定了接口规范
+
+![image-20210913222722310](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210913222722310.png)
+
+由此可知，使用springcloud中的注册中心组件，内部的具体配置是不太需要变化，有变化的是引入的依赖、服务地址要配成对应注册中心的。
+
+**服务注册到Nacos**
+
+1、在cloud-demo父工程中添加spring-cloud-alibaba的管理依赖：
+
+```xml
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+    <version>2.2.5.RELEASE</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+```
+
+2、注释掉order-service和user-service中原有的eureka依赖。
+
+3、添加nacos的客户端依赖：
+
+```xml
+<!--nacos客户端依赖-->
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+</dependency>
+```
+
+4、修改user-service&order-service中的application.yml文件，注释eureka地址，添加nacos地址：
+
+```yaml
+spring:
+	cloud:
+		nacos:
+			server-addr: localhost:8848 # nacos 服务端地址
+```
+
+5、启动并测试：
+
+注意：启动了nacos server 才能启动 client
+
+Nacos小总结：
+
+![image-20210913225449559](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210913225449559.png)
+
+**Nacos服务分级存储模型**
+
+基于地域和业务的划分
+
+容灾（即把所有服务器放到不同机房）
+
+![image-20210914210450593](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914210450593.png)
+
+同在一个机房的多个实例称为一个集群。
+
+**服务跨集群调用问题：**
+
+服务调用尽可能选择本地集群的服务，跨集群调用延迟较高
+
+本地集群不可访问时，再去访问其他集群
+
+![image-20210914210632517](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914210632517.png)
+
+**服务集群属性**
+
+1、修改application.yml，添加如下内容：
+
+```yaml
+spring:
+	cloud:
+		server-addr: localhost:8848 #nacos 服务端地址
+		discovery:
+			cluster-name: HZ #配置集群名称，也就是机房位置，例如：HZ，杭州
+```
+
+2、在Nacos控制台可以看到集群变化
+
+![image-20210914210925782](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914210925782.png)
+
+简单总结：
+
+1、Nacos服务分级存储模型
+
+1.1、一级是服务，例如userservice
+
+1.2、二级是集群，例如杭州或上海
+
+1.3、三级是实例，例如杭州机房的某台部署了userservice的服务器
+
+2、如何设置实例的集群属性
+
+修改application.yml
+
+**NacosRule负载均衡**
+
+试过可知Nacos默认的负载均衡策略是随机。
+
+![image-20210914212451735](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914212451735.png)
+
+简单总结：
+
+NacosRule负载均衡策略
+
+1、优先选择同集群服务实例列表
+
+2、本地集群找不到提供者，采取其他集群找，并且会报警告
+
+3、确定了可用实例列表后，再采用随机负载均衡挑选实例。
+
+设置权重负载均衡：
+
+性能好的机器承担更多请求。
+
+权重设置的越高，访问频率越高。
+
+![image-20210914214047128](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914214047128.png)
+
+权重为0类似挂起，用于某个服务的版本维护，灰度更新。
+
+**环境隔离 - namespace**
+
+Nacos中服务存储和数据存储的最外层都是一个名为namespace的东西，用来做最外层隔离
+
+![image-20210914214651260](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914214651260.png)
+
+![image-20210914214902204](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914214902204.png)
+
+![image-20210914214907823](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914214907823.png)
+
+没设置时的默认命名空间是public
+
+给服务进行配置的配法，填写的是id
+
+![image-20210914215101182](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914215101182.png)
+
+不同命名空间下服务不可见。
+
+**Nacos临时实例和非临时实例设置**
+
+nacos会将实例划分为临时实例和非临时实例，默认情况下所有实例都为临时实例
+
+服务注册到Nacos时，可以选择注册为临时或非临时实例，通过下面配置来设置：
+
+```yaml
+spring:
+	cloud:
+		nacos:
+			discovery:
+				ephemeral: false #设置为非临时实例
+```
+
+**Nacos和Eureka的对比**
+
+临时实例采用心跳检测，而eureka什么实例都会采用，且nacos检测频率更高。
+
+非临时实例，由nacos主动询问，且不会被剔除，会等待该种实例可用。
+
+eureka定时拉取服务pull，更新服务列表较慢，而nacos会额外作为主动方来推送服务列表更新信息。
+
+默认负载均衡也不一样。
+
+![image-20210914220759878](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914220759878.png)
+
+#### **Nacos配置管理**
+
+**统一配置管理**
+
+实际情况中服务重启带来的影响是挺大的。
+
+服务多了之后，逐个修改太过麻烦。
+
+故需要拥有统一配置管理技术：
+
+1、配置热更新
+
+2、多个服务同时配置
+
+![image-20210914221638757](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914221638757.png)
+
+DataID要唯一，防止冲突
+
+![image-20210914221909597](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914221909597.png)
+
+描述可以写写，提高可读性。
+
+配置内容不能乱写，要写那些常改变的，开关、模板类型(日期)的。
+
+示例：
+
+![image-20210914222131071](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914222131071.png)
+
+**微服务统一配置拉取**
+
+![image-20210914222456174](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914222456174.png)
+
+流程变为：
+
+若把nacos地址写入application.yml中则不对，因为读取nacos的配置都提前找到地址，所以要使用比application.yml优先级高的bootstrap.yml（引导文件）
+
+![image-20210914222658677](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914222658677.png)
+
+![image-20210914222818457](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914222818457.png)
+
+服务名称 - 环境 - 文件后缀名结合成统一配置的 DataID。
+
+要在使用统一配置管理的服务引入该依赖
+
+![image-20210914222942611](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210914222942611.png)
+
+在Controller层设置验证，表明配置拉取成功。
+
+![image-20210915210930969](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210915210930969.png)
+
+小总结：
+
+![image-20210915214740155](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210915214740155.png)
+
+**配置热更新**
+
+![image-20210915214903122](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210915214903122.png)
+
+更改已有nacos的统一配置文件
+
+配置文件变更后还要进行操作才能自动改变，以下是这种操作的多种方式：
+
+1、在@Value注入的变量所在类上添加注解@RefreshScope
+
+![image-20210915214954536](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210915214954536.png)
+
+2、 使用@ConfigurationProperties注解
+
+![image-20210915215248845](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210915215248845.png)
+
+![image-20210915215503085](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210915215503085.png)
+
+**多环境配置共享**
+
+情景：某个配置在开发、测试、生产的值一样。
+
+微服务启动时会从nacos读取多个配置文件：
+
+1、[spring.application.name]-[spring.profiles.active].yaml，例如：userservice-dev.yaml
+
+2、[spring.application.name].yaml，例如：userservice.yaml
+
+无论profile如何变化，2这个文件一定会加载，因此多环境共享配置可以写入这个文件。
+
+测试案例：
+
+![image-20210915215958173](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210915215958173.png)
+
+![image-20210915220022514](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210915220022514.png)
+
+日志可以看到不同生产环境加载的配置文件名
+
+问题：当多个配置文件有同一属性时，以谁为准？
+
+答：带环境名的nacos配置文件优先级最高，其次是不带环境名的nacos配置文件，最后是本地配置。
+
+**Nacos集群搭建**（路径不能有中文）
+
+intranet 内联网
+
+![image-20210915221047839](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210915221047839.png)
+
+按照C:\Users\桁仔\Desktop\note\Microservices test中的nacos集群搭建.md文件中的内容进行nacos节点的搭建。
+
+nginx反向代理端口为80，则这里也改为80
+
+![image-20210916222213827](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210916222213827.png)
+
+![image-20210917220335780](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210917220335780.png)
+
+集群模式后会导致热部署失效。
+
+### 基于Feign远程调用
+
+自己的踩坑与解决
+
+![image-20210921224949528](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210921224949528.png)
+
+
+
+**RestTemplate方式调用存在问题**
+
+![image-20210917220652934](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210917220652934.png)
+
+问题列举：
+
+1、代码可读性差，编程体验不统一
+
+2、参数复杂URL难以维护
+
+**Feign介绍**
+
+Feign是一个声明式的http客户端，作用是帮助我们优雅的实现http请求的发送，解决上面提到的问题。
+
+**定义和使用Feign客户端**
+
+1、引入依赖
+
+```xml
+<dependency>
+  <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+```
+
+2、在order-service的启动类添加注解开启Feign的功能：
+
+```java
+@EnableFeignClients
+@MapperScan("cn.itcast.order.mapper")
+@SpringBootApplication
+public class OrderApplication{
+    public static void main(String[] args){
+        SpringApplication.run(OrderApplication.class,args);
+    }
+}
+```
+
+![image-20210917221534115](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210917221534115.png)
+
+![image-20220514224555766](D:\Typora图片\image-20220514224555766.png)
+
+Feign存在负载均衡的功能
+
+依赖中已经集成了netflix-ribbon
+
+![image-20210918212006768](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918212006768.png)
+
+**自定义Feign的配置**
+
+![image-20210918212210723](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918212210723.png)
+
+BASIC：记录http请求发送时间，请求结束的时间，耗时多久。
+
+HEADS：在BASIC的基础上将请求头和响应头的信息都记录下来。
+
+FULL：在HEADS的基础上将请求正文和响应正文的信息都记录下来。
+
+配置Feign日志有两种方式：
+
+方式一：配置文件方式
+
+1、全局生效
+
+![image-20210918213624258](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918213624258.png)
+
+2、局部生效
+
+![image-20210918213634746](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918213634746.png)
+
+方式二：java代码方式，需要先声明一个Bean
+
+```java
+public class FeignClientConfiguration{
+    @Bean
+    public Logger.Level feignLogLevel(){
+        return Logger.Level.BASIC;
+    }
+}
+```
+
+1、而后如果是全局配置，则把它放到@EnableFeignClients这个注解中：
+
+![image-20210918213940441](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918213940441.png)
+
+2、如果是局部配置，则把它放到@FeignClient这个注解中：
+
+![image-20210918213945520](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210918213945520.png)
+
+**Feign性能优化**
+
+Feign客户端的底层实现：
+
+1、URLConnection：默认实现，不支持连接池
+
+2、Apache HttpClient：支持连接池
+
+3、OKHttp：支持连接池
+
+优化Feign的性能的方向：
+
+1、使用连接池代替默认的URLConnection
+
+2、日志级别，最好用basic或者none
+
+引入HttpClient的支持：
+
+引入依赖：
+
+```xml
+        <!--httpClient的依赖-->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+        </dependency>
+```
+
+配置连接池
+
+```yaml
+feign:
+  client:
+    config:
+      default: #default全局配置
+        loggerLevel: BASIC #日志级别，BASIC就是基本的请求和响应信息
+    httpclient:
+        enabled: true #开启feign对HttpClient的支持
+        max-connections: 200 #最大连接数
+        max-connections-per-route: 50 # 每个路径的最大连接数
+```
+
+最大连接数要试（压力测试）才能知道填入何值最优。
+
+**Feign的最佳实践**
+
+单一原则
+
+方式一（继承）：给消费者的FeignClient和提供者的Controller定义统一的父接口作为标准。
+
+![image-20210920205109859](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920205109859.png)
+
+缺点：
+
+1、服务紧耦合
+
+2、父接口参数列表中的映射不会被继承（Controller中的参数还是要写，即@PathVariable）[即在上图中UserController实现该接口，得到的方法参数注解是无效的，仅仅是起声明作用]
+
+企业因为它的契约型优点，所以用的不少。
+
+方式二（抽取）：将FeignClient抽取为独立模块，并且把接口有关的POJO、默认的Feign配置都放到这个模块中，提供给所有消费者使用。
+
+![image-20210920205937231](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920205937231.png)
+
+**Feign最佳实践方式二实现**
+
+1、首先创建一个module，命名为feign-api，然后引入feign的starter依赖
+
+2、将order-service中编写的UserClient、User、DefaultFeignConfiguration都复制到feign-api项目中。
+
+3、在order-service中引入feign-api的依赖
+
+4、修改order-service中的所有与上述三个组件有关的import部分，改成导入feign-api中的包。
+
+5、重启测试
+
+这样子弄完很容易会出现以下错误：
+
+![image-20210920215556664](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920215556664.png)
+
+说的是无法将该类的对象从IOC容器中获取到，然后注入，出现这种错误的原因是扫包没有扫描到'Feign'Client接口。
+
+直接扩大扫包范围显然是不合适的，因为默认情况可以是没有引入Feign依赖。
+
+两种解决方案：
+
+方式一：指定FeignClient所在包
+
+![image-20210920220050843](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920220050843.png)
+
+方式二：指定FeignClient字节码
+
+![image-20210920220108708](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920220108708.png)
+
+### 统一网关Gateway
+
+**为什么需要网关？**
+
+![image-20210920220824702](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920220824702.png)
+
+网关功能：
+
+1、身份认证、权限校验
+
+2、服务路由、负载均衡
+
+3、请求限流
+
+**网关的技术实现**
+
+在SpringCloud中网关的实现包括两种：
+
+1、gateway
+
+2、zuul
+
+Zuul是基于Servlet的实现，属于阻塞式编程。而SpringCloudGateway则是基于Spring5中提供的WebFlux，属于响应式编程的实现，具备更好的性能。
+
+**搭建网关服务**
+
+搭建网关服务的步骤：
+
+1、创建新的module，引入SpringCloudGateway的依赖和nacos的服务发现依赖
+
+![image-20210920222126277](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920222126277.png)
+
+2、
+
+![image-20210920222648920](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920222648920.png)
+
+3、编写路由配置及nacos地址
+
+```yaml
+server:
+  port: 10010
+spring:
+  application:
+    name: gateway
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://userservice
+          predicates:
+            - Path=/user/**
+```
+
+断言是一种判断，此处判断路径是否以/user/开头。
+
+![image-20210920224651991](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920224651991.png)
+
+多个服务的书写形式
+
+![image-20210920225141271](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210920225141271.png)
+
+#### **路由断言工厂(Route Predicate Factory)**
+
+网关路由可以配置的内容包括：
+
+路由id：路由唯一标识
+
+uri：路由目的地，支持lb和http两种
+
+*predicates：路由断言，判断请求是否符合要求，符合则转发到路由目的地*
+
+filters：路由过滤器，处理请求或响应
+
+注意：
+
+1、我们在配置文件中写的断言规则只是字符串，这些字符串会被Predicate Factory读取并处理，转变为路由判断的条件。
+
+2、例如Path=/user/**是按照路径匹配，这个规则是由org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory类来处理。
+
+3、像这样的断言工厂在SpringCloudGateway还有十几个。
+
+Spring提供了11种基本的predicate工厂：
+
+![image-20210921210746862](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210921210746862.png)
+
+Spring官网中提供了使用各种不同的工厂的实例：
+
+![image-20210921211009864](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210921211009864.png)
+
+数据传输对象（*DTO*）(Data Transfer Object)，是一种设计模式之间传输数据的软件应用系统。
+
+#### **路由过滤器(GatewayFilter)**
+
+GatewayFilter是网关中提供的一种过滤器，可以对进入网关的请求和微服务返回的响应做处理：
+
+![image-20210921212756172](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210921212756172.png)
+
+#### **过滤器工厂(GatewayFilterFactory)**
+
+Spring提供了31种不同的路由过滤器工厂。例如：
+
+![image-20210921212732855](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210921212732855.png)
+
+ 网关到微服务(downstream)
+
+案例演示：给所有进入userservice的请求添加一个请求头。
+
+![image-20210921213154326](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210921213154326.png)
+
+![image-20210921225908642](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210921225908642.png)
+
+若是远程调用，请求头并不会添加上！因为服务之间不存在网关。
+
+**默认过滤器**
+
+和routes属性同级，运用此处的请求头追加案例则写为：
+
+```yaml
+default-filters:
+	- AddRequestHeader=Truth, Itcast is freaking awesome!
+```
+
+**全局过滤器(GlobalFilter)**
+
+全局过滤器的作用是处理一切进入网关的请求和微服务响应，与GatewayFilter的作用一样。
+
+区别在于GatewayFilter通过配置定义，处理逻辑是固定的。而GlobalFilter的逻辑需要自己写代码实现。
+
+定义方式是实现GlobalFilter接口
+
+```java
+public interface GlobalFilter{
+    /**
+    * 处理当前请求，有必要的话通过{@link GatewayFilterChain}将请求交给下一个过滤器处理
+    *
+    * @param exchange 请求上下文，里面可以获取Request、Response等信息
+    *@param chain 用来把请求委托给下一个过滤器
+    * @return {@code Mono<Void>} 返回标示当前过滤器业务结束
+    */
+    Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain);
+}
+```
+
+网关中的api都是采用webflux(响应式编程)的api
+
+使用的代码实现：
+
+```java
+/**
+ * Order注解设置拦截器顺序,越高优先级越低，越低优先级越高。
+ * 带接口设置也行。
+ */
+
+//@Order(-1)
+@Component
+public class AuthorizeFilter implements GlobalFilter, Ordered {
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        //1.获取请求参数
+        ServerHttpRequest request = exchange.getRequest();
+        MultiValueMap<String, String> params = request.getQueryParams();
+        //2.获取参数中的 authorization 参数
+        //此处的方法是获取map中头一个 key为 authorization的 value。
+        String auth = params.getFirst("authorization");
+        //3.判断参数值是否等于 admin
+        //4.是则放行
+        if(auth.equals("admin")){
+            return chain.filter(exchange);
+        }
+
+        //5.不是则拦截
+        //5.1.设置状态码(401表示未登录)
+        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+
+        //5.2.拦截请求
+        return exchange.getResponse().setComplete();
+    }
+
+    @Override
+    public int getOrder() {
+        return -1;
+    }
+}
+```
+
+![image-20210922210105616](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922210105616.png)
+
+**过滤器的执行顺序**
+
+请求进入网关会碰到三类过滤器：当前路由的过滤器、DefaultFilter、GlobalFilter
+
+请求路由后，会将当前DefaultFilter、路由过滤器、GlobalFilter，合并到一个过滤器链（集合）中，排序后一次执行每个过滤器。
+
+![image-20210922210353593](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922210353593.png)
+
+**为何三者看似不同却可以形成过滤器链，或者说可以对它们进行统一排序呢？**
+
+答：路由过滤器和默认过滤器，都来源于某个过滤器工厂，而过滤器工厂的父都一致，故可看做一类。
+
+![image-20210922210852061](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922210852061.png)
+
+这里是适配器模式 
+
+使得网关过滤器适配上此时的网关过滤器适配器类，怎么看来可以把全局过滤器看做和默认过滤器、当前路由过滤器看做为一类过滤器，故可以一起用到同一个过滤器链中。
+
+默认过滤器和当前路由过滤器没有指定order值，那么它们的order值从何而来呢？默认是由Spring指定，按照声明顺序从1开始递增。
+
+![image-20210922212025018](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922212025018.png)
+
+可见，两种过滤器是分开计数的，那岂不是会冲突，再说全局过滤器也可以调成一致的数字。
+
+当过滤器值相同时，会按照 defaultFilter > 路由过滤器 > GlobalFilter 的顺序执行。
+
+![image-20210922212306131](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922212306131.png)
+
+**跨域问题处理**
+
+跨域：域名不一致就是跨域，主要包括：
+
+域名不同：www.taobao.com 和 www.taobao.org 和 www.jd.com 和 miaosha.jd.com
+
+域名相同，端口不同：localhost:8080 和 localhost:8081
+
+跨域问题：请求的发起者与服务端发生跨域ajax请求，浏览器拦截下该响应。（能发不能接）
+
+![image-20210922214240762](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922214240762.png)
+
+解决方案：CORS（请求发起者询问服务端是否允许跨域），网关底层已经解决这个问题。
+
+只需要简单配置即可实现：
+
+前面是spring.cloud.gateway
+
+```yaml
+#全局的跨域处理
+      globalcors:
+        add-to-simple-url-handler-mapping: true #解决options请求被拦截问题
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: # 允许哪些网站的跨域请求
+              - "http://localhost:8090"
+              - "http://www.leyou.com"
+            allowedMethods: # 允许的跨域ajax的请求方式
+              - "GET"
+              - "POST"
+              - "DELETE"
+              - "PUT"
+              - "OPTIONS"
+            allowedHeaders: "*" # 允许在请求中携带的头信息
+            allowCredentials: true # 是否允许携带cookie,cookie中通常都带有敏感信息，credential(凭证)
+            maxAge: 360000 # 这次跨域检测的有效期
+```
+
+/**表示拦截所有请求，跨域检测有效期描述有一次同一处请求跨域成功了，在这段时间不用检测，可以省去每次都要请求两次的损耗。
+
+运行跨域的请求地址可改，此处例子为上述网址。
+
+## Docker运用
+
+此处讲的是Docker实践，具体使用的细节见另外的Docker笔记文档。
+
+**项目部署问题**
+
+大型项目组件较多，运行环境也较为复杂，部署时会碰到一些列问题，而Docker就是用于解决该问题的。
+
+Docker如何解决呢？
+
+将应用的libs(函数库)、Deps(依赖)、配置与应用一起打包，将每个应用放到一个隔离容器去运行，避免互相干扰，但是现在可以发现还有一个问题，这些隔离容器必须处于同一个操作系统。
+
+![image-20210922221740615](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922221740615.png)
+
+而Docker自然也解决了这种问题，此处要解释如何解决，首先得提及操作系统的结构：
+
+![image-20210922222016846](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922222016846.png)
+
+不同的以Linux内核的操作系统，本质上来讲其实是提供的函数库存在差异（名字不同，或者函数实现体不同）。
+
+![image-20210922222112201](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922222112201.png)
+
+那此时解决方案就明显了，只需要在打包组件的时候把组件所用到的操作系统环境的所需函数库一起打包，Docker运行到不同的操作系统时，直接基于打包的库函数，借助操作系统的Linux内核来运行，便解决了跨操作系统的问题。
+
+总结：可以认为由Docker打好的程序包可以运行在任何以Linux为内核的操作系统中。Docker是一个快速交付应用、运行应用的技术。
+
+![image-20210922222549542](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210922222549542.png)
+
+注意：m1芯片docker也不能完全适配。
+
+**Docker与虚拟机的区别** ![image-20210923203539317](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923203539317.png)
+
+![image-20210923203634107](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923203634107.png)
+
+**doker架构**
+
+Docker是一个CS架构的程序，有两部分组成：
+
+服务端(server)：Docker守护进程，负责处理Docker指令，管理镜像、容器等
+
+客户端(client)：通过命令或RestAPI向Docker服务端发送指令。可以在本地或远程向服务端发送指令。
+
+![image-20210923204549421](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923204549421.png)
+
+实操：创建运行一个Nginx容器
+
+步骤一：去docker hub查看Nginx的容器运行命令
+
+```shell
+docker run --name containerName -p 80:80 -d nginx
+```
+
+![image-20210923213045446](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923213045446.png)
+
+进入Nginx容器，修改HTML文件内容，添加一句话。
+
+docker logs containerName：显示某个容器的运行文档(是否实时输出，看看--help就行了)
+
+docker ps 查看容器运行状态
+
+![image-20210923221034873](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210923221034873.png)
+
+上图步骤三是bash原生中的命令，效果是替换某文件中的某段文本内容。
+
+#### **数据卷(volume)**
+
+直接修改容器内数据会有如下图一样的缺点
+
+![image-20220516095039319](D:\Typora图片\image-20220516095039319.png)
+
+ 解决容器与数据耦合的问题
+
+若容器和数据耦合，会导致不便于修改、数据不可复用、升级维护困难。
+
+数据卷本质上是一个虚拟目录，指向宿主机文件系统中的某个目录。
+
+![image-20210924210010318](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924210010318.png)
+
+**操作数据卷（--help也能看）**
+
+![image-20210924210445801](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924210445801.png)
+
+挂载点：
+
+![image-20210924210647474](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924210647474.png)![image-20210924210648732](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924210648732.png)
+
+**挂载数据卷**
+我们在创建容器时，可以通过-v参数来挂载一个数据卷到某个容器目录
+
+![image-20210924210914448](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924210914448.png)
+
+**镜像构建**
+
+![image-20220516101703445](D:\Typora图片\image-20220516101703445.png)
+
+![image-20220516101618158](D:\Typora图片\image-20220516101618158.png)
+
+![image-20210924212031283](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924212031283.png)
+
+以ubuntu为基础镜像，构建java为例：
+
+![image-20210924215947872](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924215947872.png)
+
+#### DockerCompose
+
+用于部署微服务集群
+
+p58-59 后面下好补上。
+
+**Docker镜像仓库**
+
+## 服务异步通讯
+
+### **同步通讯和异步通讯**
+
+![image-20210924213748344](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924213748344.png)
+
+**同步通讯**
+
+Feign的调用时属于同步方式的，存在一些问题。
+
+![image-20210924225505435](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924225505435.png)
+
+问题一：加入短信服务，导致支付服务要修改，还要加别的就反复加入。（耦合度高）
+
+![image-20210924225725077](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924225725077.png)
+
+问题二：同步导致性能下降，总体业务时间长，吞吐量低。
+
+问题三：cpu长期处于等待状态，浪费系统资源。（性能下降）
+
+![image-20210924225847717](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210924225847717.png)
+
+问题三：级联失败
+
+当然同步通讯也有优点：结果和请求同时获得，而异步是先请求后得到请求正在处理的响应，并不知道结果是否能得到。
+
+![image-20220516103551628](D:\Typora图片\image-20220516103551628.png)
+
+**异步通讯**
+
+异步调用常见实现就是事件驱动模式
+
+优势一：服务解耦
+
+![image-20210925210417953](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925210417953.png)
+
+优势二：性能提升，吞吐量提高
+
+下图中的支付服务后续箭头指的是支付成功后的后续操作，若没有成功就不会有这个箭头而是直接返回，能这样设计的原因是用户只关心是否支付成功，至于后续的操作则不太关心，举个简单例子，就好比淘宝买东西，我们通常付款成功之后便不会再管了。
+
+![image-20210925210846741](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925210846741.png)
+
+优势三：服务没有强依赖，不担心级联失败问题
+
+![image-20210925210928414](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925210928414.png)
+
+优势四：流量削峰
+
+![image-20210925211047228](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925211047228.png)
+
+压力都由Broker顶住。
+
+缺点：
+
+1、依赖于Broker的可靠性、安全性、吞吐能力。
+
+2、架构复杂了，业务没有明显的流程线，不好追踪管理。
+
+### MQ
+
+驱动架构中的broker 
+
+AMQP跨语言跨平台
+
+![image-20210925212023801](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210925212023801.png)
+
+kafka用于海量数据传输且可靠性不高的。
+
+#### RabbitMQ
+
+rabbitMQ服务端口为5672，控制台端口为15672
+
+有笔记！
+
+![image-20220516210636885](D:\Typora图片\image-20220516210636885.png)
+
+上图的可访问虚拟主机是多用户的处理。
+
+![image-20220516210746391](D:\Typora图片\image-20220516210746391.png)
+
+![image-20220516210845205](D:\Typora图片\image-20220516210845205.png)
+
+![image-20220516211245728](D:\Typora图片\image-20220516211245728.png)
+
+![image-20220516211311268](D:\Typora图片\image-20220516211311268.png)
+
+##### 测试Demo整体架构（官方提供的API）：
+
+**生产者**：
+
+![image-20220516211549518](D:\Typora图片\image-20220516211549518.png)
+
+![image-20220516211914738](D:\Typora图片\image-20220516211914738.png)
+
+建立连接后 -> 创建数据传输的通道 -> 创建队列 -> 发送消息 -> 关闭通道和连接
+
+![image-20220516212023930](D:\Typora图片\image-20220516212023930.png)
+
+![image-20220516212053571](D:\Typora图片\image-20220516212053571.png)
+
+![image-20220516212222535](D:\Typora图片\image-20220516212222535.png)
+
+建立连接后 -> 创建数据传输的通道 -> 创建队列 -> 订阅消息 
+
+注：消费者也要声明创建队列的原因是生产者和消费者的顺序是不一定的，下面等待接收消息先打印，证明存在回调机制，是异步执行的。
+
+总体流程：
+
+![image-20220516212510899](D:\Typora图片\image-20220516212510899.png)
+
+#### SpringAMQP
+
+![image-20220516212927920](D:\Typora图片\image-20220516212927920.png)
+
+**利用SpringAMQP实现HelloWorld中的基础消息队列功能**
+
+![image-20220516213551321](D:\Typora图片\image-20220516213551321.png)
+
+设置的步骤：
+
+![image-20220516214142025](D:\Typora图片\image-20220516214142025.png)
+
+![image-20220516214945965](D:\Typora图片\image-20220516214945965.png)
+
+**WorkQueue 工作队列**
+
+![image-20220516223303549](D:\Typora图片\image-20220516223303549.png)
+
+mq存在预取机制，不设置则默认平均分配信息。
+
+![image-20220516223359634](D:\Typora图片\image-20220516223359634.png)
+
+**发布订阅模式**
+
+![image-20220516223707973](D:\Typora图片\image-20220516223707973.png)
+
+注意：exchange负责消息路由，而不是存储，路由失败则消息丢失。
+
+**信息转换器：**
+
+案例：测试发送Object类型的消息
+
+说明：在SpringAMQP的发送方法中，接收消息的类型是Object，也就是说我们可以发送任意对象类型的消息，SpringAMQP会帮我们序列化为字节后发送。
+
+```java
+@Test
+public void testSendObjectQueue(){
+    Map<String, Object> msg = new HashMap<>();
+    msg.put("name", "柳岩");
+    msg.put("age", 21);
+    rabbitTemplate.convertAndSend("object.queue", msg);
+}
+```
+
+Spring对消息对象的处理是由org.springframework.amqp.support.converter.MessageConverter来处理的。而默认实现是SimpleMessageConverter，基于JDK的ObjectOutputStream完成序列化。
+
+如果要修改只需要定义一个MessageConverter类型的Bean即可。推荐用JSON序列化，步骤如下：
+
+我们在publisher服务引入依赖：
+
+```xml
+<dependency>
+	<groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+    <version>2.9.10</version>
+</dependency>
+```
+
+我们在publisher服务声明MessageConverter：
+
+```java
+@Bean
+public MessageConverter jsonMessageConverter(){
+    return new Jackson2JsonMessageConverter();
+}
+```
+
+消息接收也要上面的步骤，接收参数写和发送的消息的对象类型。
+
+### 分布式搜索
+
+#### ES(elasticsearch)
+
+何为elasticsearch？
+
+它是一款非常强大的开源搜索引擎，可以帮助我们从海量数据中快速找到需要的内容。
+
+elasticsearch结合了kibana、Logstash、Beats，也就是elastic stack (ELK)。被广泛应用在日志数据分析、实时监控等领域。
+
+数据可视化：kibana
+
+存储、计算、搜索数据：Elasticsearch
+
+数据抓取：Logstash、Beats
+
+**elasticsearch的发展**
+
+java语言的搜索引擎类库
+
+ Lucene的优势：
+
+1、易扩展
+
+2、高性能（基于倒排索引）
+
+Lucene的缺点：
+
+1、只限于java语言开发
+
+2、学习曲线陡峭
+
+3、不支持水平扩展
+
+Compass是基于Lucene开发的，后续被重写为elasticsearch。
+
+es与Lucene相比，支持分布式且可以水平扩展，提供Restful接口，可被任何语言调用。
+
+![image-20210926220242560](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926220242560.png)
+
+**正向索引和倒排索引**
+
+传统数据库采用正向索引。
+
+![image-20210926221011868](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926221011868.png)
+
+正向先找id定位文档，倒排是基于词条倒找id。
+
+**es与mysql中的概念对比**
+
+文档：
+
+elasticsearch是面向文档存储的，可以是数据库中的一条商品数据，一个订单信息。
+
+文档数据会被序列化为json格式后存储在elasticsearch中。
+
+![image-20210926222044812](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926222044812.png)
+
+索引（Index）：相同类型文档的集合
+
+映射(mapping)：索引中文档的字段约束信息，类似表的结构约束。
+
+![image-20210926222302306](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926222302306.png)
+
+![image-20210926222342393](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926222342393.png)
+
+![image-20210926222714723](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210926222714723.png)
+
+**架构**
+
+Mysql：擅长事务类型操作，可以确保数据的安全和一致性
+
+Elasticsearch：擅长海量数据的搜索、分析、计算
+
+**安装elasticsearch、kibana**
+
+```dockerfile
+docker run -d \
+	--name es \
+	-e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
+	-e "discovery.type=single-node"
+	-v es-data:/usr/share/elasticsearch/data \
+	-v es-plugins:/usr/share/elasticsearch/plugins \
+	--privileged
+	--network es-net \
+	-p 9200:9200 \
+	-p 9300:9300 \
+elasticsearch:7.12.1	
+```
+
+```dockerfile
+docker run -d \
+--name kibana
+-e ELASTICSEARCH_HOSTS=http://es:9200 \
+--network=es-net \
+-p 5601:5601 \
+kibana:7.12.1
+```
+
+![image-20210929220813959](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929220813959.png)
+
+dsl语句，即elasticsearch的专用语言
+
+编写dsl语言的地方
+
+![image-20210929220947569](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929220947569.png)
+
+这里表示查询所有数据。
+
+当然，可以模拟无参数请求，就我们直接访问9200端口。//测试elasticsearch是否可用也可以用该种方式
+
+![image-20210929221325718](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929221325718.png)
+
+**安装IK分词器**
+
+分词器：
+
+es在创建倒排索引的时候要对文档进行分词；在搜索时，需要对用户输入的内容进行分词。但默认的分词规则对中文处理并不友好。
+
+测试一下
+
+```elm
+POST /_analyze
+{
+	"analyzer": "standard",
+	"text": "我tm的直接起飞！"
+}
+```
+
+/_analyze 分析
+
+analyzer : 分词器选择，这里选择的是标准的。
+
+text : 需要分词的内容
+
+中文分词会导致逐字分词。
+
+由于中文分词问题，我们一般都会安装IK分词器
+
+![image-20210929222028261](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929222028261.png)
+
+![image-20210929222320435](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929222320435.png)
+
+![image-20210929222809121](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929222809121.png)
+
+![image-20210929222815694](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929222815694.png)
+
+![image-20210929222820356](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929222820356.png)
+
+![image-20210929222826675](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929222826675.png)
+
+![image-20210929223045539](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20210929223045539.png)
+
+最细切分会把重叠词分开多个
+
+最细切分搜索概率会高，而最少切分产生缓存少、效率高。
+
+**IK分词器的扩展和停用词典**
+
+网络新词无法切分。
+
+字典的个性化设置：
+
+![image-20211006213646906](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211006213646906.png)
+
+#### **索引库（类似于表）操作**
+
+**mapping属性**（类似于列约束）
+
+mapping是对索引库中文档的约束，常见的mapping属性包括：
+
+1、type：字段数据类型：
+
+​	1-1、字符串：text(可分词的文本)、keyword(精确值，例如：国家、品牌、ip地址)
+
+​	1-2、数值：long、integer、short、byte、double、float
+
+​	1-3、布尔：boolean
+
+​	1-4、日期：date
+
+​	1-5、对象：object
+
+特殊处理：数组类型仅看数组中的数据的类型，没有具体的集合类型。
+
+2、index：是否创建索引，默认为true（设置了false则创建的数据无法通过直接搜索获得）
+
+3、analyzer：分词器，对内容进行切分。
+
+4、properties：该字段的子字段
+
+示例：
+
+![image-20211006220446434](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211006220446434.png)
+
+**创建索引库**
+
+ES中通过Restful请求操作索引库、文档。请求内容用DSL语句来表示。创建索引库和mapping的DSL语法如下：
+
+![image-20211007201246471](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007201246471.png)
+
+![image-20211007202440988](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007202440988.png)
+
+索引库名必须为小写，否则会出现400错误码的错误。
+
+**查看、删除索引库**
+
+查看：
+
+GET /索引库名
+
+删除：
+
+DELETE /索引库名
+
+修改（es中的索引库不允许修改）：
+
+索引库和mapping一旦创建无法修改，但是可以添加新的字段，语法如下：
+
+![image-20211007205117393](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007205117393.png)
+
+对于不能修改的原因，个人的一些理解：es采取的是倒排索引，用熟系的表结构进行解析，可以看做根据列属性来查找，若改变此时的列属性，则无法查找，而如果是正向索引，第一时间寻求的是无法修改列属性的主码，故修改列属性仍然可以找到对应数据所在的元组。
+
+**添加文档**
+
+新增文档的DSL语法如下：
+
+![image-20211007210712317](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007210712317.png)
+
+记得要加上文档id，否则系统会自动生成。
+
+![image-20211007211555989](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007211555989.png)
+
+**删除文档**
+
+DELETE /索引库名/_doc/文档id
+
+**查看文档**
+
+GET /索引库名/_doc/文档id
+
+**修改文档**
+
+方式一：全量修改，会删除旧文档，添加新文档
+
+![image-20211007212036992](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007212036992.png)
+
+方式二：局部修改，修改指定字段
+
+![image-20211007212403419](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007212403419.png)
+
+#### RestClient操作索引库
+
+RestClient 官方文档地址：
+
+https://www.elastic.co/guide/en/elasticsearch/client/index.html
+
+![image-20211007213540091](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007213540091.png)
+
+es中对于经纬度有特别的处理。
+
+![image-20211007220121406](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007220121406.png)
+
+![image-20211007220427625](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211007220427625.png)
+
+ es的id都是用字符串，比较特殊
+
+#### **RestClient的使用：**
+
+引入RestHighLevelClient依赖：
+
+```xml
+<dependency>
+   <groupId>org.elasticsearch.client</groupId>
+   <artifactId>elasticsearch-rest-high-level-client</artifactId>
+</dependency>
+```
+
+若es的依赖版本被版本管理给限定了，需要自己配置一下。
+
+![image-20211008213040785](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008213040785.png)
+
+书写测试类
+
+![image-20211008220429108](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008220429108.png)
+
+**创建索引库**
+
+![image-20211008213639134](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008213639134.png)
+
+indices - > index的复数形式
+
+**删除索引库、判断索引库是否存在**
+
+![image-20211008221105185](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008221105185.png)
+
+err.println 可以让打印结果的颜色为红色
+
+![image-20211008221556808](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008221556808.png)
+
+**新增文档**
+
+![image-20211008225502318](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008225502318.png)
+
+**查询文档**
+
+![image-20211008231427354](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008231427354.png)
+
+**删除文档**
+
+![image-20211008231204675](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008231204675.png)
+
+**修改文档**
+
+![image-20211008231121030](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008231121030.png)
+
+**批量导入文档**
+
+GET /"索引库名字"/_search	查询某个索引库的所有文档
+
+![image-20211008231541100](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008231541100.png)
+
+![image-20211008232618459](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211008232618459.png)
+
+### 分布式搜索引擎
+
+#### DSL查询文档
+
+**基本语法**
+
+![image-20211009210959391](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009210959391.png)
+
+**DSL查询分类**
+
+常见的查询类型：
+
+1、**查询所有**：查询出所有数据，一般测试用。
+
+例如：
+
+match_all（不是全部展示，会有分页限制）
+
+2、**全文检索** (full text) 查询：利用分词器对用户输入内容分词，然后去倒排索引库中匹配。例如：
+
+match_query
+
+multi_match_query
+
+**match**
+
+![image-20211009213831407](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009213831407.png)
+
+**multi_match**
+
+![image-20211009214220156](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009214220156.png)
+
+![image-20211009214405789](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009214405789.png)
+
+图中上方的形式搜索更快。
+
+3、**精确查询**：根据精确词条值查找数据，一般是查找keyword、数值、日期、boolean等类型字段。
+
+例如：
+
+ids	(根据id)
+
+range	(根据数值范围)
+
+term	(根据精确值)
+
+**term**
+
+![image-20211009214844739](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009214844739.png)
+
+大写的都是自己填的
+
+**range**
+
+![image-20211009215059205](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009215059205.png)
+
+有e带等于，没有不带
+
+4、**地理(geo)查询**：根据经纬度查询。
+
+例如：
+
+geo_distance (查询到指定中心点小于某个距离值的所有文档)
+
+geo_bounding_box (查询某个geo_point值落在某个矩形范围的所有文档)
+
+**geo_bounding_box**
+
+![image-20211009215532663](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009215532663.png)
+
+**geo_distance**
+
+![image-20211009215732175](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009215732175.png)
+
+5、**复合查询**：复合查询可以将上述各种条件组合起来，合并查询条件。
+
+例如：
+
+bool
+
+function_score (算法函数查询，可以控制文档相关性算分，控制文档排名) 
+
+**function_score**
+
+相关性算分：
+
+当我们利用match查询时，文档结果会根据与搜索词条的关联度打分(_score)，返回结果时按照分值降序排列。
+
+![image-20211009221039294](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009221039294.png)
+
+![image-20211009221113172](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211009221113172.png)
+
+TF-IDF: 在es5.0之前，会随着词频增加而越来越大。 
+
+BM25: 在es5.0之后，会随着词频增加而增大，但增大曲线会趋于水平
+
+**Function Score Query**
+
+使用这个查询，可以修改文档的相关性算分(query score)，根据新得到的算分排序。
+
+![image-20211010212054092](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010212054092.png)
+
+**Boolean Query**
+
+布尔查询时一个或多个查询子句的组合。子查询的组合方式有：
+
+must：必须匹配每个子查询，类似“与”
+
+should：选择性匹配子查询，类似“或”
+
+must_not：必须不匹配，不参与算分，类似“非”
+
+filter：必须匹配，不参与算分
+
+**不参与算分得到的查询结果会放到缓存中，所以可以尽量用不算分的查询方式来提高性能。**
+
+![image-20211010220114794](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010220114794.png)
+
+#### 搜索结果处理
+
+**排序**
+
+指定了字段就会放弃打分，性能提高。
+
+elasticsearch支持对搜索结果排序，默认是根据相关度算分 (_score) 来排序。可以排序的字段类型有：keyword类型、数值类型、地理坐标类型、日期类型等。
+
+![image-20211010221710553](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010221710553.png)
+
+**分页**
+
+elasticsearch 默认情况下只返回top10的数据。而如果要查询更多数据就需要修改分页参数了。
+
+![image-20211010223009361](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010223009361.png)
+
+![image-20211010223315651](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010223315651.png)
+
+深度分页：
+
+ES是分布式的，所以会面临深度分页问题。
+
+1、首先在每个数据分片上都排序并查询前1000条文档。
+
+2、然后将所有节点的结果聚合，在内存中重新排序选出前1000条文档。
+
+3、最后从这1000条中，选取从990开始的10跳文档
+
+若搜索页数过深，或者结果集 (from + size) 越大，对内存和CPU的消耗也越高。因此ES设定结果集查询的上限是10000。
+
+从根源上杜绝分页，或者采用官方的解决方案。
+
+search after：分页时需要排序，原理是从上一次的排序值开始，查询下一页数据。
+
+scroll：原理将排序数据形成快照，保存在内存。官方不推荐。
+
+![image-20211010225223295](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010225223295.png)
+
+**高亮**
+
+在搜索结果中把搜索关键字突出显示。
+
+原理：
+
+1、将搜索结果中的关键字用标签标记出来。
+
+2、在页面中给标签添加css样式
+
+![image-20211010225648046](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010225648046.png)
+
+默认情况下，ES搜索字段必须与高亮字段一致。
+
+![image-20211010230052619](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010230052619.png)
+
+把匹配关闭之后便可以做到不一致也能高亮
+
+![image-20211010230125349](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010230125349.png)
+
+#### RestClient查询文档
+
+**快速入门**
+
+match_all演示基本API
+
+![image-20211010233909289](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010233909289.png)
+
+![image-20211010233834888](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211010233834888.png)
+
+可以将这个Source理解为uri外的JSON部分。
+
+![image-20211011210919975](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011210919975.png)
+
+QueryBuilders
+
+![image-20211011211029669](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011211029669.png)
+
+**全文检索查询**
+
+全文检索的match和multi_match查询与match_all的API基本一致。差别是查询条件，也就是query的部分。
+
+![image-20211011212357307](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011212357307.png)
+
+![image-20211011213047729](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011213047729.png)
+
+**精确查询**
+
+![image-20211011213056627](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011213056627.png)
+
+**复合查询-boolean query**
+
+![image-20211011213427681](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011213427681.png)
+
+**排序和分页**
+
+搜索结果的排序和分页是与query同级的参数。
+
+![image-20211011220725272](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011220725272.png)
+
+**高亮**
+
+![image-20211011221409096](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211011221409096.png)
+
+#### **旅游案例**
+
+加权重的添加，这个事情其实是后台管理系统该干的
+
+![image-20211012225415386](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012225415386.png)
+
+![image-20211012230029685](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211012230029685.png)
+
+具体实现查看hotelDemo
+
+### 深入elasticsearch
+
+#### **数据聚合**
+
+聚合必须三要素：聚合名称、聚合类型、聚合字段
+
+对海量的数据做统计分析，形成可视化报表。
+
+参与聚合的字段类型必须是：
+
+keyword、数值、日期、布尔
+
+聚合的种类：
+
+聚合可以实现对文档数据的统计、分析、运算。聚合常见的有三类：
+
+1、桶(Bucket)聚合：用来对文档做分组
+
+​	TermAggregation: 按照文档字段值分组
+
+​	Date Histogram(直方图): 按照日期阶梯分组，例如一周为一组，或者一月为一组。
+
+2、度量(Metric)聚合：用来计算一些值，比如：最大值、最小值、平均值等
+
+​	Avg：求平均值
+
+​	Max：求最大值
+
+​	Min：求最小值
+
+​	Stats：同时求max、min、avg、sum等
+
+3、管道(pipeline)聚合：以其它聚合的结果为基础做聚合。
+
+**DSL实现聚合（aggregation）**
+
+DSL实现Bucket聚合：
+
+![image-20211013212415778](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013212415778.png)
+
+size为0表示只要聚合结果，不需要文档内容。
+
+聚合结果排序：
+
+默认情况下，Bucket聚合会统计Bucket内的文档数量，记为 _count，并且按照 _count降序排序，对该默认排序进行更换：
+
+![image-20211013213240093](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013213240093.png)
+
+限定聚合范围：
+
+默认情况下，Bucket聚合是对索引库的所有文档做聚合，我们可以限定要聚合的文档范围，还要添加query条件即可：
+
+![image-20211013213931225](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013213931225.png)
+
+DSL实现Metrics聚合
+
+例如，我们要求获取每个品牌的用户评分的min、max、avg等值。
+
+![image-20211013215300699](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013215300699.png)
+
+RestClient实现聚合：
+
+![image-20211013215842260](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013215842260.png)
+
+![image-20211013220525335](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013220525335.png)
+
+多条件聚合：
+
+![image-20211013224431887](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013224431887.png)
+
+![image-20211013224317119](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013224317119.png)
+
+![image-20211013225227738](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211013225227738.png)
+
+可以给自己一个概念：先写查询再写聚合。
+
+#### **自动补全**
+
+**拼音分词器**
+
+![image-20211014215249275](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014215249275.png)
+
+https://github.com/medcl/elasticsearch-analysis-pinyin/releases
+
+拼音分词器的问题：
+
+![image-20211014215854193](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014215854193.png)
+
+1、每个字都形成了一个拼音。
+
+2、一句话的整体拼音没有列出，而是以首字母拼接的形式分词
+
+3、分词只剩下了拼音，而大部分业务场景采取的不是拼音分词，不能丢弃具体词语。
+
+**自定义分词器**
+
+elasticsearch中分词器 (analyzer) 的组成包含三部分：
+
+1、character filters：在 tokenizer 之前对文本进行处理。例如删除字符、替换字符。
+
+2、tokenizer(标记器)：将文本按照一定规则切割成词条(term)。例如keyword，就是不分词；还有ik_smart
+
+3、tokenizer filter：将tokenizer输出的词条做进一步处理。例如大小写转换、同义词处理、拼音处理等
+
+![image-20211014221056096](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014221056096.png)
+
+![image-20211014221134586](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014221134586.png)
+
+分词器可操控参数：
+
+这里选中的是让分词器分词时将总体的拼音也记下。
+
+![image-20211014221507557](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014221507557.png)
+
+更改参数的形式：
+
+![image-20211014221538828](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014221538828.png)
+
+下图没有test就测试不了，因为自定义的分词只有指定某个索引库才能起效
+
+![image-20211014221735764](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014221735764.png)
+
+拼音分词器适合在创建倒排索引时使用，不能在搜索中使用。
+
+![image-20211014222040208](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014222040208.png)
+
+避免搜索到同音字，创建倒排时用自定义分词器，搜索时用ik_smart
+
+![image-20211014222241029](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014222241029.png)
+
+**自动补全查询**
+
+completion suggester查询
+
+这个查询会匹配以用户输入内容开头的词条并返回。为了提高补全查询的效率，对于文档中字段的类型存在一些约束:
+
+1、参与补全查询的字段必须是completion类型。
+
+2、字段内容一般是用来补全多个词条形成的数组。
+
+![image-20211014222705755](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014222705755.png)
+
+![image-20211014222915428](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014222915428.png)
+
+查询语法如下：
+
+![image-20211014223004636](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014223004636.png)
+
+RestAPI实现自动补全
+
+![image-20211014230605573](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014230605573.png)
+
+**实现酒店搜索框自动补全**
+
+ p129-131 自己弄相关业务的设计时忘记了可回头看看。
+
+#### ***数据同步**
+
+**数据同步思路分析**
+
+elasticsearch中的酒店数据来自于mysql，因此mysql数据发生改变时，elasticsearch也必须跟着改变，这个就是elasticsearch与mysql之间的**数据同步**。
+
+常规的非微服务业务中，我可以直接在更新mysql的时候更新elasticsearch，而在微服务中，操作mysql的业务与操作elasticsearch的业务可能在两个不同的微服务上，此时数据同步如何实现呢？
+
+方案一：同步调用
+
+![image-20211014232700884](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014232700884.png)
+
+优点：实现简单
+
+缺点：业务耦合，耗时增加。
+
+方案二：异步通知
+
+![image-20211014233056281](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014233056281.png)
+
+优点：低耦合，实现难度一般
+
+缺点：依赖mq的可靠性
+
+方案三：监听binlog
+
+![image-20211014233159545](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211014233159545.png)
+
+mysql数据变化了，binlog就会变化，此时监听的中间件(canal)就可以通知需要进行同步变化的微服务。开启binlog会加大mysql的负载，也不是万全方案。
+
+优点：几乎没有耦合度
+
+缺点：数据库负担重、实现复杂度高
+
+以上方案中，常用的是二，为了追求极致性能可以采取三！
+
+**实现elasticsearch与数据库数据同步**
+
+利用MQ实现mysql与elasticsearch数据同步。
+
+这里使用酒店案例：
+
+当酒店数据发生增、删、改时，要求对elasticsearch中数据也要完成相同操作。
+
+步骤：
+
+1、导入课前资料提供的hotel-admin项目，启动并测试酒店数据的CRUD
+
+2、声明exchange、queue、RoutingKey
+
+3、在hotel-admin中的增、删、改业务中完成消息发送
+
+4、在hotel-demo中完成消息监听，并更新elasticsearch中的数据
+
+5、启动并测试数据同步功能
+
+![image-20211015212745662](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211015212745662.png)
+
+#### **集群**
+
+**ES集群结构**
+
+单机的elasticsearch做数据存储，必然面临两个问题：海量数据存储问题、单点故障问题。
+
+海量数据存储问题解决：将索引库从逻辑上拆分为N个分片(shard)，存储到多个节点。
+
+单点故障问题解决：将分片数据在不同节点备份。
+
+![image-20211017210256748](C:\Users\桁仔\AppData\Roaming\Typora\typora-user-images\image-20211017210256748.png)
+
+**搭建集群**
+
+利用docker容器模拟3个es的节点。
+
+一个文件描述多个节点
+
+编写一个docker-compose文件，内容如下
+
+云服务器内存不足，需要后续再弄。
+
+p139-142
+
+## 高级篇
+
+### Sentinel
+
+#### 雪崩问题
+
+在微服务调用链中有一条出现了故障，导致有所涉及的服务都被拖垮了，最终导致整个微服务架构出现大量故障。
+
+![image-20220517082945062](D:\Typora图片\image-20220517082945062.png)
+
+解决雪崩的4种常见方式：
+
+1、超时处理：设置请求的超时时间，请求超过一定时间没有响应就返回错误信息，不会无休止地等待。（缓解，无法根本解决）
+
+![image-20220517083449399](D:\Typora图片\image-20220517083449399.png)
+
+上图如果来的服务一直保持1s两个，则迟早会出现问题。
+
+2、舱壁模式：限定每个业务能使用的线程数，避免耗尽整个tomcat的资源，因此也叫线程隔离。
+
+![image-20220517083816981](D:\Typora图片\image-20220517083816981.png)
+
+3、熔断降级：由断路器统计业务执行的异常比例，如果超出阈值则会熔断该业务，拦截访问该业务的一切请求。（较好解决方案）
+
+![image-20220517084218134](D:\Typora图片\image-20220517084218134.png)
+
+4、流量控制：限制业务访问的QPS（每秒访问量），避免服务因流量的突增而故障。
+
+![image-20220517084435910](D:\Typora图片\image-20220517084435910.png)
+
+#### Sentinel介绍
+
+![image-20220517085346567](D:\Typora图片\image-20220517085346567.png)
+
+信号量隔离和线程池隔离的区别：信号量是记录统计数来分配线程池中的线程，是整个服务用的一个线程池，而线程隔离是用的多个线程池，每个后续业务有一个。（线程池隔离性更强，划分力度更大）[信号量减少了线程池的创建、划分开销，所以性能可能更好]
+
+慢调用：如果耗时业务占的比例大，也可以进行操作。
+
+Sentinel特征：
+
+![image-20220517090715517](D:\Typora图片\image-20220517090715517.png)
+
+#### Sentinel的使用
+
+**Sentinel使用步骤：**
+
+![image-20220517091537641](D:\Typora图片\image-20220517091537641.png)
+
+去到默认端口8080登录，默认账号密码都为sentinel
+
+![image-20220517091448020](D:\Typora图片\image-20220517091448020.png)
+
+**微服务整合Sentinel**
+
+我们在order-service中整合Sentinel，并且连接Sentinel的控制台，步骤如下：
+
+1、引入sentinel依赖：
+
+```xml
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+```
+
+2、配置控制台地址：
+
+```yaml
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+```
+
+3、访问微服务的任意端点，触发sentinel监控
+
+#### 限流规则
+
+![image-20220517102702362](D:\Typora图片\image-20220517102702362.png)
+
+端点（endpoint）可以理解为Controller中的方法，理论上也可以监视service和mapping的调用。
+
+![image-20220517103330814](D:\Typora图片\image-20220517103330814.png)
+
+default表示一切进来的请求都要限流，单机阈值是指为接口的并发量可承受值，并发量可承受值由后续的压测可以得到。
+
+案例：
+
+需求：给 /order/{orderId} 这个资源设置流控规则，QPS不能超过5。然后利用 jmeter 测试
+
+![image-20220518090417400](D:\Typora图片\image-20220518090417400.png)
+
+直接：用当前资源来决定的限流
+
+关联：用另外的资源来决定的限流
+
+链路：对当前资源所在链路的限流
+
+**流控模式：关联**
+
+​	统计与当前资源相关的另一个资源，触发阈值时，对当前资源限流
+
+​	使用场景：比如用户支付时需要修改订单状态，同时用户要查询订单。查询和修改操作会争抢数据库锁，产生竞争。业务需求是有限支付和更新订单的业务，因此当修改订单业务触发阈值时，需要毒地查询订单业务限流。
+
+![image-20220518091309684](D:\Typora图片\image-20220518091309684.png)
+
+需求:
+
+​	在OrderController新建两个端点：/order/query 和 /order/update，无需实现业务
+
+​	配置流控规则，当 /order/update 资源被访问的QPS超过5时，对/order/query请求限流
+
+一般满足下面条件使用关联模式：
+
+两个有竞争关系的资源、一个优先级较高，一个优先级较低
+
+**流控模式：链路**
+
+![image-20220518092027649](D:\Typora图片\image-20220518092027649.png)
+
+需求：有查询订单和创建订单业务，两者都需要查询商品。针对从查询订单进入到查询商品的请求统计，并设置限流。
+
+步骤：
+
+1、在OrderService中添加一个queryGoods方法，不用实现业务
+
+2、在OrderController中，改造/order/query端点，调用OrderService中的queryGoods方法
+
+3、在OrderController中添加一个/order/save的端点，调用OrderService中的queryGoods方法
+
+4、给queryGoods设置限流规则，从/order/query进入queryGoods的方法限制QPS必须小于2
+
+![image-20220518095706259](D:\Typora图片\image-20220518095706259.png)
+
+![image-20220518100335197](D:\Typora图片\image-20220518100335197.png)
+
+**流控效果：warmup**
+
+warmup也叫预热模式，是应对服务冷启动的一种方案。请求阈值初始值是threshold/coldFactor，持续指定时长后，逐渐提高到threshold值。而coldFactor的默认值是3。
+
+例如，我设置QPS的threshold为10，预热时间为5秒，那么出事阈值就是10 / 3，也就是3，然后在5秒后逐渐增长到10.
+
+![image-20220518100835828](D:\Typora图片\image-20220518100835828.png)
+
+**流控效果：排队等待**（起到流量整形的效果）
+
+当请求超过QPS阈值时，快速失败和warmup会拒绝新的请求并抛出异常。而排队等待则是让所有请求进入一个队列中，然后按照阈值允许的时间间隔依次执行。后来的请求必须等待前面执行完成，如果请求预期的等待时间超出最大时长，则会被拒绝。
+
+例如：QPS=5，意味着每200ms处理一个队列中的请求；timeout=2000，意味着预期等待超过2000ms的请求会被拒绝并抛出异常。
+
+![image-20220518101902790](D:\Typora图片\image-20220518101902790.png)
+
+![image-20220518102353059](D:\Typora图片\image-20220518102353059.png)
+
+![image-20220518102528850](D:\Typora图片\image-20220518102528850.png)
+
+![image-20220518102537506](D:\Typora图片\image-20220518102537506.png)
+
+上图代表的含义是：对hot这个资源的0号参数（第一个参数）做统计，每1秒相同参数值的请求数不能超过5.
+
+![image-20220518102854700](D:\Typora图片\image-20220518102854700.png)
+
+需求：给/order/{orderId}这个资源添加热点参数限流，规则如下：
+
+​	默认的热点参数规则是每1秒请求量并不超过2
+
+​	给102这个参数设置例外：每1秒请求量不超过4
+
+​	给103这个参数设置例外：每1秒请求量不超过10
+
+特别注意：热点参数限流对默认的SpringMVC资源无效。[要标有sentinel注解的参数才能被作为限流对象]
+
+#### 隔离和降级
+
+![image-20220518104631398](D:\Typora图片\image-20220518104631398.png)
+
+下面步骤是编写远程调用失败后的反馈逻辑
+
+![image-20220518104913411](D:\Typora图片\image-20220518104913411.png)
+
+![image-20220518105248162](D:\Typora图片\image-20220518105248162.png)
+
+![image-20220518110508210](D:\Typora图片\image-20220518110508210.png)
+
+线程池隔离：
+
+![image-20220518110638162](D:\Typora图片\image-20220518110638162.png)
+
+信号量隔离：
+
+![image-20220518110932502](D:\Typora图片\image-20220518110932502.png)
+
+**信号量隔离和线程池隔离的对比：**
+
+线程池隔离：
+
+​	优点：
+
+​		1、支持主动超时
+
+​		2、支持异步调用
+
+​	缺点：
+
+​		线程的额外开销比较大
+
+   场景：
+
+​		低扇出
+
+信号量隔离：
+
+​	优点：
+
+​		轻量级，无额外开销
+
+​	缺点：
+
+​		1、不支持主动超时
+
+​		2、不支持异步调用
+
+​	场景：
+
+​		1、高频调用
+
+​		2、高扇出
+
+（扇出：来了一个请求，然后扩散出好几个）
+
+![image-20220518210539292](D:\Typora图片\image-20220518210539292.png)
+
+![image-20220518211149216](D:\Typora图片\image-20220518211149216.png)
+
+![image-20220518211435025](D:\Typora图片\image-20220518211435025.png)
+
+**断路器熔断策略有三种：慢调用、异常比例、异常数**
+
+![image-20220518211712586](D:\Typora图片\image-20220518211712586.png)
+
+需求：给UserClient的查询用户接口设置降级规则，慢调用的RT阈值为50ms，统计时间为1秒，最小请求数量为5，失败阈值比例为0.4，熔断时长为5。
+
+![image-20220518212416433](D:\Typora图片\image-20220518212416433.png)
+
+![image-20220518214807738](D:\Typora图片\image-20220518214807738.png)
+
+需求：给UserClient的查询用户接口设置降级规则，统计时间为1秒，最小请求数量为5，失败阈值比例为0.4，熔断时长为5秒。
+
+总结：
+
+慢调用比例：超过指定时长的调用为慢调用，统计单位时长内慢调用的比例，超过阈值则熔断。
+
+异常比例：统计单位时长内异常调用的比例，超过阈值则熔断。
+
+异常数：统计单位时长内异常调用的次数，超过阈值则熔断。
+
+#### 授权规则及规则持久化
+
+![image-20220518220512810](D:\Typora图片\image-20220518220512810.png)
+
+![image-20220518220751951](D:\Typora图片\image-20220518220751951.png)
+
+![image-20220518220927039](D:\Typora图片\image-20220518220927039.png)
+
+#### 自定义异常结果
+
+![image-20220518222001200](D:\Typora图片\image-20220518222001200.png)
+
+![image-20220518222010264](D:\Typora图片\image-20220518222010264.png)
+
+在order-service中定义类，实现BlockExceptionHandler接口：
+
+```java
+@Component
+public class SentinelExceptionHandler implements BlockExceptionHandler {
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response, BlockException e) throws Exception {
+        String msg = "未知异常";
+        int status = 429;
+
+        if (e instanceof FlowException) {
+            msg = "请求被限流了";
+        } else if (e instanceof ParamFlowException) {
+            msg = "请求被热点参数限流";
+        } else if (e instanceof DegradeException) {
+            msg = "请求被降级了";
+        } else if (e instanceof AuthorityException) {
+            msg = "没有权限访问";
+            status = 401;
+        }
+
+        response.setContentType("application/json;charset=utf-8");
+        response.setStatus(status);
+        response.getWriter().println("{\"msg\": " + msg + ", \"status\": " + status + "}");
+    }
+}
+```
+
+#### 规则持久化
+
+**规则管理模式**
+
+Sentinel的控制台规则管理有三种模式：
+
+1、原始模式：Sentinel的默认模式，将规则保存在内存，重启服务会丢失。
+
+2、pull模式：
+
+存在问题：定时轮询，容易造成数据不一致问题
+
+![image-20220518223321160](D:\Typora图片\image-20220518223321160.png)
+
+3、push模式（比较推荐）：
+
+![image-20220518223624623](D:\Typora图片\image-20220518223624623.png)
+
+**实现push模式**
+
+Sentinel 规则持久化
+
+一、修改order-service服务
+
+修改OrderService，让其监听Nacos中的sentinel规则配置。
+
+具体步骤如下：
+
+1.引入依赖
+
+在order-service中引入sentinel监听nacos的依赖：
+
+```xml
+<dependency>
+    <groupId>com.alibaba.csp</groupId>
+    <artifactId>sentinel-datasource-nacos</artifactId>
+</dependency>
+```
+
+2.配置nacos地址
+
+在order-service中的application.yml文件配置nacos地址及监听的配置信息：
+
+```yaml
+spring:
+  cloud:
+    sentinel:
+      datasource:
+        flow:
+          nacos:
+            server-addr: localhost:8848 # nacos地址
+            dataId: orderservice-flow-rules
+            groupId: SENTINEL_GROUP
+            rule-type: flow # 还可以是：degrade、authority、param-flow
+```
+
+二、修改sentinel-dashboard源码
+
+SentinelDashboard默认不支持nacos的持久化，需要修改源码。
+
+1. 解压
+
+解压课前资料中的sentinel源码包：
+
+![image-20210618201340086](D:\Typora图片\image-20210618201340086-16528849098131.png)
+
+然后并用IDEA打开这个项目，结构如下：
+
+![image-20210618201412878](D:\Typora图片\image-20210618201412878-16528849098142.png)
+
+2. 修改nacos依赖
+
+在sentinel-dashboard源码的pom文件中，nacos的依赖默认的scope是test，只能在测试时使用，这里要去除：
+
+![image-20210618201607831](D:\Typora图片\image-20210618201607831-16528849098143.png)
+
+将sentinel-datasource-nacos依赖的scope去掉：
+
+```xml
+<dependency>
+    <groupId>com.alibaba.csp</groupId>
+    <artifactId>sentinel-datasource-nacos</artifactId>
+</dependency>
+```
+
+3. 添加nacos支持
+
+在sentinel-dashboard的test包下，已经编写了对nacos的支持，我们需要将其拷贝到main下。
+
+![image-20210618201726280](D:\Typora图片\image-20210618201726280-16528849098154.png)
+
+
+
+4. 修改nacos地址
+
+然后，还需要修改测试代码中的NacosConfig类：
+
+![image-20210618201912078](D:\Typora图片\image-20210618201912078-16528849098155.png)
+
+修改其中的nacos地址，让其读取application.properties中的配置：
+
+![image-20210618202047575](D:\马\day01-微服务保护\资料\assets\image-20210618202047575.png)
+
+在sentinel-dashboard的application.properties中添加nacos地址配置：
+
+```properties
+nacos.addr=localhost:8848
+```
+
+5. 配置nacos数据源
+
+另外，还需要修改com.alibaba.csp.sentinel.dashboard.controller.v2包下的FlowControllerV2类：
+
+![image-20210618202322301](D:\Typora图片\image-20210618202322301-16528849098157.png)
+
+让我们添加的Nacos数据源生效：
+
+![image-20210618202334536](D:\Typora图片\image-20210618202334536-16528849098159.png)
+
+6. 修改前端页面
+
+接下来，还要修改前端页面，添加一个支持nacos的菜单。
+
+修改src/main/webapp/resources/app/scripts/directives/sidebar/目录下的sidebar.html文件：
+
+![image-20210618202433356](D:\Typora图片\image-20210618202433356-16528849098158.png)
+
+
+
+将其中的这部分注释打开：
+
+![image-20210618202449881](D:\Typora图片\image-20210618202449881-165288490981510.png)
+
+
+
+修改其中的文本：
+
+![image-20210618202501928](D:\Typora图片\image-20210618202501928-165288490981511.png)
+
+7. 重新编译、打包项目
+
+运行IDEA中的maven插件，编译和打包修改好的Sentinel-Dashboard：
+
+![image-20210618202701492](D:\Typora图片\image-20210618202701492-165288490983012.png)
+
+8.启动
+
+启动方式跟官方一样：
+
+```sh
+java -jar sentinel-dashboard.jar
+```
+
+如果要修改nacos地址，需要添加参数：
+
+```sh
+java -jar -Dnacos.addr=localhost:8848 sentinel-dashboard.jar
+```
+
+执行命令：![image-20220519090600933](D:\Typora图片\image-20220519090600933.png)
+
+### 分布式事务
+
+![image-20220519093812865](D:\Typora图片\image-20220519093812865.png)
+
+![image-20220519093839248](D:\Typora图片\image-20220519093839248.png)
+
+![image-20220519102104675](D:\Typora图片\image-20220519102104675.png)
+
+在分布式系统下，一个业务跨越多个服务或数据源，每个服务都是一个分支事务，要保证所有分支事务最终状态一致，这样的事务就是分布式事务。
+
+**学习目标：**
+
+![image-20220519102402781](D:\Typora图片\image-20220519102402781.png)
+
+#### 理论基础
+
+![image-20220519102641421](D:\Typora图片\image-20220519102641421.png)
+
+Consistency（一致性）：用户访问分布式系统中的任意节点，得到的数据必须一致。
+
+![image-20220519102807213](D:\Typora图片\image-20220519102807213.png)
+
+Availability（可用性）：用户访问集群中的任意健康节点，必须得到响应，而不是超时或拒绝。
+
+![image-20220519102941766](D:\Typora图片\image-20220519102941766.png)
+
+Partition（分区）：因为网络故障或其他原因导致分布式系统中的部分节点与其他节点失去连接，形成独立分区。
+
+Tolerance（容错）：在集群出现分区时，整个系统也要持续对外提供服务。
+
+![image-20220519103153501](D:\Typora图片\image-20220519103153501.png)
+
+简述CAP定理内容？
+
+1、分布式系统节点通过网络连接，一定会出现分区问题（P）
+
+2、当分区出现时，系统的一致性（C）和可用性（A）就无法同时满足
+
+思考：es集群是CP还是AP？
+
+答：是CP，当es集群中的某个节点出现故障时，出故障的节点直接被剔除（不可用），数据会分片然后放到别的es节点中，即A没有被满足。
+
+![image-20220519104032440](D:\Typora图片\image-20220519104032440.png)
+
+而分布式事务最大的问题是各个子事务的一致性问题，因此可以借鉴CAP定理和BASE理论：
+
+AP模式：各个子事务分别执行提交，允许出现结果不一致，然后采用弥补措施恢复数据即可，实现最终一致。
+
+CP模式：各个子事务执行后互相等待，同时提交，同时回滚，达成强一致。但事务等待过程中，处于弱可用状态。
+
+![image-20220519104721042](D:\Typora图片\image-20220519104721042.png)
+
+上图里的子系统事务，称为分支事务；有关联的各个分支事务在一起称为全局事务。
+
+### 初识Seata
+
+Seata是2019年1月蚂蚁金服和阿里巴巴共同开源的分布式业务解决方案。致力于提供高性能和简单易用的分布式事务服务，为用户打造一站式的分布式解决方案。
+
+#### Seata架构
+
+Seata事务管理中有三个重要角色：
+
+1、TC（Transaction Coordinator）- 事务协调者：维护全局和分支事务的状态，协调全局事务提交或回滚。
+
+2、TM（Transaction Manager）- 事务管理器：定义全局事务的范围、开始全局事务、提交或回滚全局事务。
+
+3、RM（Resource Manager） - 资源管理器：管理分支事务处理的资源，与TC交谈以注册分支事务和报告分支事务的状态，并驱动分支事务提交或回滚。
+
+![image-20220519110545220](D:\Typora图片\image-20220519110545220.png)
+
+#### Seata中的四种分布式事务解决方案
+
+1、XA模式：强一致性分阶段事务模式，牺牲了一定的可用性，无业务入侵。
+
+2、TCC模式：最终一致的分阶段事务模式，有业务入侵。
+
+3、AT模式：最终一致的分阶段事务模式，无业务入侵，也是Seata的默认模式。
+
+4、SAGA模式：长事务模式，有业务入侵。
+
+**开始对Seata的使用（具体看seata的部署与集成）**
+
+1、如下图修改registry.conf
+
+![image-20220519210304531](D:\Typora图片\image-20220519210304531.png)
+
+![image-20220519210440137](D:\Typora图片\image-20220519210440137.png)
+
+2、在nacos中加入seata配置文件
+
+![image-20220519210853240](D:\Typora图片\image-20220519210853240.png)
+
+具体配置内容：
+
+![image-20220519211053201](D:\Typora图片\image-20220519211053201.png)
+
+![image-20220519214654859](D:\Typora图片\image-20220519214654859.png)
+
+![image-20220519214736682](D:\Typora图片\image-20220519214736682.png)
+
+3、新建名为seata的数据库，运行课前资料提供大的sql文件：
+
+![image-20220519220035304](D:\Typora图片\image-20220519220035304.png)
+
+4、启动seata服务器
+
+使用的时候检查下mysql驱动是否对应上。
+
+#### 微服务集成Seata
+
+1、首先，引入seata相关依赖：
+
+```xml
+        <!--seata-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>seata-spring-boot-starter</artifactId>
+                    <groupId>io.seata</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-spring-boot-starter</artifactId>
+            <version>${seata.version}</version>
+        </dependency>
+```
+
+2、然后，配置application.yml，让微服务通过注册中心找到seata-tc-server:
+
+```yml
+seata:
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      namespace: ""
+      group: DEFAULT_GROUP
+      application: seata-tc-server
+      username: nacos
+      password: nacos
+  tx-service-group: seata-demo # 事务组名称
+  service:
+    vgroup-mapping: # 事务组与cluster的映射关系
+      seata-demo: SH
+  data-source-proxy-mode: AT
+```
+
+上面的配置留下伏笔：不能直接配置cluster-name
+
+**分布式事务的4种解决方案**
+
+XA原理：
+
+![image-20220520082549245](D:\Typora图片\image-20220520082549245.png)
+
+![image-20220520082807248](D:\Typora图片\image-20220520082807248.png)
+
+![image-20220520082915920](D:\Typora图片\image-20220520082915920.png)
+
+优势：在成功前都没有提交事务，采用cp，常用数据库都支持，实现简单，没有代码入侵。
+
+不足：若是事务流程较长，就会导致多个分支事务不提交，占用数据库资源，性能较差、可用性低，依赖关系型数据库实现事务。
+
+![image-20220520083848052](D:\Typora图片\image-20220520083848052.png)
+

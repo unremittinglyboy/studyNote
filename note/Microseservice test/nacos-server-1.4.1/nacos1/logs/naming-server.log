@@ -1,0 +1,39 @@
+2021-09-17 21:45:28,827 INFO GlobalConfig{taskDispatchPeriod=2000, batchSyncKeyCount=1000, syncRetryDelay=5000, dataWarmup=false, expireInstance=true, loadDataRetryDelayMillis=30000}
+
+2021-09-17 21:45:29,475 INFO open empty service auto clean job, initialDelay : 50000 ms, period : 30000 ms
+
+2021-09-17 21:45:29,476 INFO listen for service meta change
+
+2021-09-17 21:45:33,801 INFO [NACOS-DISTRO] healthy server list changed, old: [10.3.108.40:8848], new: [10.3.108.40:8848]
+
+2021-09-17 21:45:35,614 WARN [NamingServerHttpClientManager] Start destroying HTTP-Client
+
+2021-09-17 21:45:35,621 WARN [NamingServerHttpClientManager] Destruction of the end
+
+2021-09-17 21:45:47,628 ERROR [HEALTH-CHECK] error while processing NIO task
+
+java.lang.InterruptedException: null
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2014)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2088)
+	at java.util.concurrent.LinkedBlockingQueue.poll(LinkedBlockingQueue.java:467)
+	at com.alibaba.nacos.naming.healthcheck.TcpSuperSenseProcessor.processTask(TcpSuperSenseProcessor.java:137)
+	at com.alibaba.nacos.naming.healthcheck.TcpSuperSenseProcessor.run(TcpSuperSenseProcessor.java:154)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+2021-09-17 21:49:49,289 INFO GlobalConfig{taskDispatchPeriod=2000, batchSyncKeyCount=1000, syncRetryDelay=5000, dataWarmup=false, expireInstance=true, loadDataRetryDelayMillis=30000}
+
+2021-09-17 21:49:50,237 INFO [NACOS-DISTRO] healthy server list changed, old: [10.3.108.40:8845, 127.0.0.1:8845, 127.0.0.1:8846, 127.0.0.1:8847], new: [10.3.108.40:8845, 127.0.0.1:8845, 127.0.0.1:8846, 127.0.0.1:8847]
+
+2021-09-17 21:54:38,596 INFO GlobalConfig{taskDispatchPeriod=2000, batchSyncKeyCount=1000, syncRetryDelay=5000, dataWarmup=false, expireInstance=true, loadDataRetryDelayMillis=30000}
+
+2021-09-17 21:54:39,520 INFO [NACOS-DISTRO] healthy server list changed, old: [10.3.108.40:8845, 127.0.0.1:8845, 127.0.0.1:8846, 127.0.0.1:8847], new: [10.3.108.40:8845, 127.0.0.1:8845, 127.0.0.1:8846, 127.0.0.1:8847]
+
+2021-09-17 21:56:28,812 INFO GlobalConfig{taskDispatchPeriod=2000, batchSyncKeyCount=1000, syncRetryDelay=5000, dataWarmup=false, expireInstance=true, loadDataRetryDelayMillis=30000}
+
+2021-09-17 21:56:29,749 INFO [NACOS-DISTRO] healthy server list changed, old: [10.3.108.40:8845, 127.0.0.1:8845, 127.0.0.1:8846, 127.0.0.1:8847], new: [10.3.108.40:8845, 127.0.0.1:8845, 127.0.0.1:8846, 127.0.0.1:8847]
+

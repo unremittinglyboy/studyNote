@@ -1,0 +1,22 @@
+2021-09-22 20:54:36,041 INFO DEFAULT_GROUP@@orderservice {SYNC} {IP-NEW} cluster: HZ, new ips size: 1, content: [10.3.112.219:8080:unknown:HZ_1.0_true_false_HZ]
+
+2021-09-22 20:54:36,048 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@orderservice, ips: 10.3.112.219:8080_true,
+
+2021-09-22 20:54:39,605 INFO DEFAULT_GROUP@@userservice {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.112.219:8081:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2021-09-22 20:54:39,605 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@userservice, ips: 10.3.112.219:8081_true,
+
+2021-09-22 20:54:46,388 INFO DEFAULT_GROUP@@userservice {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.112.219:8082:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2021-09-22 20:54:46,388 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@userservice, ips: 10.3.112.219:8082_true,10.3.112.219:8081_true,
+
+2021-09-22 20:55:00,808 INFO DEFAULT_GROUP@@gateway {SYNC} {IP-NEW} cluster: DEFAULT, new ips size: 1, content: [10.3.112.219:10010:unknown:DEFAULT_1.0_true_false_DEFAULT]
+
+2021-09-22 20:55:00,808 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@gateway, ips: 10.3.112.219:10010_true,
+
+2021-09-22 20:56:05,821 INFO {POS} {IP-DISABLED} valid: 10.3.112.219:10010@DEFAULT@DEFAULT_GROUP@@gateway, region: unknown, msg: client timeout after 15000, last beat: 1632315345856
+
+2021-09-22 20:56:13,046 INFO [IP-UPDATED] namespace: public, service: DEFAULT_GROUP@@gateway, ips: 10.3.112.219:10010_false,
+
+2021-09-22 20:56:18,047 INFO service: DEFAULT_GROUP@@gateway {POS} {IP-ENABLED} valid: 10.3.112.219:10010@DEFAULT, region: unknown, msg: client beat ok
+

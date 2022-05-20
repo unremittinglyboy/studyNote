@@ -1,0 +1,33 @@
+## 浏览器相关
+
+1、用于禁止浏览器进行缩放的js代码：
+
+```
+window.addEventListener('mousewheel', function(event){
+    if (event.ctrlKey === true || event.metaKey) {
+          event.preventDefault();
+    }
+},{ passive: false});
+
+//firefox
+ window.addEventListener('DOMMouseScroll', function(event){
+    if (event.ctrlKey === true || event.metaKey) {
+           event.preventDefault();
+    }
+},{ passive: false});
+```
+
+```
+/*设置某个div存在溢出滚动*/
+#box {
+    width: 100%;
+    height: 580px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    line-height: 30px;
+    text-align: center;
+}
+#box::-webkit-scrollbar {
+    display: none;
+}
+```
